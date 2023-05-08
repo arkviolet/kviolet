@@ -1,7 +1,0 @@
-/home/kviolet/workspace/tinytoolkit/softwore/build_linux/CMakeFiles/rebuild_cache.dir
-/home/kviolet/workspace/tinytoolkit/softwore/build_linux/CMakeFiles/edit_cache.dir
-/home/kviolet/workspace/tinytoolkit/softwore/build_linux/project/CMakeFiles/rebuild_cache.dir
-/home/kviolet/workspace/tinytoolkit/softwore/build_linux/project/CMakeFiles/edit_cache.dir
-/home/kviolet/workspace/tinytoolkit/softwore/build_linux/project/kviolet_work_test/CMakeFiles/rebuild_cache.dir
-/home/kviolet/workspace/tinytoolkit/softwore/build_linux/project/kviolet_work_test/CMakeFiles/edit_cache.dir
-/home/kviolet/workspace/tinytoolkit/softwore/build_linux/project/kviolet_work_test/CMakeFiles/kviolet_work_test.dir
