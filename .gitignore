@@ -1,0 +1,19 @@
+#
+# vscode
+#
+.vscode
+
+#
+# clion
+#
+.idea
+cmake-build-debug
+cmake-build-release
+
+#
+# buildg
+#
+build
+build_linux
+build_androd
+build_rk3308
