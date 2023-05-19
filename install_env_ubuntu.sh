@@ -87,8 +87,6 @@ sudo apt-get install yasm libvpx-dev libopus-dev libfdk-aac-dev libmp3lame-dev l
 
 sudo apt-get install ffmpeg libglew-dev intel-mkl-full libsuitesparse-dev libpcl-dev -y
 
-sudo apt-get minicom -y
-
 sudo apt-get install curl -y
 
 sudo apt-get libsqlite3-dev -y
@@ -109,6 +107,41 @@ sudo apt-get install docker.io docker-compose -y
 
 sudo apt-get install libgoogle-glog-dev libgoogle-flags-dev -y
 
+sudo apt-get install minicom -y
+
+sudo apt-get install yakuake -y
+
+sudo apt-get install jtop htop atop iotop -y
+
+sudo apt-get install lsof pidstat mstat dstat mpstat iostat sysstat -y
+
+sudo apt-get install linux-tools-common linux-tools-generic linux-tools-$(uname -r)
+
+sudo apt-get install libdwarf-dev -y
+
+sudo apt-get install libperl libperl-dev -y
+
+sudo apt-get install libdwarf-freebsd-dev -y
+
+sudo apt-get install systemtap-sdt-dev -y
+
+sudo apt-get install audit-libs-dev -y
+
+sudo apt-get install libaudit-dev -y
+
+sudo apt-get install libdw-dev -y
+
+sudo apt-get install libslang2-dev -y
+
+sudo apt-get install libgtk2.0-dev -y
+
+sudo apt-get install libiberty-dev -y
+
+sudo apt-get install libunwind-dev -y
+
+sudo apt-get install binutils-dev -y
+
+sudo apt-get install libiberty-dev -y
 
 #
 # VPN
