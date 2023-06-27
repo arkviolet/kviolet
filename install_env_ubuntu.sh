@@ -109,7 +109,7 @@ sudo apt-get install libgoogle-glog-dev libgoogle-flags-dev -y
 
 sudo apt-get install minicom -y
 
-sudo apt-get install yakuake -y
+sudo apt-get install yakuake guake -y
 
 sudo apt-get install jtop htop atop iotop -y
 
