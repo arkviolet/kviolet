@@ -8,4 +8,4 @@
 #include "actorface.h"
 #include "statemachine.h"
 
-///__KVIOLET__ACTOR__ACTOR__H__
+#endif ///__KVIOLET__ACTOR__ACTOR__H__
