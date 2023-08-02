@@ -47,7 +47,9 @@ namespace kviolet
         }
 
         double Timestamp::MicrosecondsDouble()
-        { return Microseconds() * 1.0e-6; }
+        { 
+            return Microseconds() * 1.0e-6; 
+        }
 
         uint64_t Timestamp::MonotonicSeconds()
         {
