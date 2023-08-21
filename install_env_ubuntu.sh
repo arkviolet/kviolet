@@ -143,6 +143,30 @@ sudo apt-get install binutils-dev -y
 
 sudo apt-get install libiberty-dev -y
 
+
+#
+# linux perf
+#
+sudo apt-get install libdw-dev -y
+sudo apt-get install libelf-dev -y
+sudo apt-get install python-dev -y
+sudo apt-get install libperl-dev -y
+sudo apt-get install libnuma-dev -y
+sudo apt-get install binutils-dev -y
+sudo apt-get install libaudit-dev -y
+sudo apt-get install libgtk2.0-dev -y
+sudo apt-get install libunwind-dev -y
+sudo apt-get install libslang2-dev -y
+sudo apt-get install libiberty-dev -y
+sudo apt-get install systemtap-sdt-dev  -y
+
+mkdir -p  ~/workspace
+cd ~/workspace
+wget http://ftp.sjtu.edu.cn/sites/ftp.kernel.org/pub/linux/kernel/v4.x/linux-4.9.xxx.tar.gz  #需要与当前内核版本相对对应
+tar -zxvf linux-4.9.xxx.tar.gz
+cd linux-4.9.xxx/tools/perf/
+make -j4
+
 #
 # VPN
 #
