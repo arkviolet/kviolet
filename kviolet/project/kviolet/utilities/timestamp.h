@@ -2,46 +2,44 @@
 #define __KVIOLET__UTILITIES__TIMESTAMP__H__
 
 #include <time.h>
+
 #include <chrono>
 
-namespace kviolet
-{
-    namespace timestamp
-    {
-        class Timestamp
-        {
-         public:
-          /// utc s
-          static std::time_t Seconds();
+namespace kviolet {
+namespace timestamp {
+class Timestamp {
+ public:
+  /// utc s
+  static std::time_t Seconds();
 
-          /// utc ms
-          static std::time_t Milliseconds();
+  /// utc ms
+  static std::time_t Milliseconds();
 
-          /// utc us
-          static std::time_t Microseconds();
+  /// utc us
+  static std::time_t Microseconds();
 
-          /// utc ns
-          static std::time_t Nanoseconds();
+  /// utc ns
+  static std::time_t Nanoseconds();
 
-          /// utc double us
-          static double MicrosecondsDouble();
+  /// utc double us
+  static double MicrosecondsDouble();
 
-          /// cpu monotonic s
-          static uint64_t MonotonicSeconds();
+  /// cpu monotonic s
+  static uint64_t MonotonicSeconds();
 
-          /// cpu monotonic ms
-          static uint64_t MonotonicMilliseconds();
+  /// cpu monotonic ms
+  static uint64_t MonotonicMilliseconds();
 
-          /// cpu monotonic us
-          static uint64_t MonotonicMicroseconds();
+  /// cpu monotonic us
+  static uint64_t MonotonicMicroseconds();
 
-          /// cpu monotonic ns
-          static uint64_t MonotonicNanoseconds();
+  /// cpu monotonic ns
+  static uint64_t MonotonicNanoseconds();
 
-          /// cpu monotonic double us
-          static double MonotonicMicrosecondsDouble();
-        };
-    }
-}
+  /// cpu monotonic double us
+  static double MonotonicMicrosecondsDouble();
+};
+}  // namespace timestamp
+}  // namespace kviolet
 
-#endif // __KVIOLET__UTILITIES__TIME__H__
+#endif  // __KVIOLET__UTILITIES__TIME__H__

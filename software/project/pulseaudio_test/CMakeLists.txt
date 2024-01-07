@@ -1,7 +1,7 @@
 ﻿#
 # 项目名
 #
-SET(PROGRAM_NAME kviolet_work_test)
+SET(PROGRAM_NAME pulseaudio_test)
 
 #
 # 设置可执行文件生成目录
@@ -24,7 +24,7 @@ ADD_EXECUTABLE(${PROGRAM_NAME} ${SOURCE_FILES})
 #
 # 链接库文件
 #
-TRAVERSE_LIBRARY_FOR_PROGRAM_NAME(kviolet)
+TRAVERSE_LIBRARY_FOR_PROGRAM_NAME(kviolet kviolet_3rd)
 
 
 #
