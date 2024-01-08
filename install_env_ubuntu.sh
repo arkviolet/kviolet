@@ -160,6 +160,12 @@ sudo apt-get install libslang2-dev -y
 sudo apt-get install libiberty-dev -y
 sudo apt-get install systemtap-sdt-dev  -y
 
+sudo apt-get install fuse libfuse-dev -y
+
+sudo apt-get install ffmpeg -y
+sudo apt-get install pulseaudio  libpulse-dev -y
+sudo apt-get install pulseaudio:arm64  libpulse-dev:arm64 -y
+
 mkdir -p  ~/workspace
 cd ~/workspace
 wget http://ftp.sjtu.edu.cn/sites/ftp.kernel.org/pub/linux/kernel/v4.x/linux-4.9.xxx.tar.gz  #需要与当前内核版本相对对应

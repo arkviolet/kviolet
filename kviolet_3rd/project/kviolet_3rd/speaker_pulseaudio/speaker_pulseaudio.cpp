@@ -1,6 +1,7 @@
 #include "speaker_pulseaudio.h"
 
 #include <glog/logging.h>
+#include <kviolet/utilities/timestamp.h>
 #include <sndfile.h>
 
 namespace kviolet {
@@ -15,28 +16,24 @@ class AudioStream {
   void Pause();
   void Resume();
   void Cancel();
-  bool IsRunning();
+  bool IsExpire(uint64_t current_time);
 
  protected:
   void Close();
+  void SetExpireTime();
   static void stream_state_callback(pa_stream *s, void *userdata);
   static void stream_request_cb(pa_stream *s, size_t length, void *userdata);
 
  private:
   FILE *file_;
-  bool is_running_;
-  bool is_write_done_;
+  uint64_t expire_time_;
   pa_stream *stream_;
   std::string task_id_;
   uint64_t index_{0};
 };
 
 AudioStream::AudioStream(pa_stream *stream, const std::string &task_id)
-    : file_(nullptr),
-      is_running_(true),
-      is_write_done_{false},
-      stream_(stream),
-      task_id_(task_id){};
+    : file_(nullptr), expire_time_{0}, stream_(stream), task_id_(task_id){};
 
 AudioStream::~AudioStream() { Close(); }
 
@@ -67,7 +64,12 @@ void AudioStream::Resume() {
 
 void AudioStream::Cancel() { Close(); };
 
-bool AudioStream::IsRunning() { return is_running_; };
+bool AudioStream::IsExpire(uint64_t current_time) {
+  if (expire_time_ && current_time - expire_time_ > 3) {
+    return true;
+  }
+  return false;
+}
 
 void AudioStream::Close() {
   if (stream_) {
@@ -84,7 +86,13 @@ void AudioStream::Close() {
     file_ = nullptr;
   }
 
-  is_running_ = false;
+  SetExpireTime();
+}
+
+void AudioStream::SetExpireTime() {
+  if (!expire_time_) {
+    expire_time_ = timestamp::Timestamp::MonotonicSeconds();
+  }
 }
 
 void AudioStream::stream_state_callback(pa_stream *s, void *userdata) {
@@ -110,18 +118,14 @@ void AudioStream::stream_request_cb(pa_stream *s, size_t length,
   auto buffer = new (std::nothrow) uint8_t[length];
   if (!buffer) {
     LOG(ERROR) << thiz->task_id_ << ",new failed";
-    thiz->Close();
+    thiz->SetExpireTime();
     return;
   }
   auto ret = fread(buffer, 1, length, thiz->file_);
   if (0 == ret ||
-      0 != pa_stream_write(s, buffer, length, nullptr, 0, PA_SEEK_RELATIVE)) {
-    if (thiz->is_write_done_) {
-      LOG(WARNING) << thiz->task_id_ << ",write stream done";
-      thiz->Close();
-    }
-    thiz->is_write_done_ = true;
-    thiz->is_running_ = false;
+      0 != pa_stream_write(s, buffer, ret, nullptr, 0, PA_SEEK_RELATIVE)) {
+    LOG(WARNING) << thiz->task_id_ << ",write stream done";
+    thiz->SetExpireTime();
   }
   delete[] buffer;
 }
@@ -319,7 +323,8 @@ pa_sample_spec PulseAudioManager::GetAudioFormat(const std::string &path) {
 }
 
 void PulseAudioManager::DeleteExpiredAudioStreamsHandle() {
+  auto current_time = timestamp::Timestamp::MonotonicSeconds();
   stream_manager_.remove_if(
-      [](const auto &elem) { return !elem.second->IsRunning(); });
+      [&](const auto &elem) { return elem.second->IsExpire(current_time); });
 }
 }  // namespace kviolet
