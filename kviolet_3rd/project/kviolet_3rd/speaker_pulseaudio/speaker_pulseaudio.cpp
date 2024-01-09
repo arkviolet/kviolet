@@ -9,7 +9,8 @@ namespace kviolet {
 class AudioStream {
  public:
   AudioStream(const std::string &task_id)
-      : is_running_{true},
+      : is_cancel_{false},
+        is_running_{true},
         task_id_(task_id),
         sndfile_{nullptr},
         stream_{nullptr} {}
@@ -57,7 +58,7 @@ class AudioStream {
     };
   }
 
-  void Cancel() { Close(); }
+  void Cancel() { is_cancel_ = true; }
 
   bool IsRunning() { return is_running_; }
 
@@ -135,8 +136,9 @@ class AudioStream {
     auto *thiz = reinterpret_cast<AudioStream *>(userdata);
     for (;;) {
       size_t data_length = length;
-      if (pa_stream_begin_write(s, &data, &data_length) < 0) {
-        LOG(ERROR) << thiz->task_id_ << ",pa_stream_begin_write";
+      if (thiz->is_cancel_ ||
+          pa_stream_begin_write(s, &data, &data_length) < 0) {
+        LOG(ERROR) << thiz->task_id_ << ",cancel || pa_stream_begin_write";
         thiz->Close();
         return;
       }
@@ -178,6 +180,7 @@ class AudioStream {
   }
 
  private:
+  bool is_cancel_;
   bool is_running_;
   std::string task_id_;
   SNDFILE *sndfile_;
