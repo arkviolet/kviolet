@@ -67,7 +67,7 @@ sudo apt-get install libmemcached-dev -y
 
 sudo apt-get install libtokyocabinet-dev -y
 
-sudo apt-get install gcc g++ gcc-10 g++-10 -y
+sudo apt-get install gcc g++ -y
 
 sudo apt-get install redis-tools redis-server -y
 
@@ -77,7 +77,7 @@ sudo apt-get install libgflags-dev libgoogle-glog-dev -y
 
 sudo apt-get install libatlas-base-dev libsuitesparse-dev -y
 
-sudo apt-get install gfortran libgtk-3-dev libavresample-dev -y
+sudo apt-get install gfortran libgtk-3-dev -y
 
 sudo apt-get install mysql-server mysql-client libmysqlcppconn-dev -y
 
@@ -105,15 +105,15 @@ sudo apt-get install libcurl4-gnutls-dev  -y
 
 sudo apt-get install docker.io docker-compose -y
 
-sudo apt-get install libgoogle-glog-dev libgoogle-flags-dev -y
+sudo apt-get install libgoogle-glog-dev libgflags-dev -y
 
 sudo apt-get install minicom -y
 
 sudo apt-get install yakuake guake -y
 
-sudo apt-get install jtop htop atop iotop -y
+sudo apt-get install htop atop iotop -y
 
-sudo apt-get install lsof pidstat mstat dstat mpstat iostat sysstat -y
+sudo apt-get install lsof dstat sysstat -y
 
 sudo apt-get install linux-tools-common linux-tools-generic linux-tools-$(uname -r)
 
@@ -125,8 +125,6 @@ sudo apt-get install libdwarf-freebsd-dev -y
 
 sudo apt-get install systemtap-sdt-dev -y
 
-sudo apt-get install audit-libs-dev -y
-
 sudo apt-get install libaudit-dev -y
 
 sudo apt-get install libdw-dev -y
@@ -135,8 +133,6 @@ sudo apt-get install libslang2-dev -y
 
 sudo apt-get install libgtk2.0-dev -y
 
-sudo apt-get install libiberty-dev -y
-
 sudo apt-get install libunwind-dev -y
 
 sudo apt-get install binutils-dev -y
@@ -144,29 +140,16 @@ sudo apt-get install binutils-dev -y
 sudo apt-get install libiberty-dev -y
 
 
-#
-# linux perf
-#
-sudo apt-get install libdw-dev -y
 sudo apt-get install libelf-dev -y
-sudo apt-get install python-dev -y
-sudo apt-get install libperl-dev -y
-sudo apt-get install libnuma-dev -y
-sudo apt-get install binutils-dev -y
-sudo apt-get install libaudit-dev -y
-sudo apt-get install libgtk2.0-dev -y
-sudo apt-get install libunwind-dev -y
-sudo apt-get install libslang2-dev -y
-sudo apt-get install libiberty-dev -y
-sudo apt-get install systemtap-sdt-dev  -y
-
 sudo apt-get install fuse libfuse-dev -y
+sudo apt-get install python2-dev python3-dev -y
 
 sudo apt-get install ffmpeg -y
-sudo apt-get install pulseaudio  libpulse-dev -y
-sudo apt-get install pulseaudio:arm64  libpulse-dev:arm64 -y
+sudo apt-get install pulseaudio libpulse-dev -y
+sudo apt-get install pulseaudio:arm64 libpulse-dev:arm64 -y
+sudo apt-get install libsndfile-dev libsndfile1 -y
 
-mkdir -p  ~/workspace
+mkdir -p ~/workspace
 cd ~/workspace
 wget http://ftp.sjtu.edu.cn/sites/ftp.kernel.org/pub/linux/kernel/v4.x/linux-4.9.xxx.tar.gz  #需要与当前内核版本相对对应
 tar -zxvf linux-4.9.xxx.tar.gz
@@ -187,38 +170,35 @@ wget https://github.com/Fndroid/clash_for_windows_pkg/releases/download/0.20.22/
     chmod 755 -R ~/.pip/
   fi
 
-  echo "[global]
-	index-url = https://pypi.tuna.tsinghua.edu.cn/simple" >~/.pip/pip.conf
-
-        pip3 install --upgrade pip
-        pip3 install bs4
-        pip3 install ssh
-        pip3 install lulu
-        pip3 install xlrd
-        pip3 install lxml
-        pip3 install pyqt5
-        pip3 install psutil
-        pip3 install pandas
-        pip3 install pillow
-        pip3 install you-get
-        pip3 install pyquery
-        pip3 install pymysql
-        pip3 install openpyxl
-        pip3 install html5lib
-        pip3 install paramiko
-        pip3 install pycrypto
-        pip3 install selenium
-        pip3 install requests
-        pip3 install FlashText
-        pip3 install matplotlib
-        pip3 install simplejson
-        pip3 install xlsxwriter
-        pip3 install sqlalchemy
-        pip3 install goto-statement
-        pip3 install mysql-connector
-        pip3 install pyvirtualdisplay
-
-        sudo -H pip3 install -U jetson-stats -i https://pypi.tuna.tsinghua.edu.cn/simple
+  sh -c 'echo "[global]\nindex-url = https://pypi.tuna.tsinghua.edu.cn/simple" >~/.pip/pip.conf'
+    pip3 install --upgrade pip
+    pip3 install bs4
+    pip3 install ssh
+    pip3 install lulu
+    pip3 install xlrd
+    pip3 install lxml
+    pip3 install pyqt5
+    pip3 install psutil
+    pip3 install pandas
+    pip3 install pillow
+    pip3 install you-get
+    pip3 install pyquery
+    pip3 install pymysql
+    pip3 install openpyxl
+    pip3 install html5lib
+    pip3 install paramiko
+    pip3 install pycrypto
+    pip3 install selenium
+    pip3 install requests
+    pip3 install FlashText
+    pip3 install matplotlib
+    pip3 install simplejson
+    pip3 install xlsxwriter
+    pip3 install sqlalchemy
+    pip3 install goto-statement
+    pip3 install mysql-connector
+    pip3 install pyvirtualdisplay
+    sudo -H pip3 install -U jetson-stats -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 #
 # download android NDK21

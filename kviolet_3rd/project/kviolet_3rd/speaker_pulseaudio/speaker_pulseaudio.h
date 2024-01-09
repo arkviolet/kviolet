@@ -33,7 +33,6 @@ class PulseAudioManager final {
 
  protected:
   static void context_state_callback(pa_context *c, void *userdata);
-  static pa_sample_spec GetAudioFormat(const std::string &path);
   void DeleteExpiredAudioStreamsHandle();
 
  private:

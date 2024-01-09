@@ -8,132 +8,185 @@ namespace kviolet {
 
 class AudioStream {
  public:
-  AudioStream(pa_stream *stream, const std::string &task_id);
-  ~AudioStream();
+  AudioStream(const std::string &task_id)
+      : is_running_{true},
+        task_id_(task_id),
+        sndfile_{nullptr},
+        stream_{nullptr} {}
+
+  ~AudioStream() { Close(); }
 
  public:
-  bool Start(const std::string &path);
-  void Pause();
-  void Resume();
-  void Cancel();
-  bool IsExpire(uint64_t current_time);
+  bool Start(pa_context *context, const std::string &path, int volume) {
+    SF_INFO sfi;
+    sndfile_ = sf_open(path.c_str(), SFM_READ, &sfi);
+    if (!sndfile_) {
+      LOG(ERROR) << "open video file error:" << path;
+      return false;
+    }
 
- protected:
-  void Close();
-  void SetExpireTime();
-  static void stream_state_callback(pa_stream *s, void *userdata);
-  static void stream_request_cb(pa_stream *s, size_t length, void *userdata);
+    pa_cvolume cvolume;
+    auto sample_spec = AudioFormat(sfi);
+    stream_ = pa_stream_new(context, task_id_.c_str(), &sample_spec, nullptr);
+    if (!stream_) {
+      LOG(ERROR) << "create stream error";
+      return false;
+    }
+    pa_stream_set_write_callback(stream_, stream_request_cb, this);
+    pa_stream_set_state_callback(stream_, stream_state_callback, this);
 
- private:
-  FILE *file_;
-  uint64_t expire_time_;
-  pa_stream *stream_;
-  std::string task_id_;
-  uint64_t index_{0};
-};
-
-AudioStream::AudioStream(pa_stream *stream, const std::string &task_id)
-    : file_(nullptr), expire_time_{0}, stream_(stream), task_id_(task_id){};
-
-AudioStream::~AudioStream() { Close(); }
-
-std::string strstr;
-bool AudioStream::Start(const std::string &path) {
-  file_ = fopen(path.c_str(), "rb");
-  if (!file_) {
-    LOG(ERROR) << "open video file error:" << path;
-    return false;
-  }
-
-  pa_stream_set_write_callback(stream_, stream_request_cb, this);
-  pa_stream_set_state_callback(stream_, stream_state_callback, this);
-  return true;
-}
-
-void AudioStream::Pause() {
-  if (stream_) {
-    pa_stream_cork(stream_, 1, nullptr, nullptr);
-  }
-}
-
-void AudioStream::Resume() {
-  if (stream_) {
-    pa_stream_cork(stream_, 0, nullptr, nullptr);
-  };
-}
-
-void AudioStream::Cancel() { Close(); };
-
-bool AudioStream::IsExpire(uint64_t current_time) {
-  if (expire_time_ && current_time - expire_time_ > 3) {
+    pa_cvolume_set(&cvolume, sample_spec.channels,
+                   (pa_volume_t)(((double)volume / 100) * PA_VOLUME_NORM));
+    if (0 != pa_stream_connect_playback(stream_, nullptr, NULL,
+                                        PA_STREAM_NOFLAGS, &cvolume, nullptr)) {
+      LOG(ERROR) << "connect playback error";
+      return false;
+    }
     return true;
   }
-  return false;
-}
 
-void AudioStream::Close() {
-  if (stream_) {
-    pa_stream_set_write_callback(stream_, nullptr, nullptr);
-    pa_stream_set_state_callback(stream_, nullptr, nullptr);
-    pa_stream_disconnect(stream_);
-    pa_stream_unref(stream_);
-    stream_ = nullptr;
-    LOG(INFO) << task_id_ << ",stream is close";
+  void Pause() {
+    if (stream_) {
+      pa_stream_cork(stream_, 1, nullptr, nullptr);
+    }
   }
 
-  if (file_) {
-    fclose(file_);
-    file_ = nullptr;
+  void Resume() {
+    if (stream_) {
+      pa_stream_cork(stream_, 0, nullptr, nullptr);
+    };
   }
 
-  SetExpireTime();
-}
+  void Cancel() { Close(); }
 
-void AudioStream::SetExpireTime() {
-  if (!expire_time_) {
-    expire_time_ = timestamp::Timestamp::MonotonicSeconds();
+  bool IsRunning() { return is_running_; }
+
+ protected:
+  void Close() {
+    if (stream_) {
+      LOG(WARNING) << task_id_ << ",stream is close";
+      pa_stream_set_write_callback(stream_, nullptr, nullptr);
+      pa_stream_set_state_callback(stream_, nullptr, nullptr);
+      pa_stream_disconnect(stream_);
+      pa_stream_unref(stream_);
+      stream_ = nullptr;
+    }
+
+    if (sndfile_) {
+      sf_close(sndfile_);
+      sndfile_ = nullptr;
+    }
+
+    is_running_ = false;
   }
-}
 
-void AudioStream::stream_state_callback(pa_stream *s, void *userdata) {
-  auto *thiz = reinterpret_cast<AudioStream *>(userdata);
-  switch (pa_stream_get_state(s)) {
-    case PA_STREAM_CREATING:
-    case PA_STREAM_TERMINATED:
-      break;
-    case PA_STREAM_READY:
-      LOG(INFO) << thiz->task_id_ << ",stream is ready";
-      break;
-    case PA_STREAM_FAILED:
-    default:
-      LOG(WARNING) << thiz->task_id_ << ",stream error:"
+  pa_sample_spec AudioFormat(const SF_INFO &sfi) {
+    pa_sample_spec sample_spec = {PA_SAMPLE_S16LE, 44100, 2};
+    switch (sfi.format & SF_FORMAT_SUBMASK) {
+      case SF_FORMAT_PCM_16:
+      case SF_FORMAT_PCM_U8:
+      case SF_FORMAT_PCM_S8:
+        sample_spec.format = PA_SAMPLE_S16NE;
+        break;
+      case SF_FORMAT_PCM_32:
+      case SF_FORMAT_PCM_24:
+        /* note that libsndfile will convert 24 bits samples to 32 bits
+         * when using the sf_readf_int function, which will be selected
+         * by setting the format to s32. */
+        sample_spec.format = PA_SAMPLE_S32NE;
+        break;
+      case SF_FORMAT_ULAW:
+        sample_spec.format = PA_SAMPLE_ULAW;
+        break;
+      case SF_FORMAT_ALAW:
+        sample_spec.format = PA_SAMPLE_ALAW;
+        break;
+      case SF_FORMAT_FLOAT:
+      case SF_FORMAT_DOUBLE:
+      default:
+        sample_spec.format = PA_SAMPLE_FLOAT32NE;
+        break;
+    }
+    sample_spec.rate = (uint32_t)sfi.samplerate;
+    sample_spec.channels = (uint8_t)sfi.channels;
+    return sample_spec;
+  }
+
+  static void stream_state_callback(pa_stream *s, void *userdata) {
+    auto *thiz = reinterpret_cast<AudioStream *>(userdata);
+    switch (pa_stream_get_state(s)) {
+      case PA_STREAM_CREATING:
+      case PA_STREAM_TERMINATED:
+        break;
+      case PA_STREAM_READY:
+        LOG(WARNING) << thiz->task_id_ << ",stream is ready";
+        break;
+      case PA_STREAM_FAILED:
+      default:
+        LOG(ERROR) << thiz->task_id_ << ",stream error:"
                    << pa_strerror(pa_context_errno(pa_stream_get_context(s)));
-      break;
+        break;
+    }
   }
-}
 
-void AudioStream::stream_request_cb(pa_stream *s, size_t length,
-                                    void *userdata) {
-  auto *thiz = reinterpret_cast<AudioStream *>(userdata);
-  auto buffer = new (std::nothrow) uint8_t[length];
-  if (!buffer) {
-    LOG(ERROR) << thiz->task_id_ << ",new failed";
-    thiz->SetExpireTime();
-    return;
+  static void stream_request_cb(pa_stream *s, size_t length, void *userdata) {
+    void *data;
+    sf_count_t bytes;
+    auto *thiz = reinterpret_cast<AudioStream *>(userdata);
+    for (;;) {
+      size_t data_length = length;
+      if (pa_stream_begin_write(s, &data, &data_length) < 0) {
+        LOG(ERROR) << thiz->task_id_ << ",pa_stream_begin_write";
+        thiz->Close();
+        return;
+      }
+
+      bytes = sf_read_raw(thiz->sndfile_, data, (sf_count_t)data_length);
+      if (bytes > 0) {
+        pa_stream_write(s, data, (size_t)bytes, NULL, 0, PA_SEEK_RELATIVE);
+      } else {
+        pa_stream_cancel_write(s);
+      }
+
+      // EOF?
+      if (bytes < (sf_count_t)data_length) {
+        pa_operation *o;
+        pa_stream_set_write_callback(s, NULL, NULL);
+        if (!(o = pa_stream_drain(s, stream_drain_complete, userdata))) {
+          LOG(ERROR) << thiz->task_id_ << ":"
+                     << pa_strerror(pa_context_errno(pa_stream_get_context(s)));
+          thiz->Close();
+          return;
+        }
+        pa_operation_unref(o);
+        break;
+      }
+
+      // Request fulfilled
+      if ((size_t)bytes >= length) {
+        break;
+      }
+
+      length -= bytes;
+    }
   }
-  auto ret = fread(buffer, 1, length, thiz->file_);
-  if (0 == ret ||
-      0 != pa_stream_write(s, buffer, ret, nullptr, 0, PA_SEEK_RELATIVE)) {
-    LOG(WARNING) << thiz->task_id_ << ",write stream done";
-    thiz->SetExpireTime();
+
+  static void stream_drain_complete(pa_stream *, int success, void *userdata) {
+    auto *thiz = reinterpret_cast<AudioStream *>(userdata);
+    LOG(WARNING) << thiz->task_id_ << ",success:" << success;
+    thiz->Close();
   }
-  delete[] buffer;
-}
+
+ private:
+  bool is_running_;
+  std::string task_id_;
+  SNDFILE *sndfile_;
+  pa_stream *stream_;
+};
 
 void PulseAudioManager::Start() {
   LOG(WARNING) << "pulseaudio start";
   context_is_connect_ = false;
-
   mainloop_ = pa_mainloop_new();
   if (!mainloop_) {
     LOG(ERROR) << "pa_mainloop_new error";
@@ -184,33 +237,19 @@ void PulseAudioManager::ExitLoop() {
 
 void PulseAudioManager::Play(const std::string &task_id,
                              const std::string &path, int volume) {
+  DeleteExpiredAudioStreamsHandle();
+
   LOG(INFO) << task_id << "," << path << "," << volume;
   if (!context_is_connect_) {
     LOG(ERROR) << "context is not ready";
     return;
   }
 
-  pa_cvolume cvolume;
-  auto sample_spec = GetAudioFormat(path);
-  pa_cvolume_set(&cvolume, sample_spec.channels,
-                 (pa_volume_t)(((double)volume / 100) * PA_VOLUME_NORM));
-
-  auto stream = pa_stream_new(context_, task_id.c_str(), &sample_spec, nullptr);
-  if (!stream) {
-    LOG(ERROR) << task_id
-               << " pa_stream_new:" << pa_strerror(pa_context_errno(context_))
-               << std::endl;
+  auto audio_stream = std::make_shared<AudioStream>(task_id);
+  if (audio_stream->Start(context_, path, volume)) {
+    stream_manager_.insert(std::make_pair(task_id, audio_stream));
     return;
   }
-
-  auto audio_stream = std::make_shared<AudioStream>(stream, task_id);
-  if (audio_stream->Start(path) &&
-      0 == pa_stream_connect_playback(stream, nullptr, NULL, PA_STREAM_NOFLAGS,
-                                      &cvolume, nullptr)) {
-    stream_manager_.insert(std::make_pair(task_id, audio_stream));
-  }
-
-  DeleteExpiredAudioStreamsHandle();
 }
 
 void PulseAudioManager::Pause() {
@@ -278,53 +317,9 @@ void PulseAudioManager::context_state_callback(pa_context *c, void *userdata) {
   }
 }
 
-pa_sample_spec PulseAudioManager::GetAudioFormat(const std::string &path) {
-  SF_INFO sfi;
-  pa_sample_spec sample_spec = {PA_SAMPLE_S16LE, 44100, 2};
-  auto *sf = sf_open(path.c_str(), SFM_READ, &sfi);
-  if (!sf) {
-    LOG(ERROR) << "sf_open error:" << sf_strerror(nullptr);
-    return sample_spec;
-  }
-  sf_close(sf);
-  switch (sfi.format & SF_FORMAT_SUBMASK) {
-    case SF_FORMAT_PCM_16:
-    case SF_FORMAT_PCM_U8:
-    case SF_FORMAT_PCM_S8:
-      sample_spec.format = PA_SAMPLE_S16NE;
-      break;
-
-    case SF_FORMAT_PCM_32:
-    case SF_FORMAT_PCM_24:
-      /* note that libsndfile will convert 24 bits samples to 32 bits
-       * when using the sf_readf_int function, which will be selected
-       * by setting the format to s32. */
-      sample_spec.format = PA_SAMPLE_S32NE;
-      break;
-
-    case SF_FORMAT_ULAW:
-      sample_spec.format = PA_SAMPLE_ULAW;
-      break;
-
-    case SF_FORMAT_ALAW:
-      sample_spec.format = PA_SAMPLE_ALAW;
-      break;
-
-    case SF_FORMAT_FLOAT:
-    case SF_FORMAT_DOUBLE:
-    default:
-      sample_spec.format = PA_SAMPLE_FLOAT32NE;
-      break;
-  }
-
-  sample_spec.rate = (uint32_t)sfi.samplerate;
-  sample_spec.channels = (uint8_t)sfi.channels;
-  return sample_spec;
-}
-
 void PulseAudioManager::DeleteExpiredAudioStreamsHandle() {
-  auto current_time = timestamp::Timestamp::MonotonicSeconds();
   stream_manager_.remove_if(
-      [&](const auto &elem) { return elem.second->IsExpire(current_time); });
+      [](const auto &elem) { return !elem.second->IsRunning(); });
 }
+
 }  // namespace kviolet
