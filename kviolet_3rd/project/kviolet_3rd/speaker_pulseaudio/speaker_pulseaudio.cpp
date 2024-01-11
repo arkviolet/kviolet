@@ -9,7 +9,8 @@ namespace kviolet {
 class AudioStream {
  public:
   AudioStream(const std::string &task_id)
-      : is_cancel_{false},
+      : is_pause_{false},
+        is_cancel_{false},
         is_running_{true},
         task_id_(task_id),
         sndfile_{nullptr},
@@ -46,14 +47,11 @@ class AudioStream {
     return true;
   }
 
-  void Pause() {
-    if (stream_) {
-      pa_stream_cork(stream_, 1, nullptr, nullptr);
-    }
-  }
+  void Pause() { is_pause_ = true; }
 
   void Resume() {
     if (stream_) {
+      is_pause_ = false;
       pa_stream_cork(stream_, 0, nullptr, nullptr);
     };
   }
@@ -136,9 +134,8 @@ class AudioStream {
     auto *thiz = reinterpret_cast<AudioStream *>(userdata);
     for (;;) {
       size_t data_length = length;
-      if (thiz->is_cancel_ ||
-          pa_stream_begin_write(s, &data, &data_length) < 0) {
-        LOG(ERROR) << thiz->task_id_ << ",cancel || pa_stream_begin_write";
+      if (pa_stream_begin_write(s, &data, &data_length) < 0) {
+        LOG(ERROR) << thiz->task_id_ << ":memory error";
         thiz->Close();
         return;
       }
@@ -171,6 +168,15 @@ class AudioStream {
 
       length -= bytes;
     }
+
+    if (thiz->is_pause_) {
+      pa_stream_cork(s, 1, nullptr, nullptr);
+    }
+
+    if (thiz->is_cancel_) {
+      LOG(ERROR) << thiz->task_id_ << ":cancel audio";
+      thiz->Close();
+    }
   }
 
   static void stream_drain_complete(pa_stream *, int success, void *userdata) {
@@ -180,6 +186,7 @@ class AudioStream {
   }
 
  private:
+  bool is_pause_;
   bool is_cancel_;
   bool is_running_;
   std::string task_id_;
