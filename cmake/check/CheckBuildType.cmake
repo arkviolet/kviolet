@@ -7,7 +7,6 @@ IF(NOT CMAKE_BUILD_TYPE)
 
 ENDIF()
 
-
 #
 # 设置宏定义
 #
@@ -20,7 +19,6 @@ ELSE()
 	ADD_DEFINITIONS(-DRELEASE)
 
 ENDIF()
-
 
 #
 # 输出编译模式
