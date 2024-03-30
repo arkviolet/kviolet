@@ -73,7 +73,7 @@ IF (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 #									-ftime-report					# 统计编译消耗的时间并显示报告
 									-finline-functions				# 把所有简单的函数内联进调用者. 编译器会探索式地决定哪些函数足够简单, 值得做这种内联
 									-Wall							# 会打开一些很有用的警告选项
-									#-Werror							# 把警告当作错误
+									#-Werror						# 把警告当作错误
 									-Wextra							# 打印一些额外的警告信息
 									-Wshadow						# 当一个局部变量遮盖住了另一个局部变量, 或者全局变量, 给出警告
 									-Woverflow						# 范围溢出, 给出警告
