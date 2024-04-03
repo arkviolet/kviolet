@@ -10,28 +10,7 @@ mkdir  -p ~/software/
 
 SOFTWARE_PATH=~/software
 
-# Android NDK
-export ANDROID_NDK=/home/${USER}/software/android-ndk-r21e
-export NDK_HOME_DIR=/home/${USER}/software/android-ndk-r21e
-export ANDROID_NDK_ROOT=/home/${USER}/software/android-ndk-r21e
-export ANDROID_NDK_PATH=/home/${USER}/software/android-ndk-r21e
-export ANDROID_NDK_HOME=/home/${USER}/software/android-ndk-r21e
-
-
-sudo sh -c 'echo "
-deb http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse
-deb http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse
-deb http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse
-deb http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse
-deb http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse" >>/etc/apt/sources.list'
-
 sudo apt-get update
-sudo apt-get upgrade
 
 sudo apt-get install adb -y
 
@@ -161,12 +140,6 @@ cd linux-4.9.xxx/tools/perf/
 make -j4
 
 #
-# VPN
-#
-wget https://github.com/Fndroid/clash_for_windows_pkg/releases/download/0.20.22/Clash.for.Windows-0.20.22-x64-linux.tar.gz
-
-
-#
 # python3 pip3
 #
   if [ ! -d ~/.pip/ ]; then
@@ -214,19 +187,6 @@ wget https://github.com/Fndroid/clash_for_windows_pkg/releases/download/0.20.22/
     rm android-ndk-r21e-linux-x86_64.zip
 
     mv android-ndk-r21e ~/software/
-
-
-#
-# download rk3308 gcc
-#
-    cd ~/package/ && wget rk3308.zip
-
-    unzip rk3308.zip
-
-    rm rk3308.zip
-
-    mv rk3308 ~/software/
-
 
 #
 # compile linux/android opencv4,opencv,opencv_contrib
@@ -377,28 +337,3 @@ wget https://github.com/Fndroid/clash_for_windows_pkg/releases/download/0.20.22/
         --enable-emergency-malloc
 
   make -j16 && make install
-
-
-#
-# linux,jetbrains-toolbox
-#
-  cd ~/package/  && wget https://download.jetbrains.com/toolbox/jetbrains-toolbox-1.8.3678.tar.gz
-
-  tar -xvf jetbrains-toolbox-1.8.3678.tar.gz
-
-  rm -rf jetbrains-toolbox-1.8.3678.tar.gz
-
-  mv jetbrains-toolbox-1.8.3678 ${SOFTWARE_PATH}/jetbrains-toolbox
-
-
-#
-# linux,zlog
-#
-  cd ~/package/ && git clone https://github.com/HardySimpson/zlog.git
-
-  cd zlog
-
-  make PREFIX=./zlog
-
-  make PREFIX=${SOFTWARE_PATH}/zlog install
-
