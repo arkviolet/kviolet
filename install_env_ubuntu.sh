@@ -149,6 +149,10 @@ sudo apt-get install pulseaudio libpulse-dev -y
 sudo apt-get install pulseaudio:arm64 libpulse-dev:arm64 -y
 sudo apt-get install libsndfile-dev libsndfile1 -y
 
+sudo apt-get install protobuf-compiler-grpc libgrpc++-dev -y
+
+sudo apt-get install libsystemd-dev -y
+
 mkdir -p ~/workspace
 cd ~/workspace
 wget http://ftp.sjtu.edu.cn/sites/ftp.kernel.org/pub/linux/kernel/v4.x/linux-4.9.xxx.tar.gz  #需要与当前内核版本相对对应
