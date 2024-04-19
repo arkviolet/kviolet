@@ -132,6 +132,10 @@ sudo apt-get install protobuf-compiler-grpc libgrpc++-dev -y
 
 sudo apt-get install libsystemd-dev -y
 
+sudo apt-get install libboost-all-dev libprocess-cpp-dev -y
+
+sudo apt-get install libsdbus-c++ libsdbus-c++-dev libdbus-1-dev -y
+
 mkdir -p ~/workspace
 cd ~/workspace
 wget http://ftp.sjtu.edu.cn/sites/ftp.kernel.org/pub/linux/kernel/v4.x/linux-4.9.xxx.tar.gz  #需要与当前内核版本相对对应
