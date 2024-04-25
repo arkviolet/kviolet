@@ -36,3 +36,12 @@ mkdir build && cd build && cmake .. \
   -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX_LINUX}/dbus-cpp
 
 make -j && make install
+
+# dfu-util
+cd $PACKAGE_COMPILE_DIR
+
+git clone git://git.code.sf.net/p/dfu-util/dfu-util
+
+cd dfu-util && git checkout v0.9 && autoreconf -v -i && ./configure --prefix=${INSTALL_PREFIX_LINUX}/dfu-util # arm:--build=x86_64-linux-gnu --host=aarch64-linux-gnu
+
+make -j && make install
