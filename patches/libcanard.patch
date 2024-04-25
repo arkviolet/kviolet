@@ -1,0 +1,20 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+new file mode 100644
+index 0000000..96848c1
+--- /dev/null
++++ b/CMakeLists.txt
+@@ -0,0 +1,14 @@
++CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
++
++PROJECT(libcanard)
++
++FILE(GLOB SRCS libcanard/*.c)
++FILE(GLOB HEADERS libcanard/*.h)
++
++ADD_LIBRARY(${PROJECT_NAME} ${SRCS})
++
++INSTALL(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Config
++    LIBRARY DESTINATION lib
++    ARCHIVE DESTINATION lib)
++
++INSTALL(FILES ${HEADERS} DESTINATION include/libcanard)
