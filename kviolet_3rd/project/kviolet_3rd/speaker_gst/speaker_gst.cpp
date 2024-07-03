@@ -20,49 +20,24 @@ class GstAudio {
   ~GstAudio() { Close(); }
 
  public:
-  bool Initialization(const std::string &taskid, const std::string &uri,
-                      int volume) {
+  void Play(const std::string &taskid, const std::string &uri, int volume) {
+    taskid_ = taskid;
+
     launch_desc_ = g_strdup_printf("playbin uri=%s volume=%.3f", uri.c_str(),
                                    ConvertVolume((double)volume / 100));
-    LOG(INFO) << "pipeline = " << launch_desc_;
-
-    pipeline_ = gst_parse_launch(launch_desc_, &error_);
-    if (nullptr == pipeline_) {
-      LOG(ERROR) << "Failed to parse launch:" << error_->message;
-      return false;
-    }
-
-    taskid_ = taskid;
-    return true;
-  }
-
-  bool Play() {
-    if (!pipeline_) {
-      LOG(ERROR) << "pipeline is error";
-      return false;
-    }
-
-    if (GST_STATE_CHANGE_FAILURE ==
-        gst_element_set_state(pipeline_, GST_STATE_PLAYING)) {
-      LOG(ERROR) << "play is error";
-      return false;
-    }
-
-    bus_ = gst_element_get_bus(pipeline_);
-    if (nullptr == bus_) {
-      LOG(ERROR) << "bus is error";
-      return false;
-    }
-
     is_running_ = true;
     bus_thread_ = std::make_shared<std::thread>([this]() {
+      if (!Initialization()) {
+        is_running_ = false;
+      }
+
       while (is_running_) {
         auto msg = gst_bus_timed_pop_filtered(
             this->bus_, 1000 * GST_MSECOND,
             static_cast<GstMessageType>(GST_MESSAGE_STATE_CHANGED |
                                         GST_MESSAGE_ERROR | GST_MESSAGE_EOS));
-
         if (nullptr == msg) {
+          LOG(ERROR) << "get msg error";
           continue;
         }
 
@@ -72,11 +47,13 @@ class GstAudio {
             gst_message_parse_error(msg, &error_, &debug_info);
             LOG(ERROR) << "taskid:" << taskid_
                        << ":error received from element:" << error_->message;
+            gst_element_set_state(pipeline_, GST_STATE_NULL);
             g_free(debug_info);
             is_running_ = false;
             break;
           case GST_MESSAGE_EOS:
             LOG(INFO) << "taskid:" << taskid_ << ":end-of-stream reached";
+            gst_element_set_state(pipeline_, GST_STATE_NULL);
             is_running_ = false;
             break;
           case GST_MESSAGE_STATE_CHANGED:
@@ -84,9 +61,9 @@ class GstAudio {
               GstState old_state, new_state, pending_state;
               gst_message_parse_state_changed(msg, &old_state, &new_state,
                                               &pending_state);
-              LOG(WARNING) << "taskid:" << taskid_ << ":"
-                           << gst_element_state_get_name(old_state) << " to "
-                           << gst_element_state_get_name(new_state);
+              LOG(INFO) << "taskid:" << taskid_ << ":"
+                        << gst_element_state_get_name(old_state) << " to "
+                        << gst_element_state_get_name(new_state);
             }
             break;
           default:
@@ -96,11 +73,9 @@ class GstAudio {
 
         gst_message_unref(msg);
       }
-      gst_element_set_state(pipeline_, GST_STATE_NULL);
-      LOG(ERROR) << "taskid:" << taskid_ << ":play thread quit";
-    });
 
-    return true;
+      LOG(INFO) << "taskid:" << taskid_ << ":play thread quit";
+    });
   }
 
   void Pause() {
@@ -117,14 +92,34 @@ class GstAudio {
 
   void Cancel() {
     is_running_ = false;
-    auto is_failure = GST_STATE_CHANGE_FAILURE ==
-                      gst_element_set_state(pipeline_, GST_STATE_NULL);
-    LOG(ERROR) << "taskid:" << taskid_ << ":cancel status:" << is_failure;
+    LOG(ERROR) << "taskid:" << taskid_ << ",cancel";
   }
 
   bool IsRunning() { return is_running_; }
 
  protected:
+  bool Initialization() {
+    pipeline_ = gst_parse_launch(launch_desc_, &error_);
+    if (nullptr == pipeline_) {
+      LOG(ERROR) << "failed to parse launch:" << error_->message;
+      return false;
+    }
+
+    if (GST_STATE_CHANGE_FAILURE ==
+        gst_element_set_state(pipeline_, GST_STATE_PLAYING)) {
+      LOG(ERROR) << "play is error";
+      return false;
+    }
+
+    bus_ = gst_element_get_bus(pipeline_);
+    if (nullptr == bus_) {
+      LOG(ERROR) << "bus is error";
+      return false;
+    }
+
+    return true;
+  }
+
   void Close() {
     if (bus_thread_ && bus_thread_->joinable()) {
       bus_thread_->join();
@@ -173,11 +168,8 @@ void GstAudioManager::Play(const std::string &task_id, const std::string &path,
 
   auto audio_stream = std::make_shared<GstAudio>();
 
-  if (!(audio_stream->Initialization(task_id, path, volume) &&
-        audio_stream->Play())) {
-    LOG(ERROR) << "gst stream error";
-    return;
-  }
+  audio_stream->Play(task_id, path, volume);
+
   stream_manager_.insert(std::make_pair(task_id, audio_stream));
 }
 
