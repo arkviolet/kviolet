@@ -41,34 +41,29 @@ class GstAudio {
           continue;
         }
 
-        switch (GST_MESSAGE_TYPE(msg)) {
-          case GST_MESSAGE_ERROR:
+        auto type = GST_MESSAGE_TYPE(msg);
+        if (GST_MESSAGE_STATE_CHANGED == type) {
+          if (g_str_has_prefix(GST_MESSAGE_SRC_NAME(msg), "playbin")) {
+            GstState old_state, new_state, pending_state;
+            gst_message_parse_state_changed(msg, &old_state, &new_state,
+                                            &pending_state);
+            LOG(INFO) << "taskid:" << taskid_ << ":"
+                      << gst_element_state_get_name(old_state) << " to "
+                      << gst_element_state_get_name(new_state);
+          }
+        } else {
+          if (GST_MESSAGE_EOS == type) {
+            LOG(INFO) << "taskid:" << taskid_ << ":end-of-stream reached";
+            gst_element_set_state(pipeline_, GST_STATE_NULL);
+          } else {
             gchar *debug_info;
             gst_message_parse_error(msg, &error_, &debug_info);
             LOG(ERROR) << "taskid:" << taskid_
                        << ":error received from element:" << error_->message;
-            gst_element_set_state(pipeline_, GST_STATE_NULL);
             g_free(debug_info);
-            is_running_ = false;
-            break;
-          case GST_MESSAGE_EOS:
-            LOG(INFO) << "taskid:" << taskid_ << ":end-of-stream reached";
-            gst_element_set_state(pipeline_, GST_STATE_NULL);
-            is_running_ = false;
-            break;
-          case GST_MESSAGE_STATE_CHANGED:
-            if (g_str_has_prefix(GST_MESSAGE_SRC_NAME(msg), "playbin")) {
-              GstState old_state, new_state, pending_state;
-              gst_message_parse_state_changed(msg, &old_state, &new_state,
-                                              &pending_state);
-              LOG(INFO) << "taskid:" << taskid_ << ":"
-                        << gst_element_state_get_name(old_state) << " to "
-                        << gst_element_state_get_name(new_state);
-            }
-            break;
-          default:
-            LOG(ERROR) << "Unexpected message received.";
-            break;
+          }
+          gst_element_set_state(pipeline_, GST_STATE_NULL);
+          is_running_ = false;
         }
 
         gst_message_unref(msg);
