@@ -30,9 +30,12 @@ class GstAudioManager final {
   void Cancel(const std::string &task_id);
 
  protected:
+  void Listener();
   void DeleteExpiredAudioStreamsHandle();
 
  private:
+  bool is_running_;
+  std::shared_ptr<std::thread> listener_thread_;
   ConcurrentMap<std::string, std::shared_ptr<GstAudio>> stream_manager_;
 };
 
