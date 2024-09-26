@@ -100,3 +100,40 @@ gst-launch-1.0 -v videotestsrc ! videoconvert ! clockoverlay halignment=right va
 http://10.2.8.77:10026/players/rtc_player.html
 webrtc://10.2.8.77:10024/live/livestream1_13985_8969_123
 
+
+服务器:
+gst-launch-1.0 udpsrc port=8888 caps="application/x-rtp,media=(string)video,clock-rate=(int)90000,encoding-name=(string)H264,payload=(int)96" ! rtph264depay ! h264parse ! avdec_h264 ! autovideosink
+ 
+ 
+下位机服务器:
+    推视觉流
+        gst-launch-1.0 -v v4l2src device=/dev/video11 ! videoconvert ! x264enc tune=zerolatency ! rtph264pay ! udpsink host=10.2.1.133 port=8888
+    推深度流
+        gst-launch-1.0 -v v4l2src device=/dev/video12 ! videoconvert ! x264enc tune=zerolatency ! rtph264pay ! udpsink host=10.2.1.133 port=8888
+    推顶部相机流
+        gst-launch-1.0 -v v4l2src device=/dev/video16 ! videoconvert ! x264enc tune=zerolatency ! rtph264pay ! udpsink host=10.2.1.133 port=8888
+    
+
+
+docker desktop
+	echo $DISPLAY
+	sudo docker run -it -e DISPLAY="$DISPLAY" -v /tmp/.X11-unix:/tmp/.X11-unix [image]
+	apt-get update -y; apt-get install -y x11-apps;
+
+
+#
+# 10min内数据采集结果
+#
+sudo ./perf_4.9.201 stat -e cpu-clock:u  -e cpu-clock:k -e cpu-clock:uk -e raw_syscalls:sys_enter   -e context-switches -t 6099 sleep 600
+
+gdb调试
+gdb [executable]
+	r
+	[ctrl + c]
+	info threads
+	thread [n]
+	bt
+
+gdb 查看进程线程栈
+sudo gdb attach [pid]
+thread apply all bt
