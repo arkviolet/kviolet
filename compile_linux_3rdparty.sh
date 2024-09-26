@@ -13,6 +13,8 @@ INSTALL_PREFIX_LINUX=/home/${USER}/software/3rdparty
 # 3rd 编译目录
 PACKAGE_COMPILE_DIR=~/workspace/package
 
+mkdir -vp $PACKAGE_COMPILE_DIR
+
 # grpc
 cd $PACKAGE_COMPILE_DIR
 

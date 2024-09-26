@@ -1,5 +1,5 @@
-#ifndef __ACTOR__LOCK__QUEUE__
-#define __ACTOR__LOCK__QUEUE__
+#define __KVIOLET__LOCK__QUEUE__
+#define __KVIOLET__LOCK__QUEUE__
 
 #include <condition_variable>
 #include <mutex>
@@ -119,4 +119,4 @@ class LockQueue {
 };
 }  // namespace kviolet
 
-#endif  ///__ACTOR__LOCK__QUEUE__
+#endif  ///__KVIOLET__LOCK__QUEUE__

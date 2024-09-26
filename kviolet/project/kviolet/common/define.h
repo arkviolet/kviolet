@@ -3,12 +3,10 @@
 
 #include "include.h"
 
-
 /// thread sleep time
-#define KVIOLET_THIS_THREAD_SLEEP_S std::this_thread::sleep_for(std::chrono::hours(n))
-#define KVIOLET_THIS_THREAD_SLEEP_MS std::this_thread::sleep_for(std::chrono::milliseconds(n))
-#define KVIOLET_THIS_THREAD_SLEEP_US std::this_thread::sleep_for(std::chrono::microseconds(n))
-
+#define KVIOLET_THIS_THREAD_SLEEP_S(n) std::this_thread::sleep_for(std::chrono::hours(n))
+#define KVIOLET_THIS_THREAD_SLEEP_MS(n) std::this_thread::sleep_for(std::chrono::milliseconds(n))
+#define KVIOLET_THIS_THREAD_SLEEP_US(n) std::this_thread::sleep_for(std::chrono::microseconds(n))
 
 ///current timestamp
 /**
@@ -27,17 +25,14 @@
 /// π
 #define KVIOLET_PI (3.1415926535898f)
 
-
 /// bit
 #define KVIOLET_BYTE                                (1)
 #define KVIOLET_KB                  (KVIOLET_BYTE * 1024)
 #define KVIOLET_MB                  (KVIOLET_KB * 1024)
 #define KVIOLET_GB                  (KVIOLET_MB * 1024)
 
-
 ///EOF
 #define KVIOLET_EOF                 "\n"
-
 
 ///max min,
 /**
@@ -47,6 +42,5 @@
  * */
 #define KVIOLET_COMPARE_MAX(a, b) (a) > (b) ? (a) : (b)
 #define KVIOLET_COMPARE_MIN(a, b) (a) > (b) ? (b) : (a)
-
 
 #endif ///__KVIOLET__COMMON__DEFINE__H__

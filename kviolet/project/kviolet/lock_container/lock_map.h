@@ -67,8 +67,8 @@ class ConcurrentMap {
   void for_each(
       const std::function<void(const _Kty&, const _Ty&)>& callback) noexcept {
     std::lock_guard<std::recursive_mutex> lk(mutex_);
-    for (auto itor : map_) {
-      callback(itor.first, itor.second);
+    for (auto iter : map_) {
+      callback(iter.first, iter.second);
     }
   }
 

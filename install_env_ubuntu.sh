@@ -136,6 +136,7 @@ sudo apt-get install libboost-all-dev libprocess-cpp-dev -y
 
 sudo apt-get install libsdbus-c++ libsdbus-c++-dev libdbus-1-dev -y
 
+sudo apt-get install libgstreamer1.0-dev gstreamer1.0-rtsp -y
 
 sudo apt-get install cutecom -y
 

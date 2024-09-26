@@ -1,0 +1,102 @@
+git reset --soft HEAD^
+git reset HEAD
+
+时间戳转换：https://tool.lu/timestamp/
+
+sudo nmcli device wifi connect wifi_name
+sudo nmcli device wifi connect wifi_name password 'ssss' ifname wlan0
+
+grpcurl -d '{}' -plaintext 10.2.9.108:8988 com.syriusrobotics.grpc_service_proto.periscope.Periscope.getHistoryList
+grpcurl -d '{}' -plaintext 10.2.9.69:9999 com.syriusrobotics.jinglebell.Jinglebell.sendEvent
+
+dbus-send --system --dest=com.syriusrobotics.blackbox --type=method_call --print-reply /com/syriusrobotics/blackbox/register com.syriusrobotics.blackbox.register.RegisterApplicationInfomation int32:100 string:"name" array:string:"string1","string2"
+dbus-monitor --system "path='/com/syriusrobotics/bootstrapper/accessory/message',interface='com.syriusrobotics.bootstrapper.accessory.message'"
+
+rtsp 推流
+108:
+	./examples/test-launch "( videotestsrc ! x264enc ! rtph264pay name=pay0 pt=96 )"
+	./examples/test-launch "( v4l2src device=/dev/video11 norm=255 ! video/x-raw-yuv,format='fourcc'YUY2,width=640,height=480 ! x264enc tune="zerolatency" threads=4  ! rtph264pay name=pay0 pt=96 )"
+
+1.133
+	gst-launch-1.0 rtspsrc latency=20 location="rtsp://10.2.9.108:8554/test" ! rtph264depay ! h264parse ! avdec_h264 ! autovideosink
+
+rtp 推流
+
+108:
+	gst-launch-1.0 -v  videotestsrc ! videoconvert ! x264enc tune=zerolatency ! rtph264pay ! udpsink host=10.2.1.133  port=8888
+	gst-launch-1.0 -v v4l2src device=/dev/video11 ! videoconvert ! x264enc tune=zerolatency ! rtph264pay ! udpsink host=10.2.1.133 port=8888
+	gst-launch-1.0 -v videotestsrc ! videoconvert ! x264enc ! flvmux ! rtmpsink location='rtmp://localhost:1935/live/test'
+	gst-launch-1.0 -v v4l2src device=/dev/video11 ! videoconvert ! x264enc tune=zerolatency ! flvmux ! rtmpsink location=rtmp://localhost:1935/live/test110
+	gst-launch-1.0 -v videotestsrc pattern=black ! videoconvert ! clockoverlay halignment=right valignment=bottom time-format="%Y-%m-%d %H:%M:%S" ! x264enc ! flvmux ! rtmpsink location='rtmp://127.0.01:1935/live/livestream' sync=false
+	gst-launch-1.0 -v v4l2src device=/dev/video11 ! videoconvert ! clockoverlay halignment=right valignment=bottom time-format="%Y-%m-%d %H:%M:%S"  ! x264enc tune=zerolatency ! flvmux ! rtmpsink location='rtmp://127.0.0.1:1935/live/livestream'
+
+1.133
+	gst-launch-1.0 udpsrc port=8888 caps="application/x-rtp,media=(string)video,clock-rate=(int)90000,encoding-name=(string)H264,payload=(int)96" ! rtph264depay ! h264parse ! avdec_h264 ! autovideosink
+
+# 
+rtsp->rtmp 推流
+
+108
+	./examples/test-launch "( videotestsrc ! x264enc ! rtph264pay name=pay0 pt=96 )"
+	./examples/test-launch "( v4l2src device=/dev/video11 norm=255 ! video/x-raw-yuv,format='fourcc'YUY2,width=640,height=480 ! x264enc tune="zerolatency" threads=4  ! rtph264pay name=pay0 pt=96 )"
+133
+	node app.js && gst-launch-1.0 -v videotestsrc ! videoconvert ! x264enc ! flvmux ! rtmpsink location='rtmp://localhost:1935/live/test'
+
+	转发流
+	gst-launch-1.0 rtspsrc location="rtsp://10.2.9.108:8554/test" ! rtpbin name=rtpbin rtpbin. ! rtph264depay ! avdec_h264 ! x264enc ! flvmux ! rtmpsink location='rtmp://localhost:1935/live/test'
+
+# 图像化界面播放推流数据
+	ffmpeg -i rtmp://localhost:1935/live/test1 -c:v copy -c:a copy -f nut - | ffplay -
+	vlc配置网络链接 rtmp://localhost:1935/live/test1
+
+gst-launch-1.0 -v v4l2src device=/dev/video11 ! video/x-raw,format=YUY2,width=640,height=400 ! videoconvert ! video/x-raw,format=I420 ! x264enc bitrate=1000 speed-preset=veryfast tune=zerolatency ! flvmux ! rtmpsink location='rtmp://localhost:1935/live/test110'
+
+	gst 推rtsp流 到 lalserver 测试流
+		ffmpeg -re -i demo.flv -c:a copy -c:v copy -f flv rtmp://127.0.0.1:1935/live/test110
+		gst-launch-1.0 -v videotestsrc  ! videoconvert ! x264enc tune=zerolatency ! rtspclientsink location="rtsp://localhost:5544/live/test110"
+
+	拉流
+		ffplay http://10.2.9.108:8080/live/test110.flv
+		ffplay rtsp://10.2.9.108:5544/live/test110
+		ffplay rtmp://10.2.9.108:1935/live/test110
+	苹果浏览器:
+		http://10.2.9.108:8080/hls/test110.m3u8
+
+TODO
+	需要浏览器支持直接播放而非下载文件
+		ffplay http://10.2.9.108:8080/live/test110.flv
+
+sudo apt-get install libglib2.0-dev:arm64 -y
+sudo apt install libgstreamer1.0-dev:arm64 -y
+sudo apt install liborc-0.4-dev:arm64 -y
+
+gst-launch-1.0 -v videotestsrc ! videoconvert ! clockoverlay halignment=right valignment=bottom time-format="%Y-%m-%d %H:%M:%S"  ! x264enc tune=zerolatency  ! flvmux ! rtmpsink location='rtmp://127.0.0.1:1935/live/livestream'  sync=false
+gst-launch-1.0 -v videotestsrc ! videoconvert  !  x264enc tune=zerolatency ! flvmux ! rtmpsink location='rtmp://127.0.0.1:1935/live/livestream'  sync=false
+
+ gst-launch-1.0 -v v4l2src device=/dev/video11 ! videoconvert ! clockoverlay halignment=right valignment=bottom time-format="%Y-%m-%d %H:%M:%S"   ! omxh264enc ! flvmux ! rtmpsink location='rtmp://127.0.0.1:1935/live/livestream'  sync=false
+ gst-launch-1.0 -v videotestsrc ! videoconvert ! clockoverlay halignment=right valignment=bottom time-format="%Y-%m-%d %H:%M:%S"  ! x264enc tune=zerolatency  ! flvmux ! rtmpsink location='rtmp://127.0.0.1:1935/live/livestream'  sync=false
+ 
+  gst-launch-1.0 -v v4l2src device=/dev/video11 ! videoconvert ! clockoverlay halignment=right valignment=bottom time-format="%Y-%m-%d %H:%M:%S"   ! omxh264enc
+   gst-launch-1.0 videotestsrc ! videoconvert ! video/x-raw, width=640, height=400, format=I420 ! omxh264enc  ! mpegtsmux ! hlssink playlist-root=http://127.0.0.1:10005 location=./segment_%05d.ts playlist-location=./playlist.m3u8 target-duration=1 max-files=3
+   gst-launch-1.0 videotestsrc ! videoconvert ! clockoverlay halignment=right valignment=bottom time-format="%Y-%m-%d %H:%M:%S" ! omxh264enc  ! mpegtsmux ! hlssink playlist-root=http://10.2.9.17:10005 location=./segment_%05d.ts playlist-location=./playlist.m3u8 target-duration=1 max-files=20
+   
+   gst-launch-1.0 v4l2src device=/dev/video11 ! videoconvert ! clockoverlay halignment=right valignment=bottom time-format="%Y-%m-%d %H:%M:%S" ! omxh264enc ! mpegtsmux ! hlssink playlist-root=http://10.2.9.17:10005 location=./segment_%05d.ts playlist-location=./playlist.m3u8 target-duration=1 max-files=3
+   
+   gst-launch-1.0 v4l2src device=/dev/video11 ! videoconvert ! clockoverlay halignment=right valignment=bottom time-format="%Y-%m-%d %H:%M:%S" ! omxh264enc ! mpegtsmux ! hlssink playlist-root=http://10.2.9.17:10005 location=./segment_%05d.ts playlist-location=./playlist.m3u8 target-duration=1 max-files=3
+
+sudo nmcli device wifi connect syrius123456 password syrius123456
+
+gst-launch-1.0 -v v4l2src device=/dev/video11 ! videoconvert ! clockoverlay halignment=right valignment=bottom time-format="%Y-%m-%d %H:%M:%S"   ! omxh264enc ! flvmux ! rtmpsink location='rtmp://127.0.0.1:10025/live/livestream'  sync=false
+gst-launch-1.0 -v v4l2src device=/dev/video11 ! videoconvert ! omxh264enc ! flvmux ! rtmpsink location='rtmp://127.0.0.1:10025/live/livestream'  sync=false
+
+webrtc://10.2.9.108:10024/live/livestream1_13985_8969_123
+webrtc://127.0.0.1::10024/live/livestream1_13985_8969_123
+
+http://10.2.8.242:10026/players/rtc_player.html
+webrtc://10.2.8.242:10024/live/livestream1_13985_8969_123
+
+gst-launch-1.0 -v videotestsrc ! videoconvert ! clockoverlay halignment=right valignment=bottom time-format="%Y-%m-%d %H:%M:%S"  ! x264enc tune=zerolatency  ! flvmux ! rtmpsink location='rtmp://127.0.0.1:10025/live/livestream'  sync=false
+
+http://10.2.8.77:10026/players/rtc_player.html
+webrtc://10.2.8.77:10024/live/livestream1_13985_8969_123
+
