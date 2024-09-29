@@ -3,26 +3,19 @@
 
 #include <memory>
 
-namespace kviolet
-{
-    typedef unsigned int NodeSignal;
+namespace kviolet {
+typedef unsigned int NodeSignal;
 
-    typedef struct NodeEvent
-    {
-        explicit NodeEvent(NodeSignal sig) : _sig(sig)
-        {}
+typedef struct NodeEvent {
+  explicit NodeEvent(NodeSignal sig) : _sig(sig) {}
 
-        NodeSignal _sig;
-    } NodeEvent;
+  NodeSignal _sig;
+} NodeEvent;
 
-    enum
-    {
-        INIT,
-        EXIT,
-        ENTER,
-        EMPTY
-    };
+enum { INIT, EXIT, ENTER, EMPTY };
 
-    extern std::shared_ptr<NodeEvent> ActorDefault[];
-}
-#endif //__ACTOR__EVENT__H__
+extern std::shared_ptr<NodeEvent> ActorDefault[];
+
+}  // namespace kviolet
+
+#endif  //__ACTOR__EVENT__H__

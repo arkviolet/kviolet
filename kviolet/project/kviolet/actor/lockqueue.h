@@ -1,163 +1,133 @@
 #ifndef __ACTOR__LOCK__QUEUE__
 #define __ACTOR__LOCK__QUEUE__
 
-
-#include <queue>
-#include <mutex>
 #include <condition_variable>
+#include <iostream>
+#include <mutex>
+#include <queue>
 
+namespace kviolet {
+template <typename TypeT>
+class LockCQueue {
+ public:
+  LockCQueue(uint32_t size = 1024) { _maxSize = size; };
 
-namespace kviolet
-{
-    template<typename TypeT>
-    class LockCQueue
-    {
-    public:
-        LockCQueue(uint32_t size = 1024)
-        {
-            _maxSize = size;
-        };
+  ~LockCQueue() = default;
 
-        ~LockCQueue() = default;
+ public:
+  void Push(TypeT &&value) {
+    std::lock_guard<std::mutex> lock(_mutex);
 
+    if (_queue.size() > _maxSize) {
+      _queue.pop();
 
-    public:
-        void Push(TypeT &&value)
-        {
-            std::lock_guard<std::mutex> lock(_mutex);
+      std::cerr << "_queue.size:" << _maxSize << std::endl;
+    }
+    _queue.push(std::forward<TypeT>(value));
 
-            if (_queue.size() > _maxSize)
-            {
-                _queue.pop();
+    _condition.notify_one();
+  }
 
-                std::cerr << "_queue.size:" << _maxSize << std::endl;
-            }
-            _queue.push(std::forward<TypeT>(value));
+  void Push(const TypeT &value) {
+    std::lock_guard<std::mutex> lock(_mutex);
 
-            _condition.notify_one();
-        }
+    if (_queue.size() > _maxSize) {
+      _queue.pop();
 
-        void Push(const TypeT &value)
-        {
-            std::lock_guard<std::mutex> lock(_mutex);
+      std::cerr << "_queue.size:" << _maxSize << std::endl;
+    }
 
-            if (_queue.size() > _maxSize)
-            {
-                _queue.pop();
+    _queue.push(value);
 
-                std::cerr << "_queue.size:" << _maxSize << std::endl;
-            }
+    _condition.notify_one();
+  }
 
-            _queue.push(value);
+  void Pop() {
+    std::lock_guard<std::mutex> lock(_mutex);
 
-            _condition.notify_one();
-        }
+    _queue.pop();
+  }
 
-        void Pop()
-        {
-            std::lock_guard<std::mutex> lock(_mutex);
+  void Pop(TypeT &value) {
+    std::lock_guard<std::mutex> lock(_mutex);
 
-            _queue.pop();
-        }
+    value = std::move(_queue.front());
 
-        void Pop(TypeT &value)
-        {
-            std::lock_guard<std::mutex> lock(_mutex);
+    _queue.pop();
+  }
 
-            value = std::move(_queue.front());
+  void WaitAndPop() {
+    std::unique_lock<std::mutex> lock(_mutex);
 
-            _queue.pop();
-        }
+    _condition.wait(lock, [this] { return !_queue.empty(); });
+    _queue.pop();
+  }
 
-        void WaitAndPop()
-        {
-            std::unique_lock<std::mutex> lock(_mutex);
+  void WaiAndPop(TypeT &value) {
+    std::unique_lock<std::mutex> lock(_mutex);
 
-            _condition.wait(lock, [this]
-            {
-                return !_queue.empty();
-            });
-            _queue.pop();
-        }
+    _condition.wait(lock, [this] { return !_queue.empty(); });
+    value = std::move(_queue.front());
+    _queue.pop();
+  }
 
+  bool TryPop() {
+    std::lock_guard<std::mutex> lock(_mutex);
 
-        void WaiAndPop(TypeT &value)
-        {
-            std::unique_lock<std::mutex> lock(_mutex);
+    if (_queue.empty()) {
+      return false;
+    }
 
-            _condition.wait(lock, [this]
-            {
-                return !_queue.empty();
-            });
-            value = std::move(_queue.front());
-            _queue.pop();
-        }
+    _queue.pop();
 
+    return true;
+  }
 
-        bool TryPop()
-        {
-            std::lock_guard<std::mutex> lock(_mutex);
+  bool TryPop(TypeT &value) {
+    std::lock_guard<std::mutex> lock(_mutex);
 
-            if (_queue.empty())
-            {
-                return false;
-            }
+    if (_queue.empty()) {
+      return false;
+    }
 
-            _queue.pop();
+    value = std::move(_queue.front());
 
-            return true;
-        }
+    _queue.pop();
 
+    return true;
+  }
 
-        bool TryPop(TypeT &value)
-        {
-            std::lock_guard<std::mutex> lock(_mutex);
+  bool Empty() const {
+    std::lock_guard<std::mutex> lock(_mutex);
 
-            if (_queue.empty())
-            {
-                return false;
-            }
+    return _queue.empty();
+  }
 
-            value = std::move(_queue.front());
+  std::size_t Size() const {
+    std::lock_guard<std::mutex> lock(_mutex);
 
-            _queue.pop();
+    return _queue.size();
+  }
 
-            return true;
-        }
+  const TypeT &Back() const {
+    std::lock_guard<std::mutex> lock(_mutex);
 
-        bool Empty() const
-        {
-            std::lock_guard<std::mutex> lock(_mutex);
+    return _queue.back();
+  }
 
-            return _queue.empty();
-        }
+  const TypeT &Front() const {
+    std::lock_guard<std::mutex> lock(_mutex);
 
-        std::size_t Size() const
-        {
-            std::lock_guard<std::mutex> lock(_mutex);
+    return _queue.front();
+  }
 
-            return _queue.size();
-        }
+ private:
+  uint32_t _maxSize;
+  std::mutex _mutex{};
+  std::queue<TypeT> _queue{};
+  std::condition_variable _condition{};
+};
 
-        const TypeT &Back() const
-        {
-            std::lock_guard<std::mutex> lock(_mutex);
+}  // namespace kviolet
 
-            return _queue.back();
-        }
-
-        const TypeT &Front() const
-        {
-            std::lock_guard<std::mutex> lock(_mutex);
-
-            return _queue.front();
-        }
-
-    private:
-        uint32_t _maxSize;
-        std::mutex _mutex{};
-        std::queue<TypeT> _queue{};
-        std::condition_variable _condition{};
-    };
-}
-#endif ///__ACTOR__LOCK__QUEUE__
+#endif  ///__ACTOR__LOCK__QUEUE__
