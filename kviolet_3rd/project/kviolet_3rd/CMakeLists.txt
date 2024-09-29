@@ -46,26 +46,8 @@ INCLUDE_DIRECTORIES(AFTER SYSTEM /usr/lib/x86_64-linux-gnu/glib-2.0/include/)
 #
 # 链接第三方库
 #
-TARGET_LINK_LIBRARIES(${PROGRAM_NAME_SHARE}  PUBLIC glog kviolet)
-TARGET_LINK_LIBRARIES(${PROGRAM_NAME_STATIC} PUBLIC glog kviolet)
-
-#
-# pulseaudio gst
-#
-TARGET_LINK_LIBRARIES(${PROGRAM_NAME_SHARE}  PUBLIC pulse sndfile glib-2.0 gstreamer-1.0)
-TARGET_LINK_LIBRARIES(${PROGRAM_NAME_STATIC} PUBLIC pulse sndfile glib-2.0 gstreamer-1.0)
-
-#
-# curl
-#
-TARGET_LINK_LIBRARIES(${PROGRAM_NAME_SHARE}  PUBLIC curl)
-TARGET_LINK_LIBRARIES(${PROGRAM_NAME_STATIC} PUBLIC curl)
-
-#
-# grpc
-#
-TARGET_LINK_LIBRARIES(${PROGRAM_NAME_SHARE}  PUBLIC grpc++ protobuf)
-TARGET_LINK_LIBRARIES(${PROGRAM_NAME_STATIC} PUBLIC grpc++ protobuf)
+TARGET_LINK_LIBRARIES(${PROGRAM_NAME_SHARE}  PUBLIC kviolet glog pulse sndfile glib-2.0 gstreamer-1.0 curl sdbus-c++ grpc++ grpc++_reflection protobuf)
+TARGET_LINK_LIBRARIES(${PROGRAM_NAME_STATIC} PUBLIC kviolet glog pulse sndfile glib-2.0 gstreamer-1.0 curl sdbus-c++ grpc++ grpc++_reflection protobuf)
 
 #
 # 指定输出名称

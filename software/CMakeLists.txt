@@ -6,7 +6,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.8 FATAL_ERROR)
 #
 # 项目名
 #
-PROJECT(softwre VERSION 0.0.1)
+PROJECT(tool_test VERSION 0.0.1)
 
 #
 # cmake模块

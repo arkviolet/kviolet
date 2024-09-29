@@ -1,5 +1,5 @@
-#define __KVIOLET__LOCK__QUEUE__
-#define __KVIOLET__LOCK__QUEUE__
+#ifndef __KVIOLET__LOCK__QUEUE__H__
+#define __KVIOLET__LOCK__QUEUE__H__
 
 #include <condition_variable>
 #include <mutex>
@@ -119,4 +119,4 @@ class LockQueue {
 };
 }  // namespace kviolet
 
-#endif  ///__KVIOLET__LOCK__QUEUE__
+#endif  ///__KVIOLET__LOCK__QUEUE__H__

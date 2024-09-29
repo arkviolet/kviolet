@@ -5,7 +5,7 @@
 ///符号隐藏
 #define  KVIOLET_CLASS_API
 
-/// sizeof 宏实现  ex:sizeof(10)  sizeof(int)
+/// sizeof
 #define KVIOLET_OFFSET_VALUE(value) ((char*)(&value + 1) - (char*)(&value))
 #define KVIOLET_OFFSET_VARIABLE(val)  ((char*)((val*)0 + 1) - (char*)((val*)0))
 
