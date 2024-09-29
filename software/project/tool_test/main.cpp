@@ -38,8 +38,32 @@ int main(int argc, char** argv) {
 
   /// timer
   {
-    
+    TimerManager timer_manager;
+    timer_manager.Start(
+        []() {
+          auto current = Timestamp::MonotonicMilliseconds();
+          std::cout << "current time:" << current << std::endl;
+        },
+        -1, 1 * 1000);
   }
+
+  /// thread poll
+  {
+    kviolet::ThreadPool thread_poll;
+    thread_poll.Commit([]() { std::cout << "task" << std::endl; });
+  }
+
+  /// ringbuffer
+  {}
+
+  /// message queue
+  {}
+
+  /// grpc
+  {}
+
+  /// dbus
+  {}
 
   return 0;
 }
