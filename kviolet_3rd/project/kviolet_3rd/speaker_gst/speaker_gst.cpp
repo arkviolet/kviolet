@@ -6,7 +6,8 @@
 
 #include <cmath>
 
-namespace kviolet3rd {
+namespace kviolet {
+namespace enckit {
 
 static double ConvertVolume(double volume) {
   if (volume <= 0.01) {
@@ -205,4 +206,5 @@ void GstAudioManager::DeleteExpiredAudioStreamsHandle() {
   stream_manager_.RemoveIf([](const auto& elem) { return !elem.second->IsRunning(); });
 }
 
-}  // namespace kviolet3rd
+}  // namespace enckit
+}  // namespace kviolet

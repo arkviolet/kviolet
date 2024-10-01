@@ -2,7 +2,8 @@
 
 #include <grpcpp/ext/proto_server_reflection_plugin.h>
 
-namespace kviolet3rd {
+namespace kviolet {
+namespace enckit {
 
 GRPCServer::GRPCServer(const std::string& uri) : uri_(uri) {}
 
@@ -49,4 +50,5 @@ void GRPCServer::Service() {
   server_->Wait();
 }
 
-}  // namespace kviolet3rd
+}  // namespace enckit
+}  // namespace kviolet

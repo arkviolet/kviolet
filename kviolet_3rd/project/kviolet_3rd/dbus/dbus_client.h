@@ -7,7 +7,8 @@
 #include <memory>
 #include <mutex>
 #include <string>
-namespace kviolet3rd {
+namespace kviolet {
+namespace enckit {
 
 class DBusClient {
  public:
@@ -92,6 +93,7 @@ bool EmitSignal(const std::string& object_path, const std::string& interface_nam
   return client.EmitSignal(object_path, interface_name, signal_name, std::forward<_Args>(args)...);
 }
 
-}  // namespace kviolet3rd
+}  // namespace enckit
+}  // namespace kviolet
 
 #endif  ///__KVIOLET__3RD__DBUS__CLIENT__H__

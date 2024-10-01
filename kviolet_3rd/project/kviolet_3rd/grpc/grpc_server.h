@@ -7,7 +7,8 @@
 #include <string>
 #include <vector>
 
-namespace kviolet3rd {
+namespace kviolet {
+namespace enckit {
 
 class GRPCServer {
  public:
@@ -33,6 +34,7 @@ class GRPCServer {
   std::vector<std::shared_ptr<::grpc::Service>> services_;
 };
 
-}  // namespace kviolet3rd
+}  // namespace enckit
+}  // namespace kviolet
 
 #endif

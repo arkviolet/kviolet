@@ -1,7 +1,8 @@
 
 #include "dbus_client.h"
 
-namespace kviolet3rd {
+namespace kviolet {
+namespace enckit {
 
 DBusClient::DBusClient(const std::shared_ptr<sdbus::IConnection>& connection) : connection_(connection) {}
 
@@ -64,4 +65,5 @@ bool DBusClient::UnSubscribeSignal(const std::string& service_name, const std::s
   }
 }
 
-}  // namespace kviolet3rd
+}  // namespace enckit
+}  // namespace kviolet

@@ -1,6 +1,7 @@
 #include "dbus_server.h"
 
-namespace kviolet3rd {
+namespace kviolet {
+namespace enckit {
 
 DBusServer::DBusServer(const std::string& name) : service_name_(name) {}
 
@@ -51,4 +52,5 @@ void DBusServer::Service() {
   connection_->enterEventLoop();
 }
 
-}  // namespace kviolet3rd
+}  // namespace enckit
+}  // namespace kviolet

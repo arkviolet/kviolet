@@ -9,7 +9,8 @@
 #include <thread>
 #include <utility>
 
-namespace kviolet3rd {
+namespace kviolet {
+namespace enckit {
 
 using namespace kviolet::container;
 
@@ -54,6 +55,7 @@ class GrpcServiceLoop {
   LockMap<::grpc::ServerContext*, std::shared_ptr<Context>> map_;
 };
 
-}  // namespace kviolet3rd
+}  // namespace enckit
+}  // namespace kviolet
 
 #endif  //__KVIOLET__3RD__GRPC__SERVER__LOOP__H__

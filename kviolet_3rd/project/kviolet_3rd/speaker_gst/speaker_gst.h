@@ -7,7 +7,8 @@
 #include <string>
 #include <thread>
 
-namespace kviolet3rd {
+namespace kviolet {
+namespace enckit {
 
 using namespace kviolet::container;
 
@@ -41,6 +42,7 @@ class GstAudioManager final {
   LockMap<std::string, std::shared_ptr<GstAudio>> stream_manager_;
 };
 
-}  // namespace kviolet3rd
+}  // namespace enckit
+}  // namespace kviolet
 
 #endif  // __KVIOLET__3RD__SPEAKER__GST____H__

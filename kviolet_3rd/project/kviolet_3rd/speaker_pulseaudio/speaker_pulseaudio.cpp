@@ -4,7 +4,8 @@
 #include <kviolet/utilities/timestamp.h>
 #include <sndfile.h>
 
-namespace kviolet3rd {
+namespace kviolet {
+namespace enckit {
 
 class AudioStream {
  public:
@@ -311,4 +312,5 @@ void PulseAudioManager::DeleteExpiredAudioStreamsHandle() {
   stream_manager_.RemoveIf([](const auto& elem) { return !elem.second->IsRunning(); });
 }
 
-}  // namespace kviolet3rd
+}  // namespace enckit
+}  // namespace kviolet

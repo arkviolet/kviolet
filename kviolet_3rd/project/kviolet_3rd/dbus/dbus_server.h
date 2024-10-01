@@ -7,7 +7,8 @@
 #include <memory>
 #include <mutex>
 #include <string>
-namespace kviolet3rd {
+namespace kviolet {
+namespace enckit {
 
 class DBusServer {
  public:
@@ -66,6 +67,7 @@ class DBusServer {
   std::map<std::string, std::unique_ptr<sdbus::IObject>> object_;
 };
 
-}  // namespace kviolet3rd
+}  // namespace enckit
+}  // namespace kviolet
 
 #endif  ///__KVIOLET__3RD__DBUS__SERVER__H__

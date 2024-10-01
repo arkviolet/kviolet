@@ -3,7 +3,7 @@
 #include <kviolet/kviolet.h>
 #include <kviolet_3rd/kviolet_3rd.h>
 
-using namespace kviolet3rd;
+using namespace kviolet::enckit;
 using namespace kviolet::kpoll;
 using namespace kviolet::timer;
 using namespace kviolet::utilities;
