@@ -9,40 +9,36 @@
 #include <thread>
 #include <utility>
 
-namespace kviolet {
+namespace kviolet3rd {
+
+using namespace kviolet::container;
 
 template <class DataType>
 class GrpcServiceLoop {
   struct Context {
-    ConcurrentList<std::shared_ptr<DataType>> list_;
+    LockList<std::shared_ptr<DataType>> list_;
   };
 
  public:
   void send(const std::shared_ptr<DataType>& data) {
-    map_.for_each([&](auto sctx, auto ctx) { ctx->list_.push_back(data); });
+    map_.ForEach([&](auto sctx, auto ctx) { ctx->list_.push_back(data); });
   }
 
-  bool loop(::grpc::ServerContext* context,
-            const std::function<bool(const std::shared_ptr<DataType>& data)>&
-                callback,
-            const int read_timeout = 1000) {
+  bool loop(::grpc::ServerContext* context, const std::function<bool(const std::shared_ptr<DataType>& data)>& callback, const int read_timeout = 1000) {
     auto ctx = std::make_shared<Context>();
     if (ctx == nullptr) {
       return false;
     }
 
-    map_.insert(std::pair<::grpc::ServerContext*, std::shared_ptr<Context>>(
-        {context, ctx}));
+    map_.Insert(std::pair<::grpc::ServerContext*, std::shared_ptr<Context>>({context, ctx}));
 
-    LOG(INFO) << "start loop: " << std::this_thread::get_id() << ", "
-              << context->peer();
+    LOG(INFO) << "start loop: " << std::this_thread::get_id() << ", " << context->peer();
 
     std::shared_ptr<DataType> data;
     while (!context->IsCancelled()) {
       if (ctx->list_.try_pop_front(read_timeout, data)) {
         if (!callback(data)) {
-          LOG(INFO) << "close by writter: " << std::this_thread::get_id()
-                    << ", " << context->peer();
+          LOG(INFO) << "close by writter: " << std::this_thread::get_id() << ", " << context->peer();
           break;
         }
       }
@@ -55,9 +51,9 @@ class GrpcServiceLoop {
   }
 
  private:
-  ConcurrentMap<::grpc::ServerContext*, std::shared_ptr<Context>> map_;
+  LockMap<::grpc::ServerContext*, std::shared_ptr<Context>> map_;
 };
 
-}  // namespace kviolet
+}  // namespace kviolet3rd
 
 #endif  //__KVIOLET__3RD__GRPC__SERVER__LOOP__H__

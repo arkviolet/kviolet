@@ -1,45 +1,36 @@
-#ifndef __ACTOR__STATE__MACHINE__H__
-#define __ACTOR__STATE__MACHINE__H__
+#ifndef __KVIOLET__ACTOR__STATE__MACHINE__H__
+#define __KVIOLET__ACTOR__STATE__MACHINE__H__
 
 #include <map>
 
-#include "node.h"
 #include "event.h"
+#include "node.h"
 
-namespace kviolet
-{
-    class StateMachine
-    {
-    public:
-        StateMachine();
+namespace kviolet {
+namespace actor {
 
-        ~StateMachine();
+class StateMachine {
+ public:
+  StateMachine();
+  ~StateMachine();
 
-    public:
-        /**
-         * 初始根状态
-         * */
-        void Init(InterfaceFuncNode rootFuncNode);
+ public:
+  void Init(InterfaceFuncNode rootFuncNode);
+  void AddNode(InterfaceFuncNode funcNode);
+  void JumpNode(InterfaceFuncNode funcNode);
 
-        /**
-         * 添加节点,与其他节点,root节点组成状态树
-         * */
-        void AddNode(InterfaceFuncNode funcNode);
+ private:
+  void EnterStatueNode(StatusNode* dst);
 
-        /**
-         *  状态切换
-         * */
-        void JumpNode(InterfaceFuncNode funcNode);
+ public:
+  virtual void Dispatch(std::shared_ptr<NodeEvent> e);
 
-    private:
-        void EnterStatueNode(StatusNode *dst);
+ private:
+  StatusNode* _current{nullptr};
+  std::map<InterfaceFuncNode, StatusNode> _sateMap{};
+};
 
-    public:
-        virtual void Dispatch(std::shared_ptr<NodeEvent> e);
+}  // namespace actor
+}  // namespace kviolet
 
-    private:
-        StatusNode *_current{nullptr}; ///当前状态节点
-        std::map<InterfaceFuncNode, StatusNode> _sateMap{};///状态表
-    };
-}
-#endif //__ACTOR__STATE__MACHINE__H__
+#endif  //__KVIOLET__ACTOR__STATE__MACHINE__H__

@@ -32,22 +32,20 @@ class TimerManager {
   ~TimerManager();
 
  public:
-  bool Start(const std::shared_ptr<ITimerEvent> &event, int64_t count,
-             std::time_t interval);
-  bool Start(std::function<void()> function, int64_t count,
-             std::time_t interval);
+  bool Start(const std::shared_ptr<ITimerEvent>& event, int64_t count, std::time_t interval);
+  bool Start(std::function<void()> function, int64_t count, std::time_t interval);
   void Stop();
-  void Destroy(const std::shared_ptr<ITimerEvent> &enevt);
-  bool Pause(const std::shared_ptr<ITimerEvent> &enevt);
-  bool Resume(const std::shared_ptr<ITimerEvent> &enevt);
+  void Destroy(const std::shared_ptr<ITimerEvent>& enevt);
+  bool Pause(const std::shared_ptr<ITimerEvent>& enevt);
+  bool Resume(const std::shared_ptr<ITimerEvent>& enevt);
 
  protected:
   void DriverThread();
   void Update();
   void Executes();
-  void AddNode(std::shared_ptr<TimerNode> &node);
+  void AddNode(std::shared_ptr<TimerNode>& node);
   bool Cascade(std::size_t wheel, std::size_t index);
-  void ClearSpokes(std::vector<std::shared_ptr<TimerNode>> &spokesList);
+  void ClearSpokes(std::vector<std::shared_ptr<TimerNode>>& spokesList);
 
  protected:
   bool _running{true};
@@ -56,8 +54,7 @@ class TimerManager {
   std::atomic<std::time_t> _tickTime{0};
   std::atomic<std::time_t> _lastTime{0};
   std::vector<std::shared_ptr<TimerNode>> _nearList[(1 << TIMER_NEAR_BITS)]{};
-  std::vector<std::shared_ptr<TimerNode>> _wheelList[TIMER_WHEEL_NUM]
-                                                    [(1 << TIMER_WHEEL_BITS)]{};
+  std::vector<std::shared_ptr<TimerNode>> _wheelList[TIMER_WHEEL_NUM][(1 << TIMER_WHEEL_BITS)]{};
 
   std::map<std::shared_ptr<ITimerEvent>, std::shared_ptr<TimerNode>> _pause{};
   std::map<std::shared_ptr<ITimerEvent>, std::shared_ptr<TimerNode>> _normal{};

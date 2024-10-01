@@ -3,6 +3,7 @@
 #include "../common/common.h"
 
 namespace kviolet {
+namespace kpoll {
 
 ThreadPool::ThreadPool(std::size_t size) {
   _isClose.store(false);
@@ -10,7 +11,9 @@ ThreadPool::ThreadPool(std::size_t size) {
   Create(size);
 }
 
-ThreadPool::~ThreadPool() { Release(); }
+ThreadPool::~ThreadPool() {
+  Release();
+}
 
 void ThreadPool::Release() {
   if (_isClose.load()) {
@@ -20,7 +23,7 @@ void ThreadPool::Release() {
   _isClose.store(true);
   _condition.notify_all();
 
-  for (auto &thread : _pool) {
+  for (auto& thread : _pool) {
     if (thread.joinable()) {
       thread.join();
     }
@@ -37,11 +40,17 @@ bool ThreadPool::IsComplete() {
   return _tasks.empty() && _freeSize.load() == _pool.size();
 }
 
-bool ThreadPool::IsClose() const { return _isClose.load(); }
+bool ThreadPool::IsClose() const {
+  return _isClose.load();
+}
 
-std::size_t ThreadPool::TaskSize() const { return _tasks.size(); }
+std::size_t ThreadPool::TaskSize() const {
+  return _tasks.size();
+}
 
-std::size_t ThreadPool::ThreadSize() const { return _pool.size(); }
+std::size_t ThreadPool::ThreadSize() const {
+  return _pool.size();
+}
 
 void ThreadPool::Create(std::size_t size) {
   for (std::size_t i = 0; i < size; ++i) {
@@ -50,8 +59,7 @@ void ThreadPool::Create(std::size_t size) {
         std::function<void()> task;
         {
           std::unique_lock<std::mutex> lock(_mutex);
-          _condition.wait(
-              lock, [this] { return !_tasks.empty() || _isClose.load(); });
+          _condition.wait(lock, [this] { return !_tasks.empty() || _isClose.load(); });
 
           if (_isClose.load()) {
             return false;
@@ -71,4 +79,5 @@ void ThreadPool::Create(std::size_t size) {
   }
 }
 
+}  // namespace kpoll
 }  // namespace kviolet

@@ -3,8 +3,10 @@
 #include <kviolet/kviolet.h>
 #include <kviolet_3rd/kviolet_3rd.h>
 
+using namespace kviolet3rd;
+using namespace kviolet::kpoll;
 using namespace kviolet::timer;
-using namespace kviolet::timestamp;
+using namespace kviolet::utilities;
 
 int main(int argc, char** argv) {
   (void)argc;
@@ -15,7 +17,7 @@ int main(int argc, char** argv) {
     int volume = 50;
     std::string audio_path = "./test.wav";
     auto taskid = std::to_string(Timestamp::MonotonicMilliseconds());
-    auto pulseaudio = std::make_shared<kviolet::PulseAudioManager>();
+    auto pulseaudio = std::make_shared<PulseAudioManager>();
     pulseaudio->Play(taskid, audio_path, volume);
     pulseaudio->Pause(taskid);
     pulseaudio->Resume(taskid);
@@ -28,7 +30,7 @@ int main(int argc, char** argv) {
     int volume = 50;
     std::string audio_path = "./test.wav";  ///*.wav *.mp3
     auto taskid = std::to_string(Timestamp::MonotonicMilliseconds());
-    auto gst = std::make_shared<kviolet::GstAudioManager>();
+    auto gst = std::make_shared<GstAudioManager>();
     gst->Play(taskid, audio_path, volume);
     gst->Pause(taskid);
     gst->Resume(taskid);
@@ -49,7 +51,7 @@ int main(int argc, char** argv) {
 
   /// thread poll
   {
-    kviolet::ThreadPool thread_poll;
+    ThreadPool thread_poll;
     thread_poll.Commit([]() { std::cout << "task" << std::endl; });
   }
 

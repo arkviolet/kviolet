@@ -10,6 +10,8 @@
 #include "statemachine.h"
 
 namespace kviolet {
+namespace actor {
+
 class Actor;
 
 class Active : public StateMachine {
@@ -40,6 +42,7 @@ class Active : public StateMachine {
   LockCQueue<std::shared_ptr<NodeEvent>> _lockQueue;
 };
 
+}  // namespace actor
 }  // namespace kviolet
 
 #endif  //__ACTOR__ACTIVE__H__

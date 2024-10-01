@@ -7,84 +7,84 @@
 #include <mutex>
 
 namespace kviolet {
-
-template <class _Ty, class _Alloc = std::allocator<_Ty>>
-class ConcurrentList : public std::list<_Ty, _Alloc> {
+namespace container {
+template <class Type, class _Alloc = std::allocator<Type>>
+class LockList : public std::list<Type, _Alloc> {
  public:
   template <class _Valty>
-  void push_back(_Valty&& value) noexcept {
+  void PushBack(_Valty&& value) {
     std::unique_lock<std::recursive_mutex> lk(mutex_);
-    std::list<_Ty, _Alloc>::push_back(std::forward<_Valty>(value));
+    std::list<Type, _Alloc>::push_back(std::forward<_Valty>(value));
     cv_.notify_all();
   }
 
   template <class _Valty>
-  void emplace_back(_Valty&& value) noexcept {
+  void EmplaceBack(_Valty&& value) {
     std::unique_lock<std::recursive_mutex> lk(mutex_);
-    std::list<_Ty, _Alloc>::emplace_back(std::forward<_Ty>(value));
+    std::list<Type, _Alloc>::emplace_back(std::forward<Type>(value));
     cv_.notify_all();
   }
 
-  _Ty& front() noexcept {
+  Type& Front() {
     std::unique_lock<std::recursive_mutex> lk(mutex_);
-    return std::list<_Ty, _Alloc>::front();
+    return std::list<Type, _Alloc>::front();
   }
 
-  bool empty() noexcept {
+  bool Empty() {
     std::unique_lock<std::recursive_mutex> lk(mutex_);
-    return std::list<_Ty, _Alloc>::empty();
+    return std::list<Type, _Alloc>::empty();
   }
 
-  void pop_front() noexcept {
+  void PopFront() {
     std::unique_lock<std::recursive_mutex> lk(mutex_);
-    std::list<_Ty, _Alloc>::pop_front();
+    std::list<Type, _Alloc>::pop_front();
   }
 
-  bool try_pop_front(const uint64_t timeout, _Ty& value) {
+  bool TryPopFront(const uint64_t timeout, Type& value) {
     std::unique_lock<std::recursive_mutex> lk(mutex_);
-    if (std::list<_Ty, _Alloc>::size() == 0) {
-      if (cv_.wait_for(lk, std::chrono::milliseconds(timeout)) ==
-          std::cv_status::timeout) {
+    if (std::list<Type, _Alloc>::size() == 0) {
+      if (cv_.wait_for(lk, std::chrono::milliseconds(timeout)) == std::cv_status::timeout) {
         return false;
       }
     }
 
-    value = std::list<_Ty, _Alloc>::front();
-    std::list<_Ty, _Alloc>::pop_front();
+    value = std::list<Type, _Alloc>::front();
+    std::list<Type, _Alloc>::pop_front();
 
     return true;
   }
 
   template <class _Pr1>
-  auto remove_if(_Pr1 _Pred) {
+  auto RemoveIf(_Pr1 _Pred) {
     std::lock_guard<std::recursive_mutex> lk(mutex_);
-    return std::list<_Ty, _Alloc>::remove_if(_Pred);
+    return std::list<Type, _Alloc>::remove_if(_Pred);
   }
 
-  size_t size() const noexcept {
+  size_t Size() const {
     std::lock_guard<std::recursive_mutex> lk(mutex_);
-    return std::list<_Ty, _Alloc>::size();
+    return std::list<Type, _Alloc>::size();
   }
 
-  void clear() noexcept {
+  void Clear() {
     std::lock_guard<std::recursive_mutex> lk(mutex_);
-    std::list<_Ty, _Alloc>::clear();
+    std::list<Type, _Alloc>::clear();
   }
 
-  void for_each(const std::function<void(const _Ty&)>& callback) noexcept {
+  void ForEach(const std::function<void(const Type&)>& callback) {
     std::lock_guard<std::recursive_mutex> lk(mutex_);
     for (const auto& iter : *this) {
       callback(iter);
     }
   }
 
-  std::recursive_mutex* get_mutex() noexcept { return &mutex_; }
+  std::recursive_mutex* GetMutex() { return &mutex_; }
 
  private:
-  mutable std::recursive_mutex mutex_;
   std::condition_variable_any cv_;
+  mutable std::recursive_mutex mutex_;
 };
 
+}  // namespace container
 }  // namespace kviolet
 
 #endif  //__KVIOLET__LOCK__LIST__

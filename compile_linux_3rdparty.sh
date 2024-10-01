@@ -50,6 +50,17 @@ autoreconf -v -i &&  ./configure --prefix=${INSTALL_PREFIX_LINUX}/dfu-util # arm
 
 make -j && make install
 
+# srs
+cd $PACKAGE_COMPILE_DIR
+
+git clone https://github.com/ossrs/srs
+
+cd srs && git checkout fa8096ad0117a085515729e12a3758ca26036552
+
+cd trunk && ./configure --prefix=${INSTALL_PREFIX_LINUX}/srs # arm:--cross-build --cc=aarch64-linux-gnu-gcc --cxx=aarch64-linux-gnu-g++ --ar=aarch64-linux-gnu-ar --ld=aarch64-linux-gnu-ld --randlib=aarch64-linux-gnu-randlib
+
+make -j && make install
+
 # json
 cd $PACKAGE_COMPILE_DIR
 

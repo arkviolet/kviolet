@@ -2,7 +2,7 @@
 
 #include <grpcpp/ext/proto_server_reflection_plugin.h>
 
-namespace kviolet {
+namespace kviolet3rd {
 
 GRPCServer::GRPCServer(const std::string& uri) : uri_(uri) {}
 
@@ -12,8 +12,7 @@ void GRPCServer::SetMaxReceiveMessageSize(int max_size) {
   builder_.SetMaxReceiveMessageSize(max_size);
 }
 
-bool GRPCServer::RegisterService(
-    const std::shared_ptr<::grpc::Service>& service) {
+bool GRPCServer::RegisterService(const std::shared_ptr<::grpc::Service>& service) {
   builder_.RegisterService(service.get());
   services_.push_back(service);
 
@@ -29,7 +28,9 @@ bool GRPCServer::Initialize() {
   return true;
 }
 
-void GRPCServer::Destroy() { services_.clear(); }
+void GRPCServer::Destroy() {
+  services_.clear();
+}
 
 bool GRPCServer::Start() {
   server_ = builder_.BuildAndStart();
@@ -44,6 +45,8 @@ void GRPCServer::Stop() {
   server_ = nullptr;
 }
 
-void GRPCServer::Service() { server_->Wait(); }
+void GRPCServer::Service() {
+  server_->Wait();
+}
 
-}  // namespace kviolet
+}  // namespace kviolet3rd

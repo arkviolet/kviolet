@@ -1,6 +1,5 @@
 #include "instwlinklist.h"
 
-namespace kviolet
-{
-    
-}
+namespace kviolet {
+namespace efficent {}
+}  // namespace kviolet

@@ -1,25 +1,28 @@
 #ifndef __ACTOR__NODE__H__
 #define __ACTOR__NODE__H__
 
-#include <iostream>
 #include <functional>
+#include <iostream>
 
 #include "event.h"
 
-///typedef std::function<void(std::shared_ptr<NodeEvent> event)> FuncNode;
-///typedef std::function<FuncNode(std::shared_ptr<NodeEvent> event)> InterfaceFuncNode;
+/// typedef std::function<void(std::shared_ptr<NodeEvent> event)> FuncNode;
+/// typedef std::function<FuncNode(std::shared_ptr<NodeEvent> event)> InterfaceFuncNode;
 
-namespace kviolet
-{
-    typedef void (*FuncNode)(std::shared_ptr<NodeEvent> event);
+namespace kviolet {
+namespace actor {
 
-    typedef FuncNode(*InterfaceFuncNode)(std::shared_ptr<NodeEvent> event);
+typedef void (*FuncNode)(std::shared_ptr<NodeEvent> event);
 
-    typedef struct StatusNode
-    {
-        uint32_t _level{0};
-        InterfaceFuncNode _funNode{nullptr};
-        StatusNode *previousNode{nullptr};
-    } StatusNode;
-}
-#endif ///__ACTOR__NODE__H__
+typedef FuncNode (*InterfaceFuncNode)(std::shared_ptr<NodeEvent> event);
+
+typedef struct StatusNode {
+  uint32_t _level{0};
+  InterfaceFuncNode _funNode{nullptr};
+  StatusNode* previousNode{nullptr};
+} StatusNode;
+
+}  // namespace actor
+}  // namespace kviolet
+
+#endif  ///__ACTOR__NODE__H__

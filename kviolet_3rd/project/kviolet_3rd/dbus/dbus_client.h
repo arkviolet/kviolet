@@ -7,7 +7,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
-namespace kviolet {
+namespace kviolet3rd {
 
 class DBusClient {
  public:
@@ -17,15 +17,10 @@ class DBusClient {
 
  public:
   template <typename... _Args>
-  bool CallMethod(const std::string& service_name,
-                  const std::string& object_path,
-                  const std::string& interface_name,
-                  const std::string& methd_name, _Args&&... args) {
+  bool CallMethod(const std::string& service_name, const std::string& object_path, const std::string& interface_name, const std::string& methd_name, _Args&&... args) {
     try {
       auto proxy = sdbus::createProxy(*connection_, service_name, object_path);
-      proxy->callMethod(methd_name)
-          .onInterface(interface_name)
-          .withArguments(std::forward<_Args>(args)...);
+      proxy->callMethod(methd_name).onInterface(interface_name).withArguments(std::forward<_Args>(args)...);
     } catch (const sdbus::Error& e) {
       LOG(ERROR) << "name:" << e.getName() << "message:" << e.getMessage();
       return false;
@@ -35,16 +30,11 @@ class DBusClient {
   }
 
   template <typename T, typename... _Args>
-  T CallMethod(const std::string& service_name, const std::string& object_path,
-               const std::string& interface_name, const std::string& methd_name,
-               _Args&&... args) {
+  T CallMethod(const std::string& service_name, const std::string& object_path, const std::string& interface_name, const std::string& methd_name, _Args&&... args) {
     T result;
     try {
       auto proxy = sdbus::createProxy(*connection_, service_name, object_path);
-      proxy->callMethod(methd_name)
-          .onInterface(interface_name)
-          .withArguments(std::forward<_Args>(args)...)
-          .storeResultsTo(result);
+      proxy->callMethod(methd_name).onInterface(interface_name).withArguments(std::forward<_Args>(args)...).storeResultsTo(result);
     } catch (const sdbus::Error& e) {
       LOG(ERROR) << "name:" << e.getName() << "message:" << e.getMessage();
     }
@@ -53,9 +43,7 @@ class DBusClient {
   }
 
   template <typename... _Args>
-  bool EmitSignal(const std::string& object_path,
-                  const std::string& interface_name,
-                  const std::string& signal_name, _Args&&... args) {
+  bool EmitSignal(const std::string& object_path, const std::string& interface_name, const std::string& signal_name, _Args&&... args) {
     auto object = sdbus::createObject(*connection_, object_path);
     auto signal = object->createSignal(interface_name, signal_name);
     (void)(signal << ... << args);
@@ -76,10 +64,7 @@ class DBusClient {
                        const std::string& signal_name,
                        const sdbus::signal_handler& hanlder);
 
-  bool UnSubscribeSignal(const std::string& service_name,
-                         const std::string& object_path,
-                         const std::string& interface_name,
-                         const std::string& signal_name);
+  bool UnSubscribeSignal(const std::string& service_name, const std::string& object_path, const std::string& interface_name, const std::string& signal_name);
 
  private:
   std::string connection_name_;
@@ -90,33 +75,23 @@ class DBusClient {
 };
 
 template <typename... _Args>
-bool CallMethod(const std::string& service_name, const std::string& object_path,
-                const std::string& interface_name,
-                const std::string& methd_name, _Args&&... args) {
+bool CallMethod(const std::string& service_name, const std::string& object_path, const std::string& interface_name, const std::string& methd_name, _Args&&... args) {
   DBusClient client;
-  return client.CallMethod(service_name, object_path, interface_name,
-                           methd_name, std::forward<_Args>(args)...);
+  return client.CallMethod(service_name, object_path, interface_name, methd_name, std::forward<_Args>(args)...);
 }
 
 template <typename T, typename... _Args>
-T CallMethod(const std::string& service_name, const std::string& object_path,
-             const std::string& interface_name, const std::string& methd_name,
-             _Args&&... args) {
+T CallMethod(const std::string& service_name, const std::string& object_path, const std::string& interface_name, const std::string& methd_name, _Args&&... args) {
   DBusClient client;
-  return client.CallMethod<T, _Args...>(service_name, object_path,
-                                        interface_name, methd_name,
-                                        std::forward<_Args>(args)...);
+  return client.CallMethod<T, _Args...>(service_name, object_path, interface_name, methd_name, std::forward<_Args>(args)...);
 }
 
 template <typename... _Args>
-bool EmitSignal(const std::string& object_path,
-                const std::string& interface_name,
-                const std::string& signal_name, _Args&&... args) {
+bool EmitSignal(const std::string& object_path, const std::string& interface_name, const std::string& signal_name, _Args&&... args) {
   DBusClient client;
-  return client.EmitSignal(object_path, interface_name, signal_name,
-                           std::forward<_Args>(args)...);
+  return client.EmitSignal(object_path, interface_name, signal_name, std::forward<_Args>(args)...);
 }
 
-}  // namespace kviolet
+}  // namespace kviolet3rd
 
 #endif  ///__KVIOLET__3RD__DBUS__CLIENT__H__

@@ -1,42 +1,43 @@
 #ifndef __KVIOLET__EFFICIENT__TWLINKLIST__H__
 #define __KVIOLET__EFFICIENT__TWLINKLIST__H__
 
-namespace kviolet
-{
-    /**
-     * 双向循环链表
-     * */
-    typedef struct TWLinkList
-    {
-        TWLinkList *_next{nullptr};
-        TWLinkList *_prev{nullptr};
-    } TWLinkList;
+namespace kviolet {
+namespace efficent {
 
-    /**
-     *  Init Head Node
-     * */
-    void InitHeadTWLinkList(TWLinkList *head);
+/**
+ * 双向循环链表
+ * */
+typedef struct TWLinkList {
+  TWLinkList* _next{nullptr};
+  TWLinkList* _prev{nullptr};
+} TWLinkList;
 
-    /**
-     * Insert [head,head->next]
-     * */
-    void AddTWLinkListHead(TWLinkList *head, TWLinkList *nnew);
+/**
+ *  Init Head Node
+ * */
+void InitHeadTWLinkList(TWLinkList* head);
 
-    /**
-     * Insert [head->prev,head]
-     * */
-    void AddTWLinkListTail(TWLinkList *head, TWLinkList *nnew);
+/**
+ * Insert [head,head->next]
+ * */
+void AddTWLinkListHead(TWLinkList* head, TWLinkList* nnew);
 
-    /**
-     * Is Empty
-     * */
-    bool IsTWLinkList(TWLinkList *head);
+/**
+ * Insert [head->prev,head]
+ * */
+void AddTWLinkListTail(TWLinkList* head, TWLinkList* nnew);
 
-    /**
-     * Delete LinkList Node
-     * */
-    void DelTWLinkListNode(TWLinkList *entry);
-}
+/**
+ * Is Empty
+ * */
+bool IsTWLinkList(TWLinkList* head);
 
+/**
+ * Delete LinkList Node
+ * */
+void DelTWLinkListNode(TWLinkList* entry);
 
-#endif ///__KVIOLET__EFFICIENT__TWLINKLIST__H__
+}  // namespace efficent
+}  // namespace kviolet
+
+#endif  ///__KVIOLET__EFFICIENT__TWLINKLIST__H__

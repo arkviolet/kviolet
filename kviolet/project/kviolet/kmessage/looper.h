@@ -8,6 +8,8 @@
 #include "message_queue.h"
 
 namespace kviolet {
+namespace kmessage {
+
 class Looper {
  public:
   static std::shared_ptr<Looper> GetMainLooper(bool start = true);
@@ -22,10 +24,8 @@ class Looper {
   void AsyncLoop();
   void Loop();
   void Exit();
-  bool EnqueueMessage(const std::shared_ptr<Message>& message,
-                      const uint64_t when = 0);
-  bool PostHandler(const std::function<void()>& handler,
-                   const uint64_t when = 0);
+  bool EnqueueMessage(const std::shared_ptr<Message>& message, const uint64_t when = 0);
+  bool PostHandler(const std::function<void()>& handler, const uint64_t when = 0);
 
  private:
   std::string name_;
@@ -36,6 +36,7 @@ class Looper {
   bool quit_{false};
 };
 
+}  // namespace kmessage
 }  // namespace kviolet
 
 #endif  ///__KVIOLET__MESSAGE__LOOPER__H__

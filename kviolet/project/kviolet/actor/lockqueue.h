@@ -1,5 +1,5 @@
-#ifndef __ACTOR__LOCK__QUEUE__
-#define __ACTOR__LOCK__QUEUE__
+#ifndef __ACTOR__LOCK__QUEUE__H__
+#define __ACTOR__LOCK__QUEUE__H__
 
 #include <condition_variable>
 #include <iostream>
@@ -7,6 +7,8 @@
 #include <queue>
 
 namespace kviolet {
+namespace actor {
+
 template <typename TypeT>
 class LockCQueue {
  public:
@@ -15,7 +17,7 @@ class LockCQueue {
   ~LockCQueue() = default;
 
  public:
-  void Push(TypeT &&value) {
+  void Push(TypeT&& value) {
     std::lock_guard<std::mutex> lock(_mutex);
 
     if (_queue.size() > _maxSize) {
@@ -28,7 +30,7 @@ class LockCQueue {
     _condition.notify_one();
   }
 
-  void Push(const TypeT &value) {
+  void Push(const TypeT& value) {
     std::lock_guard<std::mutex> lock(_mutex);
 
     if (_queue.size() > _maxSize) {
@@ -48,7 +50,7 @@ class LockCQueue {
     _queue.pop();
   }
 
-  void Pop(TypeT &value) {
+  void Pop(TypeT& value) {
     std::lock_guard<std::mutex> lock(_mutex);
 
     value = std::move(_queue.front());
@@ -63,7 +65,7 @@ class LockCQueue {
     _queue.pop();
   }
 
-  void WaiAndPop(TypeT &value) {
+  void WaiAndPop(TypeT& value) {
     std::unique_lock<std::mutex> lock(_mutex);
 
     _condition.wait(lock, [this] { return !_queue.empty(); });
@@ -83,7 +85,7 @@ class LockCQueue {
     return true;
   }
 
-  bool TryPop(TypeT &value) {
+  bool TryPop(TypeT& value) {
     std::lock_guard<std::mutex> lock(_mutex);
 
     if (_queue.empty()) {
@@ -109,13 +111,13 @@ class LockCQueue {
     return _queue.size();
   }
 
-  const TypeT &Back() const {
+  const TypeT& Back() const {
     std::lock_guard<std::mutex> lock(_mutex);
 
     return _queue.back();
   }
 
-  const TypeT &Front() const {
+  const TypeT& Front() const {
     std::lock_guard<std::mutex> lock(_mutex);
 
     return _queue.front();
@@ -128,6 +130,7 @@ class LockCQueue {
   std::condition_variable _condition{};
 };
 
+}  // namespace actor
 }  // namespace kviolet
 
-#endif  ///__ACTOR__LOCK__QUEUE__
+#endif  ///__ACTOR__LOCK__QUEUE__H__

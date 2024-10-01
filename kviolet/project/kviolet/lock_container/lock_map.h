@@ -6,89 +6,89 @@
 #include <mutex>
 
 namespace kviolet {
+namespace container {
 
-template <class _Kty, class _Ty, class _Pr = std::less<_Kty>,
-          class _Alloc = std::allocator<std::pair<const _Kty, _Ty>>>
-class ConcurrentMap {
+template <class TypeK, class TypeV, class _Pr = std::less<TypeK>, class _Alloc = std::allocator<std::pair<const TypeK, TypeV>>>
+class LockMap {
  public:
-  using key_type = _Kty;
-  using mapped_type = _Ty;
-  using value_type = std::pair<const _Kty, _Ty>;
+  using key_type = TypeK;
+  using mapped_type = TypeV;
+  using value_type = std::pair<const TypeK, TypeV>;
 
  public:
   template <class _Valty>
-  void insert(_Valty&& _Val) {
+  void Insert(_Valty&& value) {
     std::lock_guard<std::recursive_mutex> lk(mutex_);
-    map_.insert(std::forward<_Valty>(_Val));
+    value_.insert(std::forward<_Valty>(value));
   }
 
-  _Ty& operator[](const _Kty& _Key) {
+  TypeV& operator[](const TypeK& key) {
     std::lock_guard<std::recursive_mutex> lk(mutex_);
-    return map_[_Key];
+    return value_[key];
   }
 
-  bool contains(const _Kty& _Key) noexcept {
+  bool IsExist(const TypeK& key) {
     std::lock_guard<std::recursive_mutex> lk(mutex_);
-    return map_.find(_Key) != map_.end();
+    return value_.find(key) != value_.end();
   }
 
-  bool find(const _Kty& _Key, _Ty& _Val) noexcept {
+  bool Find(const TypeK& key, TypeV& value) {
     std::lock_guard<std::recursive_mutex> lk(mutex_);
-    auto it = map_.find(_Key);
-    if (it != map_.end()) {
-      _Val = it->second;
+    auto it = value_.find(key);
+    if (it != value_.end()) {
+      value = it->second;
       return true;
     }
     return false;
   }
 
   template <class UnaryPredicate>
-  void remove_if(UnaryPredicate&& p) {
+  void RemoveIf(UnaryPredicate&& p) {
     std::lock_guard<std::recursive_mutex> lk(mutex_);
-    for (auto it = map_.begin(); it != map_.end();) {
+    for (auto it = value_.begin(); it != value_.end();) {
       if (p(*it)) {
-        it = map_.erase(it);
+        it = value_.erase(it);
       } else {
         ++it;
       }
     }
   }
 
-  bool remove(const _Kty& _Key) {
+  bool Remove(const TypeK& key) {
     std::lock_guard<std::recursive_mutex> lk(mutex_);
-    return map_.erase(_Key);
+    return value_.erase(key);
   }
 
-  void erase(typename std::map<_Kty, _Ty, _Pr, _Alloc>::iterator __position) {
+  void Erase(typename std::map<TypeK, TypeV, _Pr, _Alloc>::iterator pos) {
     std::lock_guard<std::recursive_mutex> lk(mutex_);
-    return map_.erase(__position);
+    return value_.erase(pos);
   }
 
-  void for_each(
-      const std::function<void(const _Kty&, const _Ty&)>& callback) noexcept {
+  void ForEach(const std::function<void(const TypeK&, const TypeV&)>& callback) noexcept {
     std::lock_guard<std::recursive_mutex> lk(mutex_);
-    for (auto iter : map_) {
+    for (auto iter : value_) {
       callback(iter.first, iter.second);
     }
   }
 
-  size_t size() const noexcept {
+  size_t Size() const {
     std::lock_guard<std::recursive_mutex> lk(mutex_);
-    return map_.size();
+    return value_.size();
   }
 
-  void clear() noexcept {
+  void Clear() {
     std::lock_guard<std::recursive_mutex> lk(mutex_);
-    map_.clear();
+    value_.clear();
   }
 
-  std::recursive_mutex* get_mutex() noexcept { return &mutex_; }
+  std::recursive_mutex* GetMutex() { return &mutex_; }
 
  private:
-  std::map<_Kty, _Ty, _Pr, _Alloc> map_;
   mutable std::recursive_mutex mutex_;
+  std::map<TypeK, TypeV, _Pr, _Alloc> value_;
 };
 
+}  // namespace container
 }  // namespace kviolet
 
 #endif  //__KVIOLET__LOCK__MAP__

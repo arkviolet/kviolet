@@ -3,14 +3,17 @@
 #include "../utilities/timestamp.h"
 
 namespace kviolet {
+namespace kmessage {
+
+using namespace kviolet::utilities;
 
 std::shared_ptr<Message> MessageQueue::Next() {
   int64_t nextPollTimeoutMillis = 0;
   for (;;) {
-    auto now = timestamp::Timestamp::MonotonicMilliseconds();
+    auto now = Timestamp::MonotonicMilliseconds();
 
     {
-      std::lock_guard<std::recursive_mutex> lk(*list_.get_mutex());
+      std::lock_guard<std::recursive_mutex> lk(*list_.GetMutex());
       if (quit_) {
         Clean();
         return nullptr;
@@ -39,16 +42,15 @@ std::shared_ptr<Message> MessageQueue::Next() {
   return nullptr;
 }
 
-bool MessageQueue::EnqueueMessage(const std::shared_ptr<Message> &message,
-                                  uint64_t when) {
+bool MessageQueue::EnqueueMessage(const std::shared_ptr<Message>& message, uint64_t when) {
   if (when != 0) {
-    when += timestamp::Timestamp::MonotonicMilliseconds();
+    when += Timestamp::MonotonicMilliseconds();
   }
 
   message->SetWhen(when);
 
   {
-    std::lock_guard<std::recursive_mutex> lk(*list_.get_mutex());
+    std::lock_guard<std::recursive_mutex> lk(*list_.GetMutex());
     if (quit_) {
       return false;
     }
@@ -81,7 +83,9 @@ bool MessageQueue::EnqueueMessage(const std::shared_ptr<Message> &message,
   return true;
 }
 
-void MessageQueue::Clean() { list_.clear(); }
+void MessageQueue::Clean() {
+  list_.clear();
+}
 
 void MessageQueue::Quit() {
   quit_ = true;
@@ -90,10 +94,10 @@ void MessageQueue::Quit() {
 
 void MessageQueue::Dump() {
   std::cout << "Dump:" << std::endl;
-  list_.for_each([](const std::shared_ptr<Message> &message) {
-    std::cout << "message: " << message->When() << std::endl;
-  });
+  list_.ForEach([](const std::shared_ptr<Message>& message) { std::cout << "message: " << message->When() << std::endl; });
 
   std::cout << std::endl;
 }
+
+}  // namespace kmessage
 }  // namespace kviolet

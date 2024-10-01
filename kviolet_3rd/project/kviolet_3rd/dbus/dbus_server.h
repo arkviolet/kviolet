@@ -7,7 +7,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
-namespace kviolet {
+namespace kviolet3rd {
 
 class DBusServer {
  public:
@@ -16,23 +16,16 @@ class DBusServer {
 
  public:
   template <typename _Function>
-  bool RegisterMethod(const std::string& method_name,
-                      const std::string& interface_name,
-                      const std::string& object_path, _Function&& method) {
+  bool RegisterMethod(const std::string& method_name, const std::string& interface_name, const std::string& object_path, _Function&& method) {
     if (object_.find(object_path) == object_.end()) {
       LOG(INFO) << "begin to create dbus object: " << object_path;
-      object_.insert({object_path, std::move(sdbus::createObject(
-                                       *connection_, object_path))});
+      object_.insert({object_path, std::move(sdbus::createObject(*connection_, object_path))});
     }
 
-    LOG(INFO) << "begin to register method " << method_name
-              << " on interface: " << interface_name;
+    LOG(INFO) << "begin to register method " << method_name << " on interface: " << interface_name;
 
     try {
-      object_[object_path]
-          ->registerMethod(method_name)
-          .onInterface(interface_name)
-          .implementedAs(std::forward<_Function>(method));
+      object_[object_path]->registerMethod(method_name).onInterface(interface_name).implementedAs(std::forward<_Function>(method));
     } catch (const std::exception& e) {
       LOG(ERROR) << "RegisterMethod failed:" << e.what();
       return false;
@@ -42,23 +35,16 @@ class DBusServer {
   }
 
   template <typename _Signal>
-  bool RegisterSignal(const std::string& signal_name,
-                      const std::string& interface_name,
-                      const std::string& object_path) {
+  bool RegisterSignal(const std::string& signal_name, const std::string& interface_name, const std::string& object_path) {
     if (object_.find(object_path) == object_.end()) {
       LOG(INFO) << "begin to create object: " << object_path;
-      object_.insert({object_path, std::move(sdbus::createObject(
-                                       *connection_, object_path))});
+      object_.insert({object_path, std::move(sdbus::createObject(*connection_, object_path))});
     }
 
-    LOG(INFO) << "begin to register signal " << signal_name
-              << " on interface: " << interface_name;
+    LOG(INFO) << "begin to register signal " << signal_name << " on interface: " << interface_name;
 
     try {
-      object_[object_path]
-          ->registerSignal(signal_name)
-          .onInterface(interface_name)
-          .withParameters<_Signal>();
+      object_[object_path]->registerSignal(signal_name).onInterface(interface_name).withParameters<_Signal>();
     } catch (const std::exception& e) {
       LOG(ERROR) << "RegisterSignal failed:" << e.what();
       return false;
@@ -80,6 +66,6 @@ class DBusServer {
   std::map<std::string, std::unique_ptr<sdbus::IObject>> object_;
 };
 
-}  // namespace kviolet
+}  // namespace kviolet3rd
 
 #endif  ///__KVIOLET__3RD__DBUS__SERVER__H__

@@ -6,6 +6,7 @@
 #include <memory>
 #include <mutex>
 namespace kviolet {
+namespace container {
 class LockEvent {
  public:
   LockEvent() {
@@ -41,8 +42,7 @@ class LockEvent {
     }
 
     std::unique_lock<std::mutex> lock(mutex_);
-    return pthread_cond_timedwait(&cond_, mutex_.native_handle(), &abs_time) ==
-           0;
+    return pthread_cond_timedwait(&cond_, mutex_.native_handle(), &abs_time) == 0;
   }
 
   void Notify() { pthread_cond_broadcast(&cond_); }
@@ -53,6 +53,7 @@ class LockEvent {
   pthread_condattr_t attr_;
 };
 
+}  // namespace container
 }  // namespace kviolet
 
 #endif  //__KVIOLET__LOCK__EVENT__

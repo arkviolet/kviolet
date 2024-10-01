@@ -1,40 +1,33 @@
-#ifndef __ACTOR__ACTOR__H__
-#define __ACTOR__ACTOR__H__
+#ifndef __ACTOR__ACTOR__FACE__H__
+#define __ACTOR__ACTOR__FACE__H__
 
-#include <set>
 #include <map>
+#include <set>
 #include <vector>
 #include "active.h"
 
-namespace kviolet
-{
-    class Actor
-    {
-    public:
-        Actor() = default;
+namespace kviolet {
+namespace actor {
+class Actor {
+ public:
+  Actor() = default;
+  ~Actor() = default;
 
-        ~Actor() = default;
+ public:
+  void Subscribe(Active* active, NodeSignal event);
+  void UnSubscribe(Active* active, NodeSignal event);
+  void Broadcast(std::shared_ptr<NodeEvent> event);
+  void RegisterActor(std::shared_ptr<Active> active);
+  void Start();
+  void Stop();
 
-    public:
+ private:
+  std::mutex _eventMutex;
+  std::map<NodeSignal, std::set<Active*>> _subMap;
+  std::vector<std::shared_ptr<Active>> _activeList;
+};
 
-        void Subscribe(Active *active, NodeSignal event);
+}  // namespace actor
+}  // namespace kviolet
 
-        void UnSubscribe(Active *active, NodeSignal event);
-
-        void Broadcast(std::shared_ptr<NodeEvent> event);
-
-        void RegisterActor(std::shared_ptr<Active> active);
-
-        void Start();
-
-        void Stop();
-
-    private:
-        std::mutex _eventMutex;
-        std::map<NodeSignal, std::set<Active *>> _subMap;
-        std::vector<std::shared_ptr<Active>> _activeList;
-
-    };
-}
-
-#endif //__ACTOR__ACTOR__H__
+#endif  //__ACTOR__ACTOR__FACE__H__

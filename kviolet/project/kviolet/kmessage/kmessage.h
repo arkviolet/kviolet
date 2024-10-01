@@ -1,5 +1,5 @@
-#ifndef __KVIOLET__MESSAGE__QUEUE__HEAD__H__
-#define __KVIOLET__MESSAGE__QUEUE__HEAD__H__
+#ifndef __KVIOLET__K__MESSAGE__H__
+#define __KVIOLET__K__MESSAGE__H__
 
 #include "builder_base.h"
 #include "handler.h"
@@ -9,4 +9,4 @@
 #include "message_dispatcher.h"
 #include "message_queue.h"
 
-#endif  ///__KVIOLET__MESSAGE__QUEUE__HEAD__H__
+#endif  ///__KVIOLET__K__MESSAGE__H__

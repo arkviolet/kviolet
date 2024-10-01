@@ -7,7 +7,9 @@
 #include <string>
 #include <thread>
 
-namespace kviolet {
+namespace kviolet3rd {
+
+using namespace kviolet::container;
 
 class GstAudio;
 
@@ -21,13 +23,13 @@ class GstAudioManager final {
   void Stop();
 
  public:
-  void Play(const std::string &task_id, const std::string &path, int volume);
+  void Play(const std::string& task_id, const std::string& path, int volume);
   void Pause();
-  void Pause(const std::string &task_id);
+  void Pause(const std::string& task_id);
   void Resume();
-  void Resume(const std::string &task_id);
+  void Resume(const std::string& task_id);
   void Cancel();
-  void Cancel(const std::string &task_id);
+  void Cancel(const std::string& task_id);
 
  protected:
   void Listener();
@@ -36,9 +38,9 @@ class GstAudioManager final {
  private:
   bool is_running_;
   std::shared_ptr<std::thread> listener_thread_;
-  ConcurrentMap<std::string, std::shared_ptr<GstAudio>> stream_manager_;
+  LockMap<std::string, std::shared_ptr<GstAudio>> stream_manager_;
 };
 
-}  // namespace kviolet
+}  // namespace kviolet3rd
 
 #endif  // __KVIOLET__3RD__SPEAKER__GST____H__

@@ -1,10 +1,12 @@
 #include "dbus_server.h"
 
-namespace kviolet {
+namespace kviolet3rd {
 
 DBusServer::DBusServer(const std::string& name) : service_name_(name) {}
 
-DBusServer::~DBusServer() { Destroy(); }
+DBusServer::~DBusServer() {
+  Destroy();
+}
 
 bool DBusServer::Initialize() {
   try {
@@ -41,8 +43,12 @@ void DBusServer::Stop() {
   }
 }
 
-void DBusServer::Destroy() { connection_ = nullptr; }
+void DBusServer::Destroy() {
+  connection_ = nullptr;
+}
 
-void DBusServer::Service() { connection_->enterEventLoop(); }
+void DBusServer::Service() {
+  connection_->enterEventLoop();
+}
 
-}  // namespace kviolet
+}  // namespace kviolet3rd

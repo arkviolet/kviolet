@@ -6,7 +6,7 @@
 #include <chrono>
 
 namespace kviolet {
-namespace timestamp {
+namespace utilities {
 class Timestamp {
  public:
   /// utc s
@@ -39,7 +39,8 @@ class Timestamp {
   /// cpu monotonic double us
   static double MonotonicMicrosecondsDouble();
 };
-}  // namespace timestamp
+
+}  // namespace utilities
 }  // namespace kviolet
 
 #endif  // __KVIOLET__UTILITIES__TIME__H__

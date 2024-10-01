@@ -1,12 +1,7 @@
 #!/bin/bash
 
-#
-#   适用环境  ubuntu20.4 / 22.4
-#
-source /etc/profile
-
-mkdir  -p ~/package/
-mkdir  -p ~/software/
+mkdir -vp ~/package/
+mkdir -vp ~/software/
 
 SOFTWARE_PATH=~/software
 
@@ -118,14 +113,18 @@ sudo apt-get install binutils-dev -y
 
 sudo apt-get install libiberty-dev -y
 
-
 sudo apt-get install libelf-dev -y
+
 sudo apt-get install fuse libfuse-dev -y
+
 sudo apt-get install python2-dev python3-dev -y
 
 sudo apt-get install ffmpeg -y
+
 sudo apt-get install pulseaudio libpulse-dev -y
+
 sudo apt-get install pulseaudio:arm64 libpulse-dev:arm64 -y
+
 sudo apt-get install libsndfile-dev libsndfile1 -y
 
 sudo apt-get install protobuf-compiler-grpc libgrpc++-dev -y
@@ -144,10 +143,10 @@ sudo apt-get install cutecom -y
 # BloomRPC              https://github.com/bloomrpc/bloomrpc/releases
 # grpcurl               https://github.com/fullstorydev/grpcurl/releases
 # mqtt ca_certificates  https://github.com/owntracks/tools/blob/master/TLS/generate-CA.sh
+# vpn software          https://github.com/2dust/v2rayN/releases/download/6.21/v2rayN-With-Core.zip
 
-
-mkdir -p ~/workspace
-cd ~/workspace
+# perf
+mkdir -vp ~/workspace && cd ~/workspace
 wget http://ftp.sjtu.edu.cn/sites/ftp.kernel.org/pub/linux/kernel/v4.x/linux-4.9.xxx.tar.gz  #需要与当前内核版本相对对应
 tar -zxvf linux-4.9.xxx.tar.gz
 cd linux-4.9.xxx/tools/perf/
@@ -311,6 +310,7 @@ make -j4
         -DCERES_THREADING_MODEL=CXX_THREADS
 
   make -j16 && make install
+
 #
 # linux key-value dataset
 #

@@ -3,12 +3,10 @@
 
 #include "include.h"
 
-///网络转换头
-typedef struct KVIOLET_NET_HEAD
-{
-    uint32_t length;
-    uint32_t protocol;
-} KVIOLET_NET_HEAD;
+/// 网络转换头
+typedef struct NET_HEAD {
+  uint32_t length;
+  uint32_t protocol;
+} NET_HEAD;
 
-
-#endif ///__KVIOLET__COMMON__PROTOCOL__H__
+#endif  ///__KVIOLET__COMMON__PROTOCOL__H__

@@ -12,8 +12,7 @@ namespace timer {
 
 class TimerNode {
  public:
-  TimerNode(const std::shared_ptr<ITimerEvent>& event, int64_t count,
-            std::time_t expire, std::time_t interval);
+  TimerNode(const std::shared_ptr<ITimerEvent>& event, int64_t count, std::time_t expire, std::time_t interval);
   ~TimerNode();
 
  public:

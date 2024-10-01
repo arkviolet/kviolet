@@ -4,11 +4,12 @@
 namespace kviolet {
 namespace timer {
 
-TimerNode::TimerNode(const std::shared_ptr<ITimerEvent>& event, int64_t count,
-                     std::time_t expire, std::time_t interval)
+TimerNode::TimerNode(const std::shared_ptr<ITimerEvent>& event, int64_t count, std::time_t expire, std::time_t interval)
     : _count(count), _expire(expire), _interval(interval), _event(event) {}
 
-TimerNode::~TimerNode() { Destroy(); }
+TimerNode::~TimerNode() {
+  Destroy();
+}
 
 void TimerNode::Destroy() {
   if (_isValid) {
@@ -61,13 +62,21 @@ void TimerNode::RevisedExpire(std::time_t tick) {
   }
 }
 
-bool TimerNode::IsValid() { return _isValid; }
+bool TimerNode::IsValid() {
+  return _isValid;
+}
 
-bool TimerNode::IsPause() { return _isPause; }
+bool TimerNode::IsPause() {
+  return _isPause;
+}
 
-std::time_t TimerNode::Expire() { return _expire; }
+std::time_t TimerNode::Expire() {
+  return _expire;
+}
 
-std::shared_ptr<ITimerEvent> TimerNode::Event() { return _event; }
+std::shared_ptr<ITimerEvent> TimerNode::Event() {
+  return _event;
+}
 
 }  // namespace timer
 }  // namespace kviolet

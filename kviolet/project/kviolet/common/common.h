@@ -1,11 +1,9 @@
-#ifndef __KVIOLET__COMMON__COMMON__H__
-#define __KVIOLET__COMMON__COMMON__H__
-
+#ifndef __KVIOLET__COMMON_H__
+#define __KVIOLET__COMMON_H__
 
 #include "define.h"
+#include "definecpp.h"
 #include "include.h"
 #include "procotol.h"
-#include "definecpp.h"
 
-
-#endif ///__KVIOLET__COMMON__COMMON__H__
+#endif  ///__KVIOLET__COMMON_H__

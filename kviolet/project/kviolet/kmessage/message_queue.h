@@ -8,6 +8,7 @@
 #include "message.h"
 
 namespace kviolet {
+namespace kmessage {
 
 class MessageQueue {
  public:
@@ -17,8 +18,7 @@ class MessageQueue {
  public:
   std::shared_ptr<Message> Next();
 
-  bool EnqueueMessage(const std::shared_ptr<Message> &message,
-                      uint64_t when = 0);
+  bool EnqueueMessage(const std::shared_ptr<Message>& message, uint64_t when = 0);
 
   void Clean();
   void Quit();
@@ -27,9 +27,10 @@ class MessageQueue {
  private:
   bool quit_{false};
   LockEvent event_;
-  ConcurrentList<std::shared_ptr<Message>> list_;
+  LockList<std::shared_ptr<Message>> list_;
 };
 
+}  // namespace kmessage
 }  // namespace kviolet
 
 #endif  ///__KVIOLET__MESSAGE_QUEUE__H__

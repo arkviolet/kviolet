@@ -3,13 +3,14 @@
 
 #include <atomic>
 #include <condition_variable>
+#include <functional>
 #include <mutex>
 #include <queue>
 #include <thread>
 #include <vector>
-#include <functional>
 
 namespace kviolet {
+namespace kpoll {
 
 class ThreadPool {
  public:
@@ -19,9 +20,8 @@ class ThreadPool {
 
  public:
   template <typename FunctionTypeT, typename... Args>
-  void Commit(FunctionTypeT &&function, Args &&...args) {
-    auto task = std::bind(std::forward<FunctionTypeT>(function),
-                          std::forward<Args>(args)...);
+  void Commit(FunctionTypeT&& function, Args&&... args) {
+    auto task = std::bind(std::forward<FunctionTypeT>(function), std::forward<Args>(args)...);
 
     {
       std::lock_guard<std::mutex> lock(_mutex);
@@ -56,6 +56,7 @@ class ThreadPool {
   std::queue<std::function<void()>> _tasks{};
 };
 
+}  // namespace kpoll
 }  // namespace kviolet
 
 #endif  ///__KVIOLET__THREAD__POLL__H__

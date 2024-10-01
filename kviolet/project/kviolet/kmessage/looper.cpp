@@ -4,13 +4,15 @@
 #include "message_builder.h"
 
 namespace kviolet {
+namespace kmessage {
+
 static std::shared_ptr<Looper> static_main_looper_;
 static std::mutex static_main_looper_mutex_;
 
 std::shared_ptr<Looper> Looper::GetMainLooper(bool auto_start) {
   std::lock_guard<std::mutex> lock(static_main_looper_mutex_);
   if (static_main_looper_ == nullptr) {
-    static_main_looper_ = std::make_shared<Looper>("MainLooper", auto_start);
+    static_main_looper_ = std::make_shared<Looper>("static-loop", auto_start);
   }
   return static_main_looper_;
 }
@@ -33,7 +35,9 @@ Looper::Looper(const std::string& name, bool auto_start) {
   }
 }
 
-Looper::~Looper() { Exit(); }
+Looper::~Looper() {
+  Exit();
+}
 
 void Looper::AsyncLoop() {
   thread_.reset(new std::thread([&]() {
@@ -64,17 +68,15 @@ void Looper::Exit() {
   }
 }
 
-bool Looper::EnqueueMessage(const std::shared_ptr<Message>& message,
-                            const uint64_t when) {
+bool Looper::EnqueueMessage(const std::shared_ptr<Message>& message, const uint64_t when) {
   return message_queue_.EnqueueMessage(message, when);
 }
 
-bool Looper::PostHandler(const std::function<void()>& handler,
-                         const uint64_t when) {
+bool Looper::PostHandler(const std::function<void()>& handler, const uint64_t when) {
   auto builder = std::make_shared<MessageBuilder>();
-  builder->RegisterHandler(
-      [handler](const std::shared_ptr<Message>& message) { handler(); });
+  builder->RegisterHandler([handler](const std::shared_ptr<Message>& message) { handler(); });
   return EnqueueMessage(builder->Build(), when);
 }
 
+}  // namespace kmessage
 }  // namespace kviolet

@@ -6,12 +6,11 @@
 namespace kviolet {
 namespace timer {
 
-using namespace kviolet::timestamp;
+using namespace kviolet::utilities;
 
 class InstanceTimerEvent : public ITimerEvent {
  public:
-  explicit InstanceTimerEvent(std::function<void()> function)
-      : _function(std::move(function)) {}
+  explicit InstanceTimerEvent(std::function<void()> function) : _function(std::move(function)) {}
 
   virtual ~InstanceTimerEvent() override = default;
 
@@ -46,23 +45,25 @@ TimerManager::~TimerManager() {
 
   _nearList->clear();
 
-  for (auto &iter : _wheelList) {
-    for (auto &it : iter) {
+  for (auto& iter : _wheelList) {
+    for (auto& it : iter) {
       ClearSpokes(it);
     }
   }
 }
 
-void TimerManager::Stop() { _running = false; }
+void TimerManager::Stop() {
+  _running = false;
+}
 
-void TimerManager::Destroy(const std::shared_ptr<ITimerEvent> &event) {
+void TimerManager::Destroy(const std::shared_ptr<ITimerEvent>& event) {
   auto find = _manager.find(event);
   if (find != _manager.end()) {
     find->second->Destroy();
   }
 }
 
-bool TimerManager::Pause(const std::shared_ptr<ITimerEvent> &event) {
+bool TimerManager::Pause(const std::shared_ptr<ITimerEvent>& event) {
   auto find = _normal.find(event);
   if (_normal.end() == find) {
     return false;
@@ -77,7 +78,7 @@ bool TimerManager::Pause(const std::shared_ptr<ITimerEvent> &event) {
   return true;
 }
 
-bool TimerManager::Resume(const std::shared_ptr<ITimerEvent> &event) {
+bool TimerManager::Resume(const std::shared_ptr<ITimerEvent>& event) {
   auto find = _pause.find(event);
   if (_pause.end() == find) {
     return false;
@@ -93,14 +94,12 @@ bool TimerManager::Resume(const std::shared_ptr<ITimerEvent> &event) {
   return true;
 }
 
-bool TimerManager::Start(const std::shared_ptr<ITimerEvent> &event,
-                         int64_t count, std::time_t interval) {
+bool TimerManager::Start(const std::shared_ptr<ITimerEvent>& event, int64_t count, std::time_t interval) {
   if (_manager.end() != _manager.find(event)) {
     return false;
   }
 
-  auto node =
-      std::make_shared<TimerNode>(event, count, interval + _tickTime, interval);
+  auto node = std::make_shared<TimerNode>(event, count, interval + _tickTime, interval);
 
   AddNode(node);
 
@@ -110,13 +109,11 @@ bool TimerManager::Start(const std::shared_ptr<ITimerEvent> &event,
   return true;
 }
 
-bool TimerManager::Start(std::function<void()> function, int64_t count,
-                         std::time_t interval) {
+bool TimerManager::Start(std::function<void()> function, int64_t count, std::time_t interval) {
   auto event = std::make_shared<InstanceTimerEvent>(std::move(function));
 
   if (_manager.end() == _manager.find(event)) {
-    auto node = std::make_shared<TimerNode>(event, count, interval + _tickTime,
-                                            interval);
+    auto node = std::make_shared<TimerNode>(event, count, interval + _tickTime, interval);
 
     AddNode(node);
 
@@ -157,18 +154,10 @@ void TimerManager::Executes() {
   auto index = _tickTime & ((1 << TIMER_NEAR_BITS) - 1);
 
   if (index == 0) {
-    if (Cascade(0, (std::size_t)(_tickTime >>
-                                 (TIMER_NEAR_BITS + 0 * TIMER_WHEEL_BITS)) &
-                       ((1 << TIMER_WHEEL_BITS) - 1)) &&
-        Cascade(1, (std::size_t)(_tickTime >>
-                                 (TIMER_NEAR_BITS + 1 * TIMER_WHEEL_BITS)) &
-                       ((1 << TIMER_WHEEL_BITS) - 1)) &&
-        Cascade(2, (std::size_t)(_tickTime >>
-                                 (TIMER_NEAR_BITS + 2 * TIMER_WHEEL_BITS)) &
-                       ((1 << TIMER_WHEEL_BITS) - 1))) {
-      Cascade(3, (std::size_t)(_tickTime >>
-                               (TIMER_NEAR_BITS + 3 * TIMER_WHEEL_BITS)) &
-                     ((1 << TIMER_WHEEL_BITS) - 1));
+    if (Cascade(0, (std::size_t)(_tickTime >> (TIMER_NEAR_BITS + 0 * TIMER_WHEEL_BITS)) & ((1 << TIMER_WHEEL_BITS) - 1)) &&
+        Cascade(1, (std::size_t)(_tickTime >> (TIMER_NEAR_BITS + 1 * TIMER_WHEEL_BITS)) & ((1 << TIMER_WHEEL_BITS) - 1)) &&
+        Cascade(2, (std::size_t)(_tickTime >> (TIMER_NEAR_BITS + 2 * TIMER_WHEEL_BITS)) & ((1 << TIMER_WHEEL_BITS) - 1))) {
+      Cascade(3, (std::size_t)(_tickTime >> (TIMER_NEAR_BITS + 3 * TIMER_WHEEL_BITS)) & ((1 << TIMER_WHEEL_BITS) - 1));
     }
   }
 
@@ -178,7 +167,7 @@ void TimerManager::Executes() {
 
   _nearList[index].swap(spokesList);
 
-  for (auto &node : spokesList) {
+  for (auto& node : spokesList) {
     if (node->IsValid()) {
       if (node->IsPause()) {
       } else {
@@ -196,7 +185,7 @@ void TimerManager::Executes() {
   }
 }
 
-void TimerManager::AddNode(std::shared_ptr<TimerNode> &node) {
+void TimerManager::AddNode(std::shared_ptr<TimerNode>& node) {
   std::lock_guard<std::mutex> lock(_lock);
 
   auto expire = node->Expire();
@@ -208,24 +197,19 @@ void TimerManager::AddNode(std::shared_ptr<TimerNode> &node) {
     auto index = expire & ((1 << TIMER_NEAR_BITS) - 1);
 
     _nearList[index].push_back(node);
-  } else if (offset <
-             (1 << (TIMER_NEAR_BITS + TIMER_WHEEL_BITS)))  /// [0x100, 0x4000)
+  } else if (offset < (1 << (TIMER_NEAR_BITS + TIMER_WHEEL_BITS)))  /// [0x100, 0x4000)
   {
     auto index = (expire >> TIMER_NEAR_BITS) & ((1 << TIMER_WHEEL_BITS) - 1);
 
     _wheelList[0][index].push_back(node);
-  } else if (offset < (1 << (TIMER_NEAR_BITS +
-                             2 * TIMER_WHEEL_BITS)))  /// [0x4000, 0x100000)
+  } else if (offset < (1 << (TIMER_NEAR_BITS + 2 * TIMER_WHEEL_BITS)))  /// [0x4000, 0x100000)
   {
-    auto index = (expire >> (TIMER_NEAR_BITS + TIMER_WHEEL_BITS)) &
-                 ((1 << TIMER_WHEEL_BITS) - 1);
+    auto index = (expire >> (TIMER_NEAR_BITS + TIMER_WHEEL_BITS)) & ((1 << TIMER_WHEEL_BITS) - 1);
 
     _wheelList[1][index].push_back(node);
-  } else if (offset < (1 << (TIMER_NEAR_BITS +
-                             3 * TIMER_WHEEL_BITS)))  /// [0x100000, 0x4000000)
+  } else if (offset < (1 << (TIMER_NEAR_BITS + 3 * TIMER_WHEEL_BITS)))  /// [0x100000, 0x4000000)
   {
-    auto index = (expire >> (TIMER_NEAR_BITS + 2 * TIMER_WHEEL_BITS)) &
-                 ((1 << TIMER_WHEEL_BITS) - 1);
+    auto index = (expire >> (TIMER_NEAR_BITS + 2 * TIMER_WHEEL_BITS)) & ((1 << TIMER_WHEEL_BITS) - 1);
 
     _wheelList[2][index].push_back(node);
   } else if ((int64_t)offset < 0) {
@@ -233,8 +217,7 @@ void TimerManager::AddNode(std::shared_ptr<TimerNode> &node) {
 
     _nearList[index].push_back(node);
   } else if (offset <= 0xffffffffUL) {
-    auto index = (expire >> (TIMER_NEAR_BITS + 3 * TIMER_WHEEL_BITS)) &
-                 ((1 << TIMER_WHEEL_BITS) - 1);
+    auto index = (expire >> (TIMER_NEAR_BITS + 3 * TIMER_WHEEL_BITS)) & ((1 << TIMER_WHEEL_BITS) - 1);
 
     _wheelList[3][index].push_back(node);
   } else {
@@ -242,8 +225,7 @@ void TimerManager::AddNode(std::shared_ptr<TimerNode> &node) {
   }
 }
 
-void TimerManager::ClearSpokes(
-    std::vector<std::shared_ptr<TimerNode>> &spokesList) {
+void TimerManager::ClearSpokes(std::vector<std::shared_ptr<TimerNode>>& spokesList) {
   std::vector<std::shared_ptr<TimerNode>>().swap(spokesList);
 }
 
@@ -253,7 +235,7 @@ bool TimerManager::Cascade(std::size_t wheel, std::size_t index) {
 
   _wheelList[wheel][index].swap(spokesList);
 
-  for (auto &iter : spokesList) {
+  for (auto& iter : spokesList) {
     AddNode(iter);
   }
 

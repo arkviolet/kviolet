@@ -8,21 +8,20 @@
 #include "message_builder.h"
 
 namespace kviolet {
+namespace kmessage {
 
 class MessageQueueDispatcher {
  public:
   using Callback = std::function<void(const std::shared_ptr<Message>&)>;
 
-  static void RegisterHandler(Callback&& callback,
-                              const std::shared_ptr<Looper>& looper = nullptr);
+  static void RegisterHandler(Callback&& callback, const std::shared_ptr<Looper>& looper = nullptr);
 
-  static void Send(const std::shared_ptr<Message>& message,
-                   const std::shared_ptr<Looper>& looper = nullptr);
+  static void Send(const std::shared_ptr<Message>& message, const std::shared_ptr<Looper>& looper = nullptr);
 
-  static std::shared_ptr<MessageBuilder> GetBuilder(
-      const std::shared_ptr<Looper>& looper);
+  static std::shared_ptr<MessageBuilder> GetBuilder(const std::shared_ptr<Looper>& looper);
 };
 
+}  // namespace kmessage
 }  // namespace kviolet
 
 #endif  ///__KVIOLET__MESSAGE__DISPATCHER__H__

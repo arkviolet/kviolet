@@ -4,6 +4,8 @@
 #include <memory>
 
 namespace kviolet {
+namespace actor {
+
 typedef unsigned int NodeSignal;
 
 typedef struct NodeEvent {
@@ -16,6 +18,7 @@ enum { INIT, EXIT, ENTER, EMPTY };
 
 extern std::shared_ptr<NodeEvent> ActorDefault[];
 
+}  // namespace actor
 }  // namespace kviolet
 
 #endif  //__ACTOR__EVENT__H__

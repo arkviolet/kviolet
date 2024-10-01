@@ -6,6 +6,9 @@
 #include "builder_base.h"
 
 namespace kviolet {
+namespace kmessage {
+
+using namespace kpoll;
 
 class Message : public std::enable_shared_from_this<Message> {
  public:
@@ -42,6 +45,7 @@ class Message : public std::enable_shared_from_this<Message> {
   std::shared_ptr<MessageBuilderBase> builder_;
 };
 
+}  // namespace kmessage
 }  // namespace kviolet
 
 #endif  ///__KVIOLET__MESSAGE__QUEUE__MESSAGE__H__

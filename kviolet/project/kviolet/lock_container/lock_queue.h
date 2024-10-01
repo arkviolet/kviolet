@@ -6,6 +6,7 @@
 #include <queue>
 
 namespace kviolet {
+namespace container {
 
 template <typename TypeT>
 class LockQueue {
@@ -14,7 +15,7 @@ class LockQueue {
   ~LockQueue() = default;
 
  public:
-  void Push(TypeT &&value) {
+  void Push(TypeT&& value) {
     std::lock_guard<std::mutex> lock(_mutex);
 
     _queue.push(std::forward<TypeT>(value));
@@ -22,7 +23,7 @@ class LockQueue {
     _condition.notify_one();
   }
 
-  void Push(const TypeT &value) {
+  void Push(const TypeT& value) {
     std::lock_guard<std::mutex> lock(_mutex);
 
     _queue.push(value);
@@ -36,7 +37,7 @@ class LockQueue {
     _queue.pop();
   }
 
-  void Pop(TypeT &value) {
+  void Pop(TypeT& value) {
     std::lock_guard<std::mutex> lock(_mutex);
 
     value = std::move(_queue.front());
@@ -52,7 +53,7 @@ class LockQueue {
     _queue.pop();
   }
 
-  void WaiAndPop(TypeT &value) {
+  void WaiAndPop(TypeT& value) {
     std::unique_lock<std::mutex> lock(_mutex);
 
     _condition.wait(lock, [this] { return !_queue.empty(); });
@@ -74,7 +75,7 @@ class LockQueue {
     return true;
   }
 
-  bool TryPop(TypeT &value) {
+  bool TryPop(TypeT& value) {
     std::lock_guard<std::mutex> lock(_mutex);
 
     if (_queue.empty()) {
@@ -100,13 +101,13 @@ class LockQueue {
     return _queue.size();
   }
 
-  const TypeT &Back() const {
+  const TypeT& Back() const {
     std::lock_guard<std::mutex> lock(_mutex);
 
     return _queue.back();
   }
 
-  const TypeT &Front() const {
+  const TypeT& Front() const {
     std::lock_guard<std::mutex> lock(_mutex);
 
     return _queue.front();
@@ -117,6 +118,8 @@ class LockQueue {
   std::queue<TypeT> _queue{};
   std::condition_variable _condition{};
 };
+
+}  // namespace container
 }  // namespace kviolet
 
 #endif  ///__KVIOLET__LOCK__QUEUE__H__

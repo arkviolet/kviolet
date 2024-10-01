@@ -18,7 +18,6 @@ rm -rf build && mkdir build && cd build && cmake .. \
 
 make -j && make install
 
-
 # kviolet 3rd
 cd $sourcePath/kviolet_3rd
 rm -rf build && mkdir build && cd build && cmake .. \
