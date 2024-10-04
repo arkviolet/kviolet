@@ -1,8 +1,8 @@
 #include "speaker_pulseaudio.h"
 
 #include <glog/logging.h>
-#include <kviolet/utilities/timestamp.h>
 #include <sndfile.h>
+#include "../../kviolet/utilities/timestamp.h"
 
 namespace kviolet {
 namespace enckit {

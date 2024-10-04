@@ -1,7 +1,7 @@
 #ifndef __KVIOLET__3RD__SPEAKER__GST____H__
 #define __KVIOLET__3RD__SPEAKER__GST____H__
 
-#include <kviolet/lock_container/lock_map.h>
+#include "../../kviolet/lock_container/lock_map.h"
 
 #include <memory>
 #include <string>

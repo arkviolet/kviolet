@@ -2,8 +2,8 @@
 #define __KVIOLET__3RD__GRPC__SERVER__LOOP__H__
 
 #include <grpcpp/grpcpp.h>
-#include <kviolet/lock_container/lock_list.h>
-#include <kviolet/lock_container/lock_map.h>
+#include "../../kviolet/lock_container/lock_list.h"
+#include "../../kviolet/lock_container/lock_map.h"
 
 #include <memory>
 #include <thread>

@@ -74,20 +74,6 @@ mkdir build && cd build && cmake .. \
 
 make -j && make install
 
-# fmt
-cd $PACKAGE_COMPILE_DIR
-
-git clone https://github.com/fmtlib/fmt.git
-
-cd fmt && git checkout 8.0.1
-
-mkdir build && cd build && cmake .. \
-  -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX_LINUX}/fmt \
-  -DBUILD_SHARED_LIBS=ON \
-  -DFMT_TEST=OFF
-
-make -j && make install
-
 # yaml-cpp
 cd $PACKAGE_COMPILE_DIR
 
