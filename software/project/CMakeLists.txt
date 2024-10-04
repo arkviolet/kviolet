@@ -1,6 +1,7 @@
 #
 # kviolet
 #
+TRAVERSE_LIBRARY_DIRECTORIES(/home/$ENV{USER}/software/kviolet/lib)
 TRAVERSE_LIBRARY_DIRECTORIES(/home/$ENV{USER}/software/kviolet/lib64)
 INCLUDE_DIRECTORIES(AFTER SYSTEM /home/$ENV{USER}/software/kviolet/include)
 

@@ -11,6 +11,18 @@ using namespace kviolet::utilities;
 int main(int argc, char** argv) {
   (void)argc;
   (void)argv;
+  /// fmt
+  {
+    fmt::print("Hello, world!\n");
+    auto str = fmt::format("The answer is {}.", 42);
+    std::cout << "str:" << str << std::endl;
+
+    fmt::print("Date and time: {}\n", std::chrono::system_clock::now());
+    fmt::print("Time: {:%H:%M}\n", std::chrono::system_clock::now());
+
+    std::vector<int> v = {1, 2, 3};
+    fmt::print("{}\n", v);
+  }
 
   /// pulseaudio
   {

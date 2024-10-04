@@ -35,6 +35,7 @@ TRAVERSE_LIBRARY_DIRECTORIES(
         /usr/lib64
         /usr/local/lib
         /usr/local/lib64
+        /home/$ENV{USER}/software/kviolet/lib
         /home/$ENV{USER}/software/kviolet/lib64)
 
 TRAVERSE_CURRENT_DIRECTORY_ADD_PROJECT()

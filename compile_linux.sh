@@ -21,6 +21,17 @@ rm -rf build && mkdir build && cd build && cmake .. \
 
 make -j && make install
 
+# fmt
+cd /tmp && git clone https://github.com/fmtlib/fmt
+cd fmt && mkdir build && cd build && cmake .. \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_VERBOSE_MAKEFILE=ON \
+  -DCMAKE_C_FLAGS=-fPIC \
+  -DCMAKE_CXX_FLAGS=-fPIC \
+  -DCMAKE_INSTALL_PREFIX=${TOOLKIT_INSTALL_PREFIX_LINUX}/
+
+make -j && make install
+
 # kviolet enckit tool
 cd $sourcePath/kviolet_enckit
 rm -rf build && mkdir build && cd build && cmake .. \
