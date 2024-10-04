@@ -1,4 +1,0 @@
-#
-# 遍历当前目录添加项目
-#
-TRAVERSE_CURRENT_DIRECTORY_ADD_PROJECT()

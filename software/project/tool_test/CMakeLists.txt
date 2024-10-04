@@ -24,7 +24,7 @@ ADD_EXECUTABLE(${PROGRAM_NAME} ${SOURCE_FILES})
 #
 # 链接库文件
 #
-TRAVERSE_LIBRARY_FOR_PROGRAM_NAME(kviolet kviolet_3rd)
+TRAVERSE_LIBRARY_FOR_PROGRAM_NAME(kviolet kviolet_enckit)
 
 
 REDEFINE_FILE_MACRO(${PROGRAM_NAME})                                                    #添加启动项目

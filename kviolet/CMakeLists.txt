@@ -1,11 +1,10 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.8 FATAL_ERROR)
 
-PROJECT(kviolet VERSION 0.0.1)
+PROJECT(kviolet)
 
-SET(CMAKE_MODULE_PATH 
+SET(CMAKE_MODULE_PATH
         ${CMAKE_SOURCE_DIR}/../cmake/check
         ${CMAKE_SOURCE_DIR}/../cmake/traverse)
-
 
 INCLUDE(TraverseSet)
 INCLUDE(TraverseSource)
@@ -21,10 +20,6 @@ INCLUDE(CheckCompiler)
 INCLUDE(CheckBuildType)
 INCLUDE(CheckGlobalType)
 INCLUDE(CheckInstallPrefix)
-
-TRAVERSE_INCLUDE_DIRECTORIES(
-        ${PROJECT_SOURCE_DIR}
-        ${PROJECT_SOURCE_DIR}/project)
 
 TRAVERSE_INCLUDE_DIRECTORIES(
         /usr/include

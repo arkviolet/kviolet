@@ -1,7 +1,7 @@
 
 
 #include <kviolet/kviolet.h>
-#include <kviolet_3rd/kviolet_3rd.h>
+#include <kviolet_enckit/kviolet_enckit.h>
 
 using namespace kviolet::enckit;
 using namespace kviolet::kpoll;

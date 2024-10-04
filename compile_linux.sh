@@ -7,6 +7,9 @@ sourcePath=$(cd $(dirname $0) && pwd)
 # 编译安装路径
 TOOLKIT_INSTALL_PREFIX_LINUX=/home/${USER}/software/kviolet
 
+# delete clear
+rm -rf ${TOOLKIT_INSTALL_PREFIX_LINUX}
+
 # kviolet tool
 cd $sourcePath/kviolet
 rm -rf build && mkdir build && cd build && cmake .. \
@@ -18,8 +21,8 @@ rm -rf build && mkdir build && cd build && cmake .. \
 
 make -j && make install
 
-# kviolet 3rd
-cd $sourcePath/kviolet_3rd
+# kviolet enckit tool
+cd $sourcePath/kviolet_enckit
 rm -rf build && mkdir build && cd build && cmake .. \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_VERBOSE_MAKEFILE=ON \
@@ -28,3 +31,8 @@ rm -rf build && mkdir build && cd build && cmake .. \
   -DCMAKE_INSTALL_PREFIX=${TOOLKIT_INSTALL_PREFIX_LINUX}
 
 make -j && make install
+
+# software
+cd $sourcePath/software
+rm -rf build && mkdir build && cd build && cmake ..
+make -j
