@@ -1,5 +1,5 @@
-#ifndef __KVIOLET__ENCIT__FORMAT__H__
-#define __KVIOLET__ENCIT__FORMAT__H__
+#ifndef __KVIOLET__ENCKIT__FORMAT__H__
+#define __KVIOLET__ENCKIT__FORMAT__H__
 
 // https://github.com/fmtlib/fmt
 
@@ -10,4 +10,4 @@
 #include <fmt/printf.h>
 #include <fmt/ranges.h>
 
-#endif  //__KVIOLET__ENCIT__FORMAT__H__
+#endif  //__KVIOLET__ENCKIT__FORMAT__H__

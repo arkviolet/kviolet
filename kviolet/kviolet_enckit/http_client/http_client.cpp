@@ -244,46 +244,37 @@ void HTTPClient::SetProxy() {
 
 void HTTPClient::SetSession(HTTP_OPTION_TYPE option) {
   if (_session.headers) {
-    ///  设置头信息
     curl_easy_setopt(_curl, CURLOPT_HTTPHEADER, _session.headers);
   }
 
-  /// 连接超时时间
   if (_session.timeout == 0) {
     curl_easy_setopt(_curl, CURLOPT_CONNECTTIMEOUT, 3);
   } else {
     curl_easy_setopt(_curl, CURLOPT_CONNECTTIMEOUT, _session.timeout);
   }
 
-  /// 接收数据时超时时间
   if (_session.receiveTimeout == 0) {
     curl_easy_setopt(_curl, CURLOPT_TIMEOUT, 3);
   } else {
     curl_easy_setopt(_curl, CURLOPT_TIMEOUT, _session.receiveTimeout);
   }
 
-  /// 设置请求的地址
   if (!_session.url.empty()) {
     curl_easy_setopt(_curl, CURLOPT_URL, _session.url.c_str());
   }
 
-  /// 设置登陆信息
   if (!_session.login.empty()) {
     curl_easy_setopt(_curl, CURLOPT_USERPWD, _session.login.c_str());
   }
 
   if (_session.caFile.empty()) {
-    /// 不验证证书
-    curl_easy_setopt(_curl, CURLOPT_SSL_VERIFYPEER, 0L);
 
-    /// 不验证证书中是否设置域名
-    curl_easy_setopt(_curl, CURLOPT_SSL_VERIFYHOST, 0L);
+    curl_easy_setopt(_curl, CURLOPT_SSL_VERIFYPEER, 0L);    /// 不验证证书
+    curl_easy_setopt(_curl, CURLOPT_SSL_VERIFYHOST, 0L);    /// 不验证证书中是否设置域名
   } else {
-    /// CA根证书
-    curl_easy_setopt(_curl, CURLOPT_CAINFO, _session.caFile.c_str());
 
-    /// 只信任CA颁布的证书
-    curl_easy_setopt(_curl, CURLOPT_SSL_VERIFYPEER, 1L);
+    curl_easy_setopt(_curl, CURLOPT_CAINFO, _session.caFile.c_str());    /// CA根证书
+    curl_easy_setopt(_curl, CURLOPT_SSL_VERIFYPEER, 1L);    /// 只信任CA颁布的证书
 
     /// 检查证书中是否设置域名, 并且是否与提供的主机名匹配
     curl_easy_setopt(_curl, CURLOPT_SSL_VERIFYHOST, 2L);
@@ -296,7 +287,6 @@ void HTTPClient::SetSession(HTTP_OPTION_TYPE option) {
 
     case HTTP_OPTION_TYPE::PUT: {
       curl_easy_setopt(_curl, CURLOPT_PUT, 1L);  /// 设置put操作
-
       if (!_session.params.empty()) {
         curl_easy_setopt(_curl, CURLOPT_POSTFIELDS,
                          _session.params.c_str());  /// 设置提交的数据
@@ -304,22 +294,16 @@ void HTTPClient::SetSession(HTTP_OPTION_TYPE option) {
 
       break;
     }
-
     case HTTP_OPTION_TYPE::POST: {
       curl_easy_setopt(_curl, CURLOPT_POST, 1L);  /// 设置post操作
-
       if (!_session.params.empty()) {
         curl_easy_setopt(_curl, CURLOPT_POSTFIELDS,
                          _session.params.c_str());  /// 设置提交的数据
       }
-
       break;
     }
-
     default: {
-      curl_easy_setopt(_curl, CURLOPT_CUSTOMREQUEST,
-                       _session.requestOption.c_str());  /// 设置自定义请求方式
-
+      curl_easy_setopt(_curl, CURLOPT_CUSTOMREQUEST, _session.requestOption.c_str());  /// 设置自定义请求方式
       break;
     }
   }
@@ -328,25 +312,19 @@ void HTTPClient::SetSession(HTTP_OPTION_TYPE option) {
   curl_easy_setopt(_curl, CURLOPT_VERBOSE, 1L);  // 启用汇报信息
   curl_easy_setopt(_curl, CURLOPT_DEBUGFUNCTION, AskHeaderFunction);
   curl_easy_setopt(_curl, CURLOPT_DEBUGDATA, this);
-  //
 
   // curl_easy_setopt(_curl, CURLOPT_USERAGENT,);  /// 设置用户代理
 
-  /// 设置获取返回内容的缓冲区
-  curl_easy_setopt(_curl, CURLOPT_WRITEDATA, this);
-  /// 设置获取返回内容的回调函数
-  curl_easy_setopt(_curl, CURLOPT_WRITEFUNCTION, WriteFunction);
-
-  /// 设置获取头部信息的缓冲区
-  curl_easy_setopt(_curl, CURLOPT_HEADERDATA, this);
-  /// 设置获取头部信息的回调函数
-  curl_easy_setopt(_curl, CURLOPT_HEADERFUNCTION, HeaderFunction);
+  curl_easy_setopt(_curl, CURLOPT_WRITEDATA, this);   /// 设置获取返回内容的缓冲区
+  curl_easy_setopt(_curl, CURLOPT_WRITEFUNCTION, WriteFunction);  /// 设置获取返回内容的回调函数
+  curl_easy_setopt(_curl, CURLOPT_HEADERDATA, this);  /// 设置获取头部信息的缓冲区
+  curl_easy_setopt(_curl, CURLOPT_HEADERFUNCTION, HeaderFunction);  /// 设置获取头部信息的回调函数
 
   /// 当多个线程都使用超时处理的时候, 同时主线程中有sleep或是wait等操作.
   /// 如果不设置这个选项, 将会发信号打断wait从而导致程序退出.
   curl_easy_setopt(_curl, CURLOPT_NOSIGNAL, 1L);
-  /// 查找次数，防止查找太深
-  curl_easy_setopt(_curl, CURLOPT_MAXREDIRS, 3L);
+
+  curl_easy_setopt(_curl, CURLOPT_MAXREDIRS, 3L);  /// 查找次数，防止查找太深
   /// 默认情况下完成一个任务以后, 出于重用连接的考虑不会马上关闭,
   /// 如果没有新的TCP请求来重用这个连接, 那么只能等到CLOSE_WAIT超时
   /// 这个时间默认在7200秒甚至更高, 太多的CLOSE_WAIT连接会导致性能问题
@@ -411,21 +389,17 @@ void HTTPClient::ParseResponseCode() {
 }
 
 void HTTPClient::ParseResponseLength() {
-  if (curl_easy_getinfo(_curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD,
-                        &_response.contentLength) == CURLE_OK) {
+  if (curl_easy_getinfo(_curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &_response.contentLength) == CURLE_OK) {
     if (_response.contentLength > 0) {
-      _response.content.reserve(
-          static_cast<std::size_t>(_response.contentLength));
+      _response.content.reserve(static_cast<std::size_t>(_response.contentLength));
     }
   } else {
     _response.contentLength = 0.0;
   }
 
-  if (curl_easy_getinfo(_curl, CURLINFO_SIZE_DOWNLOAD,
-                        &_response.contentLengthZip) == CURLE_OK) {
+  if (curl_easy_getinfo(_curl, CURLINFO_SIZE_DOWNLOAD, &_response.contentLengthZip) == CURLE_OK) {
     if (_response.contentLength > 0) {
-      _response.content.reserve(
-          static_cast<std::size_t>(_response.contentLengthZip));
+      _response.content.reserve(static_cast<std::size_t>(_response.contentLengthZip));
     }
   } else {
     _response.contentLengthZip = 0.0;
@@ -449,7 +423,6 @@ bool HTTPClient::Launch(HTTP_OPTION_TYPE option) {
   SetSession(option);
 
   _errorCode = curl_easy_perform(_curl);
-
   if (_errorCode == CURLE_OK) {
     ++_session.successCount;
   } else {
@@ -468,22 +441,18 @@ bool HTTPClient::Launch(HTTP_OPTION_TYPE option) {
 std::size_t HTTPClient::WriteFunction(void *buffer, std::size_t size,
                                       std::size_t nmemb, void *stream) {
   auto count = nmemb * size;
-
   auto *client = reinterpret_cast<HTTPClient *>(stream);
-
   if (client == nullptr) {
     return count;
   }
 
   if (client->_isFirstWrite) {
     client->_isFirstWrite = false;
-
     client->ParseResponseCode();
     client->ParseResponseLength();
   }
 
-  client->_response.content.append(reinterpret_cast<const char *>(buffer),
-                                   count);
+  client->_response.content.append(reinterpret_cast<const char *>(buffer), count);
 
   return count;
 }
@@ -491,15 +460,13 @@ std::size_t HTTPClient::WriteFunction(void *buffer, std::size_t size,
 std::size_t HTTPClient::HeaderFunction(void *buffer, std::size_t size,
                                        std::size_t nmemb, void *stream) {
   auto count = nmemb * size;
-
   auto *client = reinterpret_cast<HTTPClient *>(stream);
 
   if (client == nullptr) {
     return count;
   }
 
-  client->_response.header.append(reinterpret_cast<const char *>(buffer),
-                                  count);
+  client->_response.header.append(reinterpret_cast<const char *>(buffer), count);
 
   return count;
 }
@@ -513,12 +480,10 @@ size_t HTTPClient::AskHeaderFunction(CURL *, curl_infotype type, void *buffer,
     return size;
   }
 
-  if (type == CURLINFO_HEADER_OUT)  // CURLINFO_TEXT  CURLINFO_HEADER_IN
-                                    // CURLINFO_DATA_IN CURLINFO_DATA_OUT
+  if (type == CURLINFO_HEADER_OUT)  // CURLINFO_TEXT  CURLINFO_HEADER_IN CURLINFO_DATA_IN CURLINFO_DATA_OUT
   {
     client->_response.askHeader.clear();
-    client->_response.askHeader.append(reinterpret_cast<const char *>(buffer),
-                                       size);
+    client->_response.askHeader.append(reinterpret_cast<const char *>(buffer), size);
   }
   return size;
 }

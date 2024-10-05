@@ -1,5 +1,5 @@
-#ifndef __KVIOLET__3RD__GRPC__SERVER__LOOP__H__
-#define __KVIOLET__3RD__GRPC__SERVER__LOOP__H__
+#ifndef __KVIOLET__ENCKIT__GRPC__SERVER__LOOP__H__
+#define __KVIOLET__ENCKIT__GRPC__SERVER__LOOP__H__
 
 #include <grpcpp/grpcpp.h>
 #include "../../kviolet/lock_container/lock_list.h"
@@ -14,24 +14,26 @@ namespace enckit {
 
 using namespace kviolet::container;
 
-template <class DataType>
+template<class DataType>
 class GrpcServiceLoop {
   struct Context {
     LockList<std::shared_ptr<DataType>> list_;
   };
 
  public:
-  void send(const std::shared_ptr<DataType>& data) {
+  void send(const std::shared_ptr<DataType> &data) {
     map_.ForEach([&](auto sctx, auto ctx) { ctx->list_.push_back(data); });
   }
 
-  bool loop(::grpc::ServerContext* context, const std::function<bool(const std::shared_ptr<DataType>& data)>& callback, const int read_timeout = 1000) {
+  bool loop(::grpc::ServerContext *context,
+            const std::function<bool(const std::shared_ptr<DataType> &data)> &callback,
+            const int read_timeout = 1000) {
     auto ctx = std::make_shared<Context>();
     if (ctx == nullptr) {
       return false;
     }
 
-    map_.Insert(std::pair<::grpc::ServerContext*, std::shared_ptr<Context>>({context, ctx}));
+    map_.Insert(std::pair<::grpc::ServerContext *, std::shared_ptr<Context>>({context, ctx}));
 
     LOG(INFO) << "start loop: " << std::this_thread::get_id() << ", " << context->peer();
 
@@ -52,10 +54,10 @@ class GrpcServiceLoop {
   }
 
  private:
-  LockMap<::grpc::ServerContext*, std::shared_ptr<Context>> map_;
+  LockMap<::grpc::ServerContext *, std::shared_ptr<Context>> map_;
 };
 
 }  // namespace enckit
 }  // namespace kviolet
 
-#endif  //__KVIOLET__3RD__GRPC__SERVER__LOOP__H__
+#endif  //__KVIOLET__ENCKIT__GRPC__SERVER__LOOP__H__

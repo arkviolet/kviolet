@@ -1,5 +1,5 @@
-#ifndef __KVIOLET__3RD__GRPC__SERVER____H__
-#define __KVIOLET__3RD__GRPC__SERVER____H__
+#ifndef __KVIOLET__ENCKIT__GRPC__SERVER__H__
+#define __KVIOLET__ENCKIT__GRPC__SERVER__H__
 
 #include <grpcpp/grpcpp.h>
 
@@ -12,13 +12,13 @@ namespace enckit {
 
 class GRPCServer {
  public:
-  explicit GRPCServer(const std::string& uri);
+  explicit GRPCServer(const std::string &uri);
   GRPCServer() = delete;
   virtual ~GRPCServer();
 
  public:
   virtual void SetMaxReceiveMessageSize(int max_size);
-  virtual bool RegisterService(const std::shared_ptr<::grpc::Service>& service);
+  virtual bool RegisterService(const std::shared_ptr<::grpc::Service> &service);
 
  protected:
   virtual bool Initialize();
@@ -37,4 +37,4 @@ class GRPCServer {
 }  // namespace enckit
 }  // namespace kviolet
 
-#endif
+#endif  //__KVIOLET__ENCKIT__GRPC__SERVER__H__

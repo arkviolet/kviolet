@@ -4,16 +4,17 @@
 namespace kviolet {
 namespace enckit {
 
-DBusClient::DBusClient(const std::shared_ptr<sdbus::IConnection>& connection) : connection_(connection) {}
+DBusClient::DBusClient(const std::shared_ptr<sdbus::IConnection> &connection) : connection_(connection) {}
 
-DBusClient::DBusClient(const std::string& connection_name) : connection_name_(connection_name), connection_(sdbus::createSystemBusConnection().release()) {
+DBusClient::DBusClient(const std::string &connection_name)
+    : connection_name_(connection_name), connection_(sdbus::createSystemBusConnection().release()) {
   if (connection_name_ != "") {
     connection_->requestName(connection_name_);
   }
 }
 
 DBusClient::~DBusClient() {
-  for (auto& it : proxy_) {
+  for (auto &it : proxy_) {
     it.second->unregister();
   }
 
@@ -25,11 +26,11 @@ DBusClient::~DBusClient() {
   }
 }
 
-bool DBusClient::SubscribeSignal(const std::string& service_name,
-                                 const std::string& object_path,
-                                 const std::string& interface_name,
-                                 const std::string& signal_name,
-                                 const sdbus::signal_handler& hanlder) {
+bool DBusClient::SubscribeSignal(const std::string &service_name,
+                                 const std::string &object_path,
+                                 const std::string &interface_name,
+                                 const std::string &signal_name,
+                                 const sdbus::signal_handler &handler) {
   std::call_once(event_loop_once_, [this]() {
     LOG(INFO) << "begin dbus event loop";
     connection_->enterEventLoopAsync();
@@ -38,9 +39,9 @@ bool DBusClient::SubscribeSignal(const std::string& service_name,
 
   auto proxy = sdbus::createProxy(*connection_, service_name, object_path);
   try {
-    proxy->registerSignalHandler(interface_name, signal_name, hanlder);
-  } catch (const sdbus::Error& e) {
-    LOG(ERROR) << "sdbus error: name = " << e.getName() << " message = " << e.getMessage();
+    proxy->registerSignalHandler(interface_name, signal_name, handler);
+  } catch (const sdbus::Error &e) {
+    LOG(ERROR) << "dbus error: name = " << e.getName() << " message = " << e.getMessage();
     return false;
   }
   proxy->finishRegistration();
@@ -51,7 +52,10 @@ bool DBusClient::SubscribeSignal(const std::string& service_name,
   return true;
 }
 
-bool DBusClient::UnSubscribeSignal(const std::string& service_name, const std::string& object_path, const std::string& interface_name, const std::string& signal_name) {
+bool DBusClient::UnSubscribeSignal(const std::string &service_name,
+                                   const std::string &object_path,
+                                   const std::string &interface_name,
+                                   const std::string &signal_name) {
   std::string signal_id = service_name + object_path + interface_name + signal_name;
   auto it = proxy_.find(signal_id);
   if (it != proxy_.end()) {

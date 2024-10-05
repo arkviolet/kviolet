@@ -21,8 +21,8 @@ class GstAudio {
   ~GstAudio() { Close(); }
 
  public:
-  bool Play(const std::string& taskid, const std::string& uri, int volume) {
-    launch_desc_ = g_strdup_printf("playbin uri=%s volume=%.3f", uri.c_str(), ConvertVolume((double)volume / 100));
+  bool Play(const std::string &taskid, const std::string &uri, int volume) {
+    launch_desc_ = g_strdup_printf("playbin uri=%s volume=%.3f", uri.c_str(), ConvertVolume((double) volume / 100));
 
     LOG(INFO) << "pipeline = " << launch_desc_;
     if (nullptr == (pipeline_ = gst_parse_launch(launch_desc_, &error_))) {
@@ -48,7 +48,10 @@ class GstAudio {
 
   void Print() {
     while (is_running_) {
-      auto msg = gst_bus_timed_pop_filtered(bus_, 0 * GST_MSECOND, static_cast<GstMessageType>(GST_MESSAGE_STATE_CHANGED | GST_MESSAGE_ERROR | GST_MESSAGE_EOS));
+      auto msg = gst_bus_timed_pop_filtered(bus_,
+                                            0 * GST_MSECOND,
+                                            static_cast<GstMessageType>(GST_MESSAGE_STATE_CHANGED | GST_MESSAGE_ERROR
+                                                | GST_MESSAGE_EOS));
       if (nullptr == msg) {
         return;
       }
@@ -65,7 +68,7 @@ class GstAudio {
         if (GST_MESSAGE_EOS == GST_MESSAGE_TYPE(msg)) {
           LOG(INFO) << taskid_ << " end-of-stream ";
         } else {
-          gchar* debug_info;
+          gchar *debug_info;
           gst_message_parse_error(msg, &error_, &debug_info);
           LOG(ERROR) << taskid_ << ",error received" << error_->message;
           g_free(debug_info);
@@ -121,10 +124,10 @@ class GstAudio {
  private:
   bool is_running_{false};
   std::string taskid_{""};
-  char* launch_desc_{nullptr};
-  GstBus* bus_{nullptr};
-  GError* error_{nullptr};
-  GstElement* pipeline_{nullptr};
+  char *launch_desc_{nullptr};
+  GstBus *bus_{nullptr};
+  GError *error_{nullptr};
+  GstElement *pipeline_{nullptr};
 };
 
 void GstAudioManager::Start() {
@@ -145,7 +148,7 @@ void GstAudioManager::Stop() {
   gst_deinit();
 }
 
-void GstAudioManager::Play(const std::string& task_id, const std::string& path, int volume) {
+void GstAudioManager::Play(const std::string &task_id, const std::string &path, int volume) {
   auto audio_stream = std::make_shared<GstAudio>();
   if (audio_stream->Play(task_id, path, volume)) {
     stream_manager_.Insert(std::make_pair(task_id, audio_stream));
@@ -154,10 +157,10 @@ void GstAudioManager::Play(const std::string& task_id, const std::string& path, 
 
 void GstAudioManager::Pause() {
   LOG(WARNING) << "Pause all audio";
-  stream_manager_.ForEach([](const std::string&, const std::shared_ptr<GstAudio>& stream) { stream->Pause(); });
+  stream_manager_.ForEach([](const std::string &, const std::shared_ptr<GstAudio> &stream) { stream->Pause(); });
 }
 
-void GstAudioManager::Pause(const std::string& task_id) {
+void GstAudioManager::Pause(const std::string &task_id) {
   LOG(WARNING) << "Pause audio:" << task_id;
   std::lock_guard<std::recursive_mutex> lk(*stream_manager_.GetMutex());
   if (stream_manager_.IsExist(task_id)) {
@@ -167,10 +170,10 @@ void GstAudioManager::Pause(const std::string& task_id) {
 
 void GstAudioManager::Resume() {
   LOG(WARNING) << "Resume all audio";
-  stream_manager_.ForEach([](const std::string&, const std::shared_ptr<GstAudio>& stream) { stream->Resume(); });
+  stream_manager_.ForEach([](const std::string &, const std::shared_ptr<GstAudio> &stream) { stream->Resume(); });
 }
 
-void GstAudioManager::Resume(const std::string& task_id) {
+void GstAudioManager::Resume(const std::string &task_id) {
   LOG(WARNING) << "Resume audio:" << task_id;
   std::lock_guard<std::recursive_mutex> lk(*stream_manager_.GetMutex());
   if (stream_manager_.IsExist(task_id)) {
@@ -180,10 +183,10 @@ void GstAudioManager::Resume(const std::string& task_id) {
 
 void GstAudioManager::Cancel() {
   LOG(WARNING) << "Cancel all audio";
-  stream_manager_.ForEach([](const std::string&, const std::shared_ptr<GstAudio>& stream) { stream->Cancel(); });
+  stream_manager_.ForEach([](const std::string &, const std::shared_ptr<GstAudio> &stream) { stream->Cancel(); });
 }
 
-void GstAudioManager::Cancel(const std::string& task_id) {
+void GstAudioManager::Cancel(const std::string &task_id) {
   LOG(WARNING) << "Cancel audio:" << task_id;
   std::lock_guard<std::recursive_mutex> lk(*stream_manager_.GetMutex());
   if (stream_manager_.IsExist(task_id)) {
@@ -193,7 +196,7 @@ void GstAudioManager::Cancel(const std::string& task_id) {
 
 void GstAudioManager::Listener() {
   do {
-    stream_manager_.ForEach([](const std::string&, const std::shared_ptr<GstAudio>& stream) { stream->Print(); });
+    stream_manager_.ForEach([](const std::string &, const std::shared_ptr<GstAudio> &stream) { stream->Print(); });
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
@@ -203,7 +206,7 @@ void GstAudioManager::Listener() {
 }
 
 void GstAudioManager::DeleteExpiredAudioStreamsHandle() {
-  stream_manager_.RemoveIf([](const auto& elem) { return !elem.second->IsRunning(); });
+  stream_manager_.RemoveIf([](const auto &elem) { return !elem.second->IsRunning(); });
 }
 
 }  // namespace enckit

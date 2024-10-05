@@ -1,5 +1,5 @@
-#ifndef __KVIOLET__3RD__SPEAKER__GST____H__
-#define __KVIOLET__3RD__SPEAKER__GST____H__
+#ifndef __KVIOLET__ENCKIT__SPEAKER__GST__H__
+#define __KVIOLET__ENCKIT__SPEAKER__GST__H__
 
 #include "../../kviolet/lock_container/lock_map.h"
 
@@ -24,13 +24,13 @@ class GstAudioManager final {
   void Stop();
 
  public:
-  void Play(const std::string& task_id, const std::string& path, int volume);
+  void Play(const std::string &task_id, const std::string &path, int volume);
   void Pause();
-  void Pause(const std::string& task_id);
+  void Pause(const std::string &task_id);
   void Resume();
-  void Resume(const std::string& task_id);
+  void Resume(const std::string &task_id);
   void Cancel();
-  void Cancel(const std::string& task_id);
+  void Cancel(const std::string &task_id);
 
  protected:
   void Listener();
@@ -45,4 +45,4 @@ class GstAudioManager final {
 }  // namespace enckit
 }  // namespace kviolet
 
-#endif  // __KVIOLET__3RD__SPEAKER__GST____H__
+#endif  // __KVIOLET__ENCKIT__SPEAKER__GST__H__

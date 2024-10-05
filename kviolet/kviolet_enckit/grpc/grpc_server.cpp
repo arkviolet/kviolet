@@ -5,7 +5,7 @@
 namespace kviolet {
 namespace enckit {
 
-GRPCServer::GRPCServer(const std::string& uri) : uri_(uri) {}
+GRPCServer::GRPCServer(const std::string &uri) : uri_(uri) {}
 
 GRPCServer::~GRPCServer() {}
 
@@ -13,7 +13,7 @@ void GRPCServer::SetMaxReceiveMessageSize(int max_size) {
   builder_.SetMaxReceiveMessageSize(max_size);
 }
 
-bool GRPCServer::RegisterService(const std::shared_ptr<::grpc::Service>& service) {
+bool GRPCServer::RegisterService(const std::shared_ptr<::grpc::Service> &service) {
   builder_.RegisterService(service.get());
   services_.push_back(service);
 
@@ -36,7 +36,7 @@ void GRPCServer::Destroy() {
 bool GRPCServer::Start() {
   server_ = builder_.BuildAndStart();
 
-  return server_ ? true : false;
+  return server_ != nullptr;
 }
 
 void GRPCServer::Stop() {
