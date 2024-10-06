@@ -4,6 +4,7 @@
 #include <chrono>
 #include <condition_variable>
 #include <functional>
+#include <iostream>
 #include <list>
 #include <mutex>
 
@@ -22,6 +23,7 @@ class LockList : public std::list<_Tp> {
   void PushBack(const _Tp& value) {
     std::lock_guard<std::recursive_mutex> lock(_mutex);
     std::list<_Tp>::push_back(value);
+
     _condition.notify_all();
   }
 

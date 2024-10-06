@@ -6,6 +6,7 @@ using namespace kviolet::kpoll;
 using namespace kviolet::timer;
 using namespace kviolet::utilities;
 using namespace kviolet::container;
+using namespace kviolet::message_queue;
 
 void test_fmt() {
   fmt::print("Hello, world!\n");
@@ -144,9 +145,32 @@ void test_pool() {
   }
 }
 
+class TestMessage : public Message {
+ public:
+  int i;
+  int j;
+};
+
+void test_message_queue() {
+  Dispatcher::RegisterHandler([&](const std::shared_ptr<Message> &msg) {
+    auto m = std::dynamic_pointer_cast<TestMessage>(msg);
+    std::cout << m->i << std::endl;
+    std::cout << m->j << std::endl;
+  });
+
+  for (int i = 0; i < 100; ++i) {
+    auto msg = std::make_shared<TestMessage>();
+    msg->i = msg->j = i;
+    Dispatcher::Send(msg);
+    sleep(1);
+  }
+}
+
 int main(int argc, char **argv) {
   (void)argc;
   (void)argv;
+
+  test_message_queue();
 
   test_fmt();
 
