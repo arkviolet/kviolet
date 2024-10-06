@@ -6,4 +6,4 @@
 #include "lock_map.h"
 #include "lock_queue.h"
 
-#endif  // __KVIOLET__LOCK_CONTAINER__H__
+#endif  // __KVIOLET__LOCK__CONTAINER__H__

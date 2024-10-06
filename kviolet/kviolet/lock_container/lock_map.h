@@ -1,5 +1,5 @@
-#ifndef __KVIOLET__LOCK__MAP__
-#define __KVIOLET__LOCK__MAP__
+#ifndef __KVIOLET__LOCK__MAP__H__
+#define __KVIOLET__LOCK__MAP__H__
 
 #include <functional>
 #include <map>
@@ -8,87 +8,77 @@
 namespace kviolet {
 namespace container {
 
-template <class TypeK, class TypeV, class _Pr = std::less<TypeK>, class _Alloc = std::allocator<std::pair<const TypeK, TypeV>>>
+template <class _Tpkey, class _TpValue>
 class LockMap {
- public:
-  using key_type = TypeK;
-  using mapped_type = TypeV;
-  using value_type = std::pair<const TypeK, TypeV>;
-
  public:
   template <class _Valty>
   void Insert(_Valty&& value) {
-    std::lock_guard<std::recursive_mutex> lk(mutex_);
-    value_.insert(std::forward<_Valty>(value));
+    std::lock_guard<std::recursive_mutex> lk(_mutex);
+    _value.insert(std::forward<_Valty>(value));
   }
 
-  TypeV& operator[](const TypeK& key) {
-    std::lock_guard<std::recursive_mutex> lk(mutex_);
-    return value_[key];
+  _TpValue& operator[](const _Tpkey& key) {
+    std::lock_guard<std::recursive_mutex> lk(_mutex);
+    return _value[key];
   }
 
-  bool IsExist(const TypeK& key) {
-    std::lock_guard<std::recursive_mutex> lk(mutex_);
-    return value_.find(key) != value_.end();
+  bool IsExist(const _Tpkey& key) {
+    std::lock_guard<std::recursive_mutex> lk(_mutex);
+    return _value.end() != _value.find(key);
   }
 
-  bool Find(const TypeK& key, TypeV& value) {
-    std::lock_guard<std::recursive_mutex> lk(mutex_);
-    auto it = value_.find(key);
-    if (it != value_.end()) {
-      value = it->second;
+  bool Find(const _Tpkey& key, _TpValue& value) {
+    std::lock_guard<std::recursive_mutex> lk(_mutex);
+    auto find = _value.find(key);
+    if (find != _value.end()) {
+      value = find->second;
       return true;
     }
     return false;
   }
 
-  template <class UnaryPredicate>
-  void RemoveIf(UnaryPredicate&& p) {
-    std::lock_guard<std::recursive_mutex> lk(mutex_);
-    for (auto it = value_.begin(); it != value_.end();) {
+  template <typename _Pre>
+  void RemoveIf(_Pre p) {
+    std::lock_guard<std::recursive_mutex> lk(_mutex);
+    for (auto it = _value.begin(); it != _value.end();) {
       if (p(*it)) {
-        it = value_.erase(it);
+        it = _value.erase(it);
       } else {
         ++it;
       }
     }
   }
 
-  bool Remove(const TypeK& key) {
-    std::lock_guard<std::recursive_mutex> lk(mutex_);
-    return value_.erase(key);
+  bool Remove(const _Tpkey& key) {
+    std::lock_guard<std::recursive_mutex> lk(_mutex);
+    return _value.erase(key);
   }
 
-  void Erase(typename std::map<TypeK, TypeV, _Pr, _Alloc>::iterator pos) {
-    std::lock_guard<std::recursive_mutex> lk(mutex_);
-    return value_.erase(pos);
-  }
-
-  void ForEach(const std::function<void(const TypeK&, const TypeV&)>& callback) noexcept {
-    std::lock_guard<std::recursive_mutex> lk(mutex_);
-    for (auto iter : value_) {
-      callback(iter.first, iter.second);
+  void ForEach(const std::function<void(const _Tpkey&, const _TpValue&)>& cb) noexcept {
+    std::lock_guard<std::recursive_mutex> lk(_mutex);
+    for (auto& iter : _value) {
+      cb(iter.first, iter.second);
     }
   }
 
   size_t Size() const {
-    std::lock_guard<std::recursive_mutex> lk(mutex_);
-    return value_.size();
+    std::lock_guard<std::recursive_mutex> lk(_mutex);
+    return _value.size();
   }
 
   void Clear() {
-    std::lock_guard<std::recursive_mutex> lk(mutex_);
-    value_.clear();
+    std::lock_guard<std::recursive_mutex> lk(_mutex);
+    _value.clear();
   }
 
-  std::recursive_mutex* GetMutex() { return &mutex_; }
+  std::recursive_mutex* GetMutex() { return &_mutex; }
 
  private:
-  mutable std::recursive_mutex mutex_;
-  std::map<TypeK, TypeV, _Pr, _Alloc> value_;
+  std::map<_Tpkey, _TpValue> _value;
+  mutable std::recursive_mutex _mutex;
 };
 
 }  // namespace container
 }  // namespace kviolet
 
-#endif  //__KVIOLET__LOCK__MAP__
+#endif  //__KVIOLET__LOCK__MAP__H__

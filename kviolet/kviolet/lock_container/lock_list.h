@@ -1,6 +1,7 @@
-#ifndef __KVIOLET__LOCK__LIST__
-#define __KVIOLET__LOCK__LIST__
+#ifndef __KVIOLET__LOCK__LIST__H__
+#define __KVIOLET__LOCK__LIST__H__
 
+#include <chrono>
 #include <condition_variable>
 #include <functional>
 #include <list>
@@ -8,83 +9,101 @@
 
 namespace kviolet {
 namespace container {
-template <class Type, class _Alloc = std::allocator<Type>>
-class LockList : public std::list<Type, _Alloc> {
+
+template <class _Tp>
+class LockList : public std::list<_Tp> {
  public:
-  template <class _Valty>
-  void PushBack(_Valty&& value) {
-    std::unique_lock<std::recursive_mutex> lk(mutex_);
-    std::list<Type, _Alloc>::push_back(std::forward<_Valty>(value));
-    cv_.notify_all();
+  void PushBack(_Tp&& value) {
+    std::lock_guard<std::recursive_mutex> lock(_mutex);
+    std::list<_Tp>::push_back(std::forward<_Tp>(value));
+    _condition.notify_all();
   }
 
-  template <class _Valty>
-  void EmplaceBack(_Valty&& value) {
-    std::unique_lock<std::recursive_mutex> lk(mutex_);
-    std::list<Type, _Alloc>::emplace_back(std::forward<Type>(value));
-    cv_.notify_all();
+  void PushBack(const _Tp& value) {
+    std::lock_guard<std::recursive_mutex> lock(_mutex);
+    std::list<_Tp>::push_back(value);
+    _condition.notify_all();
   }
 
-  Type& Front() {
-    std::unique_lock<std::recursive_mutex> lk(mutex_);
-    return std::list<Type, _Alloc>::front();
+  void EmplaceBack(const _Tp& value) {
+    std::lock_guard<std::recursive_mutex> lock(_mutex);
+    std::list<_Tp>::emplace_back(value);
+    _condition.notify_all();
+  }
+
+  std::size_t Size() {
+    std::lock_guard<std::recursive_mutex> lock(_mutex);
+    return std::list<_Tp>::size();
+  }
+
+  void Clear() {
+    std::lock_guard<std::recursive_mutex> lock(_mutex);
+    std::list<_Tp>::clear();
   }
 
   bool Empty() {
-    std::unique_lock<std::recursive_mutex> lk(mutex_);
-    return std::list<Type, _Alloc>::empty();
+    std::lock_guard<std::recursive_mutex> lock(_mutex);
+    return std::list<_Tp>::empty();
+  }
+
+  _Tp& Front() {
+    std::lock_guard<std::recursive_mutex> lock(_mutex);
+    return std::list<_Tp>::front();
   }
 
   void PopFront() {
-    std::unique_lock<std::recursive_mutex> lk(mutex_);
-    std::list<Type, _Alloc>::pop_front();
+    std::lock_guard<std::recursive_mutex> lock(_mutex);
+    std::list<_Tp>::pop_front();
   }
 
-  bool TryPopFront(const uint64_t timeout, Type& value) {
-    std::unique_lock<std::recursive_mutex> lk(mutex_);
-    if (std::list<Type, _Alloc>::size() == 0) {
-      if (cv_.wait_for(lk, std::chrono::milliseconds(timeout)) == std::cv_status::timeout) {
-        return false;
-      }
+  void WaitPopFront(_Tp& value) {
+    std::unique_lock<std::recursive_mutex> lock(_mutex);
+    _condition.wait(lock, [this] { return !std::list<_Tp>::empty(); });
+
+    value = std::move(std::list<_Tp>::front());
+    std::list<_Tp>::pop_front();
+  }
+
+  bool WaitPopFront(_Tp& value, uint64_t timeout) {
+    std::unique_lock<std::recursive_mutex> lock(_mutex);
+
+    if (0 == std::list<_Tp>::size() &&
+        std::cv_status::timeout == _condition.wait_for(lock, std::chrono::milliseconds(timeout))) {
+      return false;
     }
 
-    value = std::list<Type, _Alloc>::front();
-    std::list<Type, _Alloc>::pop_front();
+    value = std::move(std::list<_Tp>::front());
+    std::list<_Tp>::pop_front();
 
     return true;
   }
 
-  template <class _Pr1>
-  auto RemoveIf(_Pr1 _Pred) {
-    std::lock_guard<std::recursive_mutex> lk(mutex_);
-    return std::list<Type, _Alloc>::remove_if(_Pred);
+  void Remove(const _Tp& value) {
+    std::unique_lock<std::recursive_mutex> lock(_mutex);
+    std::list<_Tp>::remove(value);  /// 顺序遍历查找删除
   }
 
-  size_t Size() const {
-    std::lock_guard<std::recursive_mutex> lk(mutex_);
-    return std::list<Type, _Alloc>::size();
+  template <typename _Pre>
+  void Remove(_Pre pr) {
+    std::unique_lock<std::recursive_mutex> lock(_mutex);
+    std::list<_Tp>::remove_if(pr);  /// 顺序遍历根据传入条件判断
   }
 
-  void Clear() {
-    std::lock_guard<std::recursive_mutex> lk(mutex_);
-    std::list<Type, _Alloc>::clear();
-  }
-
-  void ForEach(const std::function<void(const Type&)>& callback) {
-    std::lock_guard<std::recursive_mutex> lk(mutex_);
-    for (const auto& iter : *this) {
-      callback(iter);
+  void ForEach(const std::function<void(const _Tp& value)> cb) {
+    std::unique_lock<std::recursive_mutex> lock(_mutex);
+    for (auto& iter : *this) {  // TODO
+      cb(iter);
     }
   }
 
-  std::recursive_mutex* GetMutex() { return &mutex_; }
+  std::recursive_mutex* GetMutex() { return &_mutex; }
 
  private:
-  std::condition_variable_any cv_;
-  mutable std::recursive_mutex mutex_;
+  std::recursive_mutex _mutex;
+  std::condition_variable_any _condition;
 };
 
 }  // namespace container
 }  // namespace kviolet
 
-#endif  //__KVIOLET__LOCK__LIST__
+#endif  // __KVIOLET__LOCK__LIST__H__
