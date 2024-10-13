@@ -1,6 +1,7 @@
 #ifndef __KVIOLET__MESSAGE__QUEUE__MESSAGE__QUEUE__H__
 #define __KVIOLET__MESSAGE__QUEUE__MESSAGE__QUEUE__H__
 
+#include "../lock_container/lock_event.h"
 #include "../lock_container/lock_list.h"
 #include "message.h"
 
@@ -22,6 +23,7 @@ class MessageQueue {
   void Dump();
 
  private:
+  LockEvent _event;
   LockList<std::shared_ptr<Message>> _list;
 };
 

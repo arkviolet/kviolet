@@ -1,24 +1,11 @@
 #include "../../kviolet/kviolet.h"
-#include "../../kviolet_enckit/kviolet_enckit.h"
 
-using namespace kviolet::enckit;
 using namespace kviolet::kpoll;
 using namespace kviolet::timer;
+using namespace kviolet::efficent;
 using namespace kviolet::utilities;
 using namespace kviolet::container;
 using namespace kviolet::message_queue;
-
-void test_fmt() {
-  fmt::print("Hello, world!\n");
-  auto str = fmt::format("The answer is {}.", 42);
-  std::cout << "str:" << str << std::endl;
-
-  fmt::print("Date and time: {}\n", std::chrono::system_clock::now());
-  fmt::print("Time: {:%H:%M}\n", std::chrono::system_clock::now());
-
-  std::vector<int> v = {1, 2, 3};
-  fmt::print("{}\n", v);
-}
 
 void test_container() {
   /// event
@@ -97,34 +84,6 @@ void test_container() {
   }
 }
 
-void test_audio() {
-  /// pulseaudio
-  {
-    int volume = 50;
-    std::string audio_path = "./test.wav";
-    auto taskid = std::to_string(Timestamp::MonotonicMilliseconds());
-    auto pulseaudio = std::make_shared<PulseAudioManager>();
-    pulseaudio->Play(taskid, audio_path, volume);
-    pulseaudio->Pause(taskid);
-    pulseaudio->Resume(taskid);
-    pulseaudio->Cancel();
-    pulseaudio = nullptr;
-  }
-
-  /// gst audio
-  {
-    int volume = 50;
-    std::string audio_path = "./test.wav";  ///*.wav *.mp3
-    auto taskid = std::to_string(Timestamp::MonotonicMilliseconds());
-    auto gst = std::make_shared<GstAudioManager>();
-    gst->Play(taskid, audio_path, volume);
-    gst->Pause(taskid);
-    gst->Resume(taskid);
-    gst->Cancel();
-    gst = nullptr;
-  }
-}
-
 void test_timer() {
   TimerManager timer_manager;
   timer_manager.Start(
@@ -166,35 +125,60 @@ void test_message_queue() {
   }
 }
 
+void test_twlinklist() {
+  INSTWLinkList<int> list_test;
+
+  int a[] = {1, 1, 2, 6, 6, 3, 4, 5};
+  for (int i = 0; i < sizeof(a) / sizeof(a[0]); ++i) {
+    list_test.PushBack(a[i]);
+  }
+
+  std::cout << "Ergodic" << std::endl;
+  list_test.Ergodic([](const int &value) { std::cout << value << " "; });
+  std::cout << std::endl;
+
+  std::cout << "Remove 1" << std::endl;
+  list_test.Remove(1);
+  list_test.Ergodic([](const int &value) { std::cout << value << " "; });
+  std::cout << std::endl;
+
+  std::cout << "Remove pr" << std::endl;
+  list_test.Remove([](const int &value) { return 6 == value; });
+  list_test.Ergodic([](const int &value) { std::cout << value << " "; });
+  std::cout << std::endl;
+
+  std::cout << "size:" << list_test.Size() << std::endl;
+}
+
 int main(int argc, char **argv) {
   (void)argc;
   (void)argv;
 
+  test_twlinklist();
+
+  return 0;
+
+  std::list<int> x;
+  x.push_back(1);
+  x.push_back(2);
+  x.push_back(3);
+  x.push_back(4);
+
+  for (auto &iter : x) {
+    std::cout << iter << " ";
+  }
+  std::cout << std::endl;
+
+  return 0;
   test_message_queue();
 
-  test_fmt();
-
   test_container();
-
-  test_audio();
 
   test_timer();
 
   test_pool();
 
   /// ringbuffer
-  {
-  }
-
-  /// message queue
-  {
-  }
-
-  /// grpc
-  {
-  }
-
-  /// dbus
   {
   }
 

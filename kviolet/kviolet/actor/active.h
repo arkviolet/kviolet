@@ -1,48 +1,48 @@
-#ifndef __ACTOR__ACTIVE__H__
-#define __ACTOR__ACTIVE__H__
+#ifndef __KVIOLET__ACTOR__ACTIVE__H__
+#define __KVIOLET__ACTOR__ACTIVE__H__
 
-#include <atomic>
+#include <functional>
+#include <future>
+#include <memory>
 #include <thread>
 
-#include "event.h"
-#include "lockqueue.h"
-#include "node.h"
-#include "statemachine.h"
+#include "hsm.h"
+#include "queue.h"
 
 namespace kviolet {
 namespace actor {
 
-class Actor;
+class Handle;
 
-class Active : public StateMachine {
+class Active : public Hsm, public std::enable_shared_from_this<Active> {
+ protected:
+  explicit Active(PseudoState init, const std::shared_ptr<Handle>& handle);
+  virtual ~Active();
+
  public:
-  Active(std::shared_ptr<Actor> actor) : _actor(actor) {}
+  void Start();
+  void Stop();
 
-  ~Active() = default;
+  void PushBack(const std::shared_ptr<Event>& event);
+  void PushFront(const std::shared_ptr<Event>& event);
 
- public:
-  virtual void Stop();
+  /// event->_signal must >= 4 enum { EVENT_INIT, EVENT_ENTER, EVENT_EXIT, EVENT_EMPTY };
+  void Subscribe(Signal event);
 
-  virtual void Start();
+  /// event->_signal must >= 4 enum { EVENT_INIT, EVENT_ENTER, EVENT_EXIT, EVENT_EMPTY };
+  void UnSubscribe(Signal event);
 
-  virtual void PushBack(std::shared_ptr<NodeEvent> e);
-
-  virtual void PushFront(std::shared_ptr<NodeEvent> e);
-
-  virtual void Subscribe(NodeSignal event);
-
-  virtual void Unsubscribe(NodeSignal event);
-
-  virtual void Broadcast(std::shared_ptr<NodeEvent> e);
+  /// event->_signal must >= 4 enum { EVENT_INIT, EVENT_ENTER, EVENT_EXIT, EVENT_EMPTY };
+  void Publish(const std::shared_ptr<Event>& event);
 
  private:
-  std::thread _runThread;
-  std::atomic<bool> _running;
-  std::shared_ptr<Actor> _actor;
-  LockCQueue<std::shared_ptr<NodeEvent>> _lockQueue;
+  bool _running;
+  std::shared_ptr<Handle> _handle;
+  Deque<std::shared_ptr<Event>> _queue;
+  std::shared_ptr<std::thread> _work_thread;
 };
 
 }  // namespace actor
 }  // namespace kviolet
 
-#endif  //__ACTOR__ACTIVE__H__
+#endif  // __KVIOLET__ACTOR__ACTIVE__H__

@@ -1,44 +1,48 @@
 #include "active.h"
-#include "actorface.h"
+
+#include "event.h"
+#include "handle.h"
 
 namespace kviolet {
 namespace actor {
 
+Active::Active(PseudoState init, const std::shared_ptr<Handle>& handle)
+    : Hsm(init), _running(true), _handle(handle) {}
+
+Active::~Active() { Stop(); }
+
 void Active::Start() {
   _running = true;
-
-  auto func = [this]() {
-    std::shared_ptr<NodeEvent> node;
-
+  _work_thread = std::make_shared<std::thread>([this]() {
     while (_running) {
-      _lockQueue.WaiAndPop(node);
+      auto event = _queue.Pop();
 
-      Dispatch(node);
+      Dispatch(event);
     }
-  };
+  });
+}
+void Active::Stop() {
+  _running = false;
 
-  _runThread = std::move(std::thread(func));
+  if (!_queue.Size()) {
+    _queue.PushBack(StdEventPtr[EVENT_EMPTY]);
+  }
+
+  if (_work_thread && _work_thread->joinable()) {
+    _work_thread->join();
+    _work_thread = nullptr;
+  }
 }
 
-void Active::PushBack(std::shared_ptr<NodeEvent> e) {
-  _lockQueue.Push(e);
-}
+void Active::PushBack(const std::shared_ptr<Event>& event) { _queue.PushBack(event); }
 
-void Active::PushFront(std::shared_ptr<NodeEvent> e) {
-  _lockQueue.Push(e);  /// TODO Push Front
-}
+void Active::PushFront(const std::shared_ptr<Event>& event) { _queue.PushFront(event); }
 
-void Active::Subscribe(NodeSignal event) {
-  _actor->Subscribe(this, event);
-}
+void Active::Subscribe(Signal event) { _handle->Subscribe(shared_from_this(), event); }
 
-void Active::Unsubscribe(NodeSignal event) {
-  _actor->UnSubscribe(this, event);
-}
+void Active::UnSubscribe(Signal event) { _handle->UnSubscribe(shared_from_this(), event); }
 
-void Active::Broadcast(std::shared_ptr<NodeEvent> event) {
-  _actor->Broadcast(event);
-}
+void Active::Publish(const std::shared_ptr<Event>& event) { _handle->Publish(event); }
 
 }  // namespace actor
 }  // namespace kviolet

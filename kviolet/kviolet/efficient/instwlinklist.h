@@ -6,98 +6,97 @@
 
 namespace kviolet {
 namespace efficent {
-template <typename T>
-class KVIOLET_CLASS_API INSTWLinkList {
+
+template <class _Tp>
+class INSTWLinkList {
  public:
   struct INSTWNode {
-    T _data;
-    TWLinkList* _linklist;
+    _Tp _data;
+    TWLinkList _linklist;  /// TODO TWLinkList _linklist; --> TWLinkList* _linklist;
+    INSTWNode(int data) : _data(data) {}
   };
 
  public:
-  explicit INSTWLinkList() { _insHead = Creat(); }
-
-  explicit INSTWLinkList(uint32_t size) {
-    assert(size > 1);  ///???
-
-    _insHead = Creat(size);
+  explicit INSTWLinkList() {
+    _head = new TWLinkList();
+    _head = InitializeHead(_head);
   }
 
   ~INSTWLinkList() {
-    for (uint32_t i = 0; i < _size; ++i) {
-      /// get current struct point
-      auto* ins = KVIOLET_CONTAINER_OF(_insHead->_linklist, INSTWNode, _linklist);
-
-      /// current struct point  -> next
-      _insHead = KVIOLET_CONTAINER_OF(_insHead->_linklist->_next, INSTWNode, _linklist);
-
-      delete ins;
+    auto iter = _head->_next;
+    while (_head != iter) {
+      auto* node = KVIOLET_CONTAINER_OF(iter, INSTWNode, _linklist);
+      DestroyNode(iter);
+      iter = iter->_next;
+      delete node;
     }
+    delete _head;
   }
 
  public:
-  uint32_t GetInsLinkListSize() { return _size; }
-
-  void AddInsLinkListTailNode(T* value) {
-    assert(value);
-
-    auto* temp = Creat();
-
-    memcpy(&temp->_data, value, sizeof(T));
-
-    AddTWLinkListTail(_insHead->_linklist, temp->_linklist);
+  void PushBack(const int& value) {
+    auto node = new INSTWNode(value);
+    InsertBack(_head, &node->_linklist);
   }
 
-  void AddInsLinkListHeadNode(T* value) {
-    assert(value);
-
-    auto* temp = Creat();
-
-    memcpy(&temp->_data, value, sizeof(T));
-
-    AddInsLinkListHeadNode(_insHead->_linklist, temp->_linklist);
+  void PushFront(const int& value) {
+    auto node = new INSTWNode(value);
+    InsertFront(_head, &node->_linklist);
   }
 
-  void ErgodicInsLinkList() {
-    auto* head = _insHead;
-    for (uint32_t i = 0; i < _size; ++i) {
-      auto* ins = KVIOLET_CONTAINER_OF(head->_linklist, INSTWNode, _linklist);
-      {
-        /**
-         * Option T
-         * */
-        (void)ins->_data;
+  bool Empty() { return _head == _head->_next; }
+
+  uint32_t Size() {
+    uint32_t size = 0;
+    auto iter = _head->_next;
+    while (iter != _head) {
+      iter = iter->_next;
+      ++size;
+    }
+
+    return size;
+  }
+
+  void Remove(const _Tp& value) {
+    auto iter = _head->_next;
+    while (_head != iter) {
+      auto* node = KVIOLET_CONTAINER_OF(iter, INSTWNode, _linklist);
+      if (node->_data == value) {
+        DestroyNode(iter);
+        delete node;
+        return;
       }
-      head = KVIOLET_CONTAINER_OF(head->_linklist->_next, INSTWNode, _linklist);
+      iter = iter->_next;
+    }
+  }
+
+  template <typename _Pre>
+  void Remove(const _Pre& pr) {
+    auto iter = _head->_next;
+    while (_head != iter) {
+      auto* node = KVIOLET_CONTAINER_OF(iter, INSTWNode, _linklist);
+      if (pr(node->_data)) {
+        DestroyNode(iter);
+        iter = iter->_next;
+        delete node;
+      } else {
+        iter = iter->_next;
+      }
+    }
+  }
+
+  template <typename _Pre>
+  void Ergodic(const _Pre& pr) {
+    auto iter = _head->_next;
+    while (_head != iter) {
+      auto* node = KVIOLET_CONTAINER_OF(iter, INSTWNode, _linklist);
+      pr(node->_data);
+      iter = iter->_next;
     }
   }
 
  private:
-  INSTWNode* Creat() {
-    ++_size;
-
-    auto* head = new INSTWNode();
-
-    InitHeadTWLinkList(head->_linklist);
-
-    return head;
-  }
-
-  INSTWNode* Creat(uint32_t size) {
-    auto* head = Creat();
-
-    for (int i = 0; i < size - 1; ++i) {
-      auto* temp = Creat();
-
-      AddTWLinkListTail(head->_linklist, temp->_linklist);
-    }
-
-    return head;
-  }
-
- private:
-  uint32_t _size{0};
-  INSTWNode* _insHead{nullptr};
+  TWLinkList* _head{nullptr};
 };
 
 }  // namespace efficent

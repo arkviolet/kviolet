@@ -3,12 +3,13 @@
 namespace kviolet {
 namespace actor {
 
-std::shared_ptr<NodeEvent> ActorDefault[] = {
-    std::make_shared<NodeEvent>(INIT),
-    std::make_shared<NodeEvent>(EXIT),
-    std::make_shared<NodeEvent>(ENTER),
-    std::make_shared<NodeEvent>(EMPTY),
-};
+Event::Event(Signal sig) : _signal(sig) {}
+
+Event::~Event() {}
+
+std::shared_ptr<Event> StdEventPtr[] = {
+    std::make_shared<Event>(EVENT_INIT), std::make_shared<Event>(EVENT_ENTER),
+    std::make_shared<Event>(EVENT_EXIT), std::make_shared<Event>(EVENT_EMPTY)};
 
 }  // namespace actor
 }  // namespace kviolet

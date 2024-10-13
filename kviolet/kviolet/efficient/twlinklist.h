@@ -4,38 +4,20 @@
 namespace kviolet {
 namespace efficent {
 
-/**
- * 双向循环链表
- * */
 typedef struct TWLinkList {
   TWLinkList* _next{nullptr};
   TWLinkList* _prev{nullptr};
 } TWLinkList;
 
-/**
- *  Init Head Node
- * */
-void InitHeadTWLinkList(TWLinkList* head);
+TWLinkList* InitializeHead(TWLinkList* node);
 
-/**
- * Insert [head,head->next]
- * */
-void AddTWLinkListHead(TWLinkList* head, TWLinkList* nnew);
+void DestroyNode(TWLinkList* entry);
 
-/**
- * Insert [head->prev,head]
- * */
-void AddTWLinkListTail(TWLinkList* head, TWLinkList* nnew);
+void InsertBack(TWLinkList* head, TWLinkList* nnew);
 
-/**
- * Is Empty
- * */
-bool IsTWLinkList(TWLinkList* head);
+void InsertFront(TWLinkList* head, TWLinkList* nnew);
 
-/**
- * Delete LinkList Node
- * */
-void DelTWLinkListNode(TWLinkList* entry);
+void InsertTWLinkList(TWLinkList* nnew, TWLinkList* prev, TWLinkList* next);
 
 }  // namespace efficent
 }  // namespace kviolet

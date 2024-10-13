@@ -17,10 +17,13 @@ class Message : public std::enable_shared_from_this<Message> {
 
   void Run() { _builder->Run(shared_from_this()); }
 
-  void Send();
+  void Send(uint64_t when = 0);
 
+  uint64_t When();
+  
  protected:
   Builder::Ptr _builder;
+  mutable uint64_t _when;
 };
 
 }  // namespace message_queue
