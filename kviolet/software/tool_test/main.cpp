@@ -125,51 +125,80 @@ void test_message_queue() {
   }
 }
 
-void test_twlinklist() {
-  INSTWLinkList<int> list_test;
+void test_efficent() {
+  /// ringbuffer
+  {
+  }
+  
+  /// queue
+  {
+    Queue<std::string> queue_test;
 
-  int a[] = {1, 1, 2, 6, 6, 3, 4, 5};
-  for (int i = 0; i < sizeof(a) / sizeof(a[0]); ++i) {
-    list_test.PushBack(a[i]);
+    std::cout << " Queue Push " << std::endl;
+    queue_test.Push("this");
+    queue_test.Push("is");
+    queue_test.Push("just");
+    queue_test.Push("test");
+    queue_test.Push("data");
+
+    std::cout << " Queue Pop " << std::endl;
+    std::string value;
+    while (queue_test.Pop(value)) {
+      std::cout << value << std::endl;
+    }
   }
 
-  std::cout << "Ergodic" << std::endl;
-  list_test.Ergodic([](const int &value) { std::cout << value << " "; });
-  std::cout << std::endl;
+  /// stack
+  {
+    Stack<std::string> stack_test;
 
-  std::cout << "Remove 1" << std::endl;
-  list_test.Remove(1);
-  list_test.Ergodic([](const int &value) { std::cout << value << " "; });
-  std::cout << std::endl;
+    std::cout << " Stack Push " << std::endl;
+    stack_test.Push("this");
+    stack_test.Push("is");
+    stack_test.Push("just");
+    stack_test.Push("test");
+    stack_test.Push("data");
 
-  std::cout << "Remove pr" << std::endl;
-  list_test.Remove([](const int &value) { return 6 == value; });
-  list_test.Ergodic([](const int &value) { std::cout << value << " "; });
-  std::cout << std::endl;
+    std::cout << " Stack Pop " << std::endl;
+    std::string value;
+    while (stack_test.Pop(value)) {
+      std::cout << value << std::endl;
+    }
+  }
 
-  std::cout << "size:" << list_test.Size() << std::endl;
+  /// list
+  {
+    INSTWLinkList<int> list_test;
+
+    int a[] = {1, 1, 2, 6, 6, 3, 4, 5};
+    for (int i = 0; i < sizeof(a) / sizeof(a[0]); ++i) {
+      list_test.PushBack(a[i]);
+    }
+
+    std::cout << "Ergodic" << std::endl;
+    list_test.Ergodic([](const int &value) { std::cout << value << " "; });
+    std::cout << std::endl;
+
+    std::cout << "Remove 1" << std::endl;
+    list_test.Remove(1);
+    list_test.Ergodic([](const int &value) { std::cout << value << " "; });
+    std::cout << std::endl;
+
+    std::cout << "Remove pr" << std::endl;
+    list_test.Remove([](const int &value) { return 6 == value; });
+    list_test.Ergodic([](const int &value) { std::cout << value << " "; });
+    std::cout << std::endl;
+
+    std::cout << "size:" << list_test.Size() << std::endl;
+  }
 }
 
 int main(int argc, char **argv) {
   (void)argc;
   (void)argv;
 
-  test_twlinklist();
+  test_efficent();
 
-  return 0;
-
-  std::list<int> x;
-  x.push_back(1);
-  x.push_back(2);
-  x.push_back(3);
-  x.push_back(4);
-
-  for (auto &iter : x) {
-    std::cout << iter << " ";
-  }
-  std::cout << std::endl;
-
-  return 0;
   test_message_queue();
 
   test_container();
@@ -177,10 +206,6 @@ int main(int argc, char **argv) {
   test_timer();
 
   test_pool();
-
-  /// ringbuffer
-  {
-  }
 
   return 0;
 }
