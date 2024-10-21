@@ -6,6 +6,7 @@ using namespace kviolet::efficent;
 using namespace kviolet::utilities;
 using namespace kviolet::container;
 using namespace kviolet::message_queue;
+using namespace kviolet::module;
 
 void test_container() {
   /// event
@@ -129,7 +130,7 @@ void test_efficent() {
   /// ringbuffer
   {
   }
-  
+
   /// queue
   {
     Queue<std::string> queue_test;
@@ -193,9 +194,40 @@ void test_efficent() {
   }
 }
 
+class SingletonTest {
+ public:
+  SingletonTest() { std::cout << "SingletonTest()" << std::endl; }
+  ~SingletonTest() { std::cout << "~SingletonTest()" << std::endl; }
+
+ public:
+  void Test() { std::cout << "Test()" << std::endl; }
+};
+
+class SingletonInterfaceTest : public SingletonInterface {
+ public:
+  virtual void Handle(void *in, void *out) override {
+    std::cout << "SingletonInterfaceTest" << std::endl;
+  }
+};
+
+class SingletonTestHandle final : public Singleton<SingletonTest> {};
+
+void test_module() {
+  {
+    SingletonTestHandle::Instance().Test();
+  }
+
+  {
+    SingletonInterfaceTest InterfaceTest;
+    SingletonInterface::Instance()->Handle(nullptr, nullptr);
+  }
+}
+
 int main(int argc, char **argv) {
   (void)argc;
   (void)argv;
+
+  test_module();
 
   test_efficent();
 

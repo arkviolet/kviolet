@@ -7,6 +7,7 @@
 #include "efficient/efficient.h"
 #include "lock_container/lock_container.h"
 #include "message_queue/message_dispatcher.h"
+#include "module/module.h"
 #include "net/net.h"
 #include "poll/poll.h"
 #include "system/system.h"
