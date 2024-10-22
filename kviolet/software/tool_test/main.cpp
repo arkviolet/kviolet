@@ -7,6 +7,7 @@ using namespace kviolet::utilities;
 using namespace kviolet::container;
 using namespace kviolet::message_queue;
 using namespace kviolet::module;
+using namespace kviolet::system;
 
 void test_container() {
   /// event
@@ -223,9 +224,41 @@ void test_module() {
   }
 }
 
+void test_system() {
+  {
+    std::cout << std::this_thread::get_id() << std::endl;
+    std::cout << Process::ThreadID() << std::endl;
+  }
+
+  {
+    std::cout << "<--thread name:" << Process::ThreadName() << std::endl;
+
+    Process::ThreadName("test");
+
+    std::cout << "--> thread name:" << Process::ThreadName() << std::endl;
+
+    std::cout << "max priority:" << Process::MaxThreadPriority() << std::endl;
+  }
+
+  {
+    const char *argv[] = {"/usr/bin/sleep", "10", nullptr};
+    auto pid = Process::Fork(argv);
+
+    std::cout << Process::WaitPid(pid, true) << std::endl;
+
+    pid = Process::Fork(argv);
+    for (int i = 0; i < 12; ++i) {
+      std::cout << Process::WaitPid(pid, false) << std::endl;
+      sleep(1);
+    }
+  }
+}
+
 int main(int argc, char **argv) {
   (void)argc;
   (void)argv;
+
+  test_system();
 
   test_module();
 

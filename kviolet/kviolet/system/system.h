@@ -1,4 +1,6 @@
-#ifndef __KVIOLET__SYSYTEM__H__
-#define __KVIOLET__SYSYTEM__H__
+#ifndef __KVIOLET__SYSTEM__H__
+#define __KVIOLET__SYSTEM__H__
 
-#endif  // __KVIOLET__SYSYTEM__H__
+#include "process.h"
+
+#endif  // __KVIOLET__SYSTEM__H__
