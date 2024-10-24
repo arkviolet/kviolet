@@ -1,0 +1,68 @@
+diff --git a/src/core/lib/slice/percent_encoding.cc b/src/core/lib/slice/percent_encoding.cc
+index 117e98d..610e0c0 100644
+--- a/src/core/lib/slice/percent_encoding.cc
++++ b/src/core/lib/slice/percent_encoding.cc
+@@ -45,8 +45,6 @@ class UrlTable : public BitSet<256> {
+   }
+ };
+ 
+-constexpr UrlTable g_url_table;
+-
+ class CompatibleTable : public BitSet<256> {
+  public:
+   constexpr CompatibleTable() {
+@@ -57,15 +55,13 @@ class CompatibleTable : public BitSet<256> {
+   }
+ };
+ 
+-constexpr CompatibleTable g_compatible_table;
+-
+ // Map PercentEncodingType to a lookup table of legal symbols for that encoding.
+ const BitSet<256>& LookupTableForPercentEncodingType(PercentEncodingType type) {
+   switch (type) {
+     case PercentEncodingType::URL:
+-      return g_url_table;
++      return UrlTable();
+     case PercentEncodingType::Compatible:
+-      return g_compatible_table;
++      return CompatibleTable();
+   }
+   // Crash if a bad PercentEncodingType was passed in.
+   GPR_UNREACHABLE_CODE(abort());
+diff --git a/src/core/lib/surface/validate_metadata.cc b/src/core/lib/surface/validate_metadata.cc
+index 938f25e..d9e88a0 100644
+--- a/src/core/lib/surface/validate_metadata.cc
++++ b/src/core/lib/surface/validate_metadata.cc
+@@ -68,7 +68,7 @@ class LegalHeaderKeyBits : public grpc_core::BitSet<256> {
+     set('.');
+   }
+ };
+-constexpr LegalHeaderKeyBits g_legal_header_key_bits;
++
+ }  // namespace
+ 
+ grpc_error_handle grpc_validate_header_key_is_legal(const grpc_slice& slice) {
+@@ -84,7 +84,7 @@ grpc_error_handle grpc_validate_header_key_is_legal(const grpc_slice& slice) {
+     return GRPC_ERROR_CREATE_FROM_STATIC_STRING(
+         "Metadata keys cannot start with :");
+   }
+-  return conforms_to(slice, g_legal_header_key_bits, "Illegal header key");
++  return conforms_to(slice, LegalHeaderKeyBits(), "Illegal header key");
+ }
+ 
+ int grpc_header_key_is_legal(grpc_slice slice) {
+@@ -100,12 +100,12 @@ class LegalHeaderNonBinValueBits : public grpc_core::BitSet<256> {
+     }
+   }
+ };
+-constexpr LegalHeaderNonBinValueBits g_legal_header_non_bin_value_bits;
++
+ }  // namespace
+ 
+ grpc_error_handle grpc_validate_header_nonbin_value_is_legal(
+     const grpc_slice& slice) {
+-  return conforms_to(slice, g_legal_header_non_bin_value_bits,
++  return conforms_to(slice, LegalHeaderNonBinValueBits(),
+                      "Illegal header value");
+ }
+ 
