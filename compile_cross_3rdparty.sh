@@ -53,3 +53,85 @@ cd $PACKAGE_COMPILE_DIR/grpc && git apply -p1 --ignore-space-change --whitespace
 cd $PACKAGE_COMPILE_DIR/grpc/cd build_h3_r258
 
 make -j8 && make install
+
+# rk
+source /opt/workspace/Rockchip/rk3568/aarch64-linux-gcc-v12.3/environment-setup
+export "CONFIGURE_FLAGS=--target=aarch64-buildroot-linux-gnu --host=aarch64-buildroot-linux-gnu --build=x86_64-pc-linux-gnu"
+
+cd $PACKAGE_COMPILE_DIR
+
+wget http://mirrors.ustc.edu.cn/gnu/gmp/gmp-6.1.2.tar.xz
+
+tar -xvf gmp-6.1.2.tar.xz && cd gmp-6.1.2
+
+./configure	$CONFIGURE_FLAGS \
+			--prefix=/home/${USER}/software/kviolet_cross_3rdparty/gun \
+			--exec-prefix=/home/${USER}/software/kviolet_cross_3rdparty/gun \
+			--sysconfdir=/home/${USER}/software/kviolet_cross_3rdparty/gun/etc \
+			--localstatedir=/home/${USER}/software/kviolet_cross_3rdparty/gun/var
+
+make -j8 && make install
+
+rm /home/${USER}/software/kviolet_cross_3rdparty/gun/lib/libgmp.la
+
+cd $PACKAGE_COMPILE_DIR
+
+wget http://mirrors.ustc.edu.cn/gnu/mpfr/mpfr-4.0.1.tar.gz
+
+tar -xvf mpfr-4.0.1.tar.gz && cd mpfr-4.0.1/
+
+./configure $CONFIGURE_FLAGS \
+			--enable-thread-safe \
+			--enable-warnings \
+			--with-gmp=/home/${USER}/software/kviolet_cross_3rdparty/gun \
+			--prefix=/home/${USER}/software/kviolet_cross_3rdparty/gun \
+			--exec-prefix=/home/${USER}/software/kviolet_cross_3rdparty/gun \
+			--sysconfdir=/home/${USER}/software/kviolet_cross_3rdparty/gun/etc \
+			--localstatedir=/home/${USER}/software/kviolet_cross_3rdparty/gun/var
+
+make -j8 && make install
+
+rm /home/${USER}/software/kviolet_cross_3rdparty/gun/lib/libmpfr.la
+
+cd $PACKAGE_COMPILE_DIR
+
+wget http://mirrors.ustc.edu.cn/gnu/mpc/mpc-1.1.0.tar.gz
+
+tar -xvf mpc-1.1.0.tar.gz && cd mpc-1.1.0/
+
+./configure $CONFIGURE_FLAGS \
+			--with-gmp=/home/${USER}/software/kviolet_cross_3rdparty/gun \
+			--with-mpfr=/home/${USER}/software/kviolet_cross_3rdparty/gun \
+			--prefix=/home/${USER}/software/kviolet_cross_3rdparty/gun \
+			--exec-prefix=/home/${USER}/software/kviolet_cross_3rdparty/gun \
+			--sysconfdir=/home/${USER}/software/kviolet_cross_3rdparty/gun/etc \
+			--localstatedir=/home/${USER}/software/kviolet_cross_3rdparty/gun/var
+
+make -j8 && make install
+
+rm /home/${USER}/software/kviolet_cross_3rdparty/gun/lib/libmpc.la
+
+cd $PACKAGE_COMPILE_DIR
+
+wget http://mirrors.ustc.edu.cn/gnu/gdb/gdb-8.1.tar.gz
+
+tar -xvf gdb-8.1.tar.gz && cd gdb-8.1/
+
+./configure $CONFIGURE_FLAGS \
+			--with-gmp=/home/${USER}/software/kviolet_cross_3rdparty/gun \
+			--with-mpfr=/home/${USER}/software/kviolet_cross_3rdparty/gun \
+			--with-mpc=/home/${USER}/software/kviolet_cross_3rdparty/gun \
+			--enable-host-shared \
+			--enable-vtable-verify \
+			--enable-lto \
+			--enable-libssp \
+			--enable-libada \
+			--program-suffix=8.1 \
+			--prefix=/home/${USER}/software/kviolet_cross_3rdparty/gun \
+			--exec-prefix=/home/${USER}/software/kviolet_cross_3rdparty/gun \
+			--sysconfdir=/home/${USER}/software/kviolet_cross_3rdparty/gun/etc \
+			--localstatedir=/home/${USER}/software/kviolet_cross_3rdparty/gun/var
+
+sed -i '179,181d' gdb/nat/linux-ptrace.h
+
+make -j8 && make install
