@@ -4,7 +4,7 @@ set -ex
 
 sourcePath=$(cd $(dirname $0) && pwd)
 
-GIT_PATCHE_DIR=$sourcePath/patches
+GIT_PATCH_DIR=$sourcePath/patches
 
 # 编译安装路径
 INSTALL_PREFIX_LINUX=/home/${USER}/software/kviolet_3rdparty
@@ -48,7 +48,7 @@ cmake .. -DgRPC_INSTALL=ON \
 		-D_gRPC_CPP_PLUGIN=$INSTALL_PREFIX_LINUX/grpc/bin/grpc_cpp_plugin \
 		-D_gRPC_PROTOBUF_PROTOC_EXECUTABLE=$INSTALL_PREFIX_LINUX/grpc/bin/protoc
 
-cd $PACKAGE_COMPILE_DIR/grpc && git apply -p1 --ignore-space-change --whitespace=nowarn $GIT_PATCHE_DIR/grpc_h3_r258.patch
+cd $PACKAGE_COMPILE_DIR/grpc && git apply -p1 --ignore-space-change --whitespace=nowarn GIT_PATCH_DIR/grpc_h3_r258.patch
 
 cd $PACKAGE_COMPILE_DIR/grpc/cd build_h3_r258
 
@@ -66,14 +66,14 @@ wget http://mirrors.ustc.edu.cn/gnu/gmp/gmp-6.1.2.tar.xz
 tar -xvf gmp-6.1.2.tar.xz && cd gmp-6.1.2
 
 ./configure $CONFIGURE_FLAGS \
-		--prefix=/home/${USER}/software/kviolet_cross_3rdparty/gun \
-		--exec-prefix=/home/${USER}/software/kviolet_cross_3rdparty/gun \
-		--sysconfdir=/home/${USER}/software/kviolet_cross_3rdparty/gun/etc \
-		--localstatedir=/home/${USER}/software/kviolet_cross_3rdparty/gun/var
+		--prefix=$INSTALL_PREFIX_CROSS_LINUX/gun \
+		--exec-prefix=$INSTALL_PREFIX_CROSS_LINUX/gun \
+		--sysconfdir=$INSTALL_PREFIX_CROSS_LINUX//gun/etc \
+		--localstatedir=$INSTALL_PREFIX_CROSS_LINUX//gun/var
 
 make -j8 && make install
 
-rm /home/${USER}/software/kviolet_cross_3rdparty/gun/lib/libgmp.la
+rm $INSTALL_PREFIX_CROSS_LINUX/gun/lib/libgmp.la
 
 cd $PACKAGE_COMPILE_DIR
 
@@ -84,15 +84,15 @@ tar -xvf mpfr-4.0.1.tar.gz && cd mpfr-4.0.1/
 ./configure $CONFIGURE_FLAGS \
 		--enable-thread-safe \
 		--enable-warnings \
-		--with-gmp=/home/${USER}/software/kviolet_cross_3rdparty/gun \
-		--prefix=/home/${USER}/software/kviolet_cross_3rdparty/gun \
-		--exec-prefix=/home/${USER}/software/kviolet_cross_3rdparty/gun \
-		--sysconfdir=/home/${USER}/software/kviolet_cross_3rdparty/gun/etc \
-		--localstatedir=/home/${USER}/software/kviolet_cross_3rdparty/gun/var
+		--with-gmp=$INSTALL_PREFIX_CROSS_LINUX/gun \
+		--prefix=$INSTALL_PREFIX_CROSS_LINUX/gun \
+		--exec-prefix=$INSTALL_PREFIX_CROSS_LINUX/gun \
+		--sysconfdir=$INSTALL_PREFIX_CROSS_LINUX/gun/etc \
+		--localstatedir=$INSTALL_PREFIX_CROSS_LINUX/gun/var
 
 make -j8 && make install
 
-rm /home/${USER}/software/kviolet_cross_3rdparty/gun/lib/libmpfr.la
+rm $INSTALL_PREFIX_CROSS_LINUX/gun/lib/libmpfr.la
 
 cd $PACKAGE_COMPILE_DIR
 
@@ -101,16 +101,16 @@ wget http://mirrors.ustc.edu.cn/gnu/mpc/mpc-1.1.0.tar.gz
 tar -xvf mpc-1.1.0.tar.gz && cd mpc-1.1.0/
 
 ./configure $CONFIGURE_FLAGS \
-		--with-gmp=/home/${USER}/software/kviolet_cross_3rdparty/gun \
-		--with-mpfr=/home/${USER}/software/kviolet_cross_3rdparty/gun \
-		--prefix=/home/${USER}/software/kviolet_cross_3rdparty/gun \
-		--exec-prefix=/home/${USER}/software/kviolet_cross_3rdparty/gun \
-		--sysconfdir=/home/${USER}/software/kviolet_cross_3rdparty/gun/etc \
-		--localstatedir=/home/${USER}/software/kviolet_cross_3rdparty/gun/var
+		--with-gmp=$INSTALL_PREFIX_CROSS_LINUX/gun \
+		--with-mpfr=$INSTALL_PREFIX_CROSS_LINUX/gun \
+		--prefix=$INSTALL_PREFIX_CROSS_LINUX/gun \
+		--exec-prefix=$INSTALL_PREFIX_CROSS_LINUX/gun \
+		--sysconfdir=$INSTALL_PREFIX_CROSS_LINUX/gun/etc \
+		--localstatedir=$INSTALL_PREFIX_CROSS_LINUX/gun/var
 
 make -j8 && make install
 
-rm /home/${USER}/software/kviolet_cross_3rdparty/gun/lib/libmpc.la
+rm $INSTALL_PREFIX_CROSS_LINUX/gun/lib/libmpc.la
 
 cd $PACKAGE_COMPILE_DIR
 
@@ -119,19 +119,19 @@ wget http://mirrors.ustc.edu.cn/gnu/gdb/gdb-8.1.tar.gz
 tar -xvf gdb-8.1.tar.gz && cd gdb-8.1/
 
 ./configure $CONFIGURE_FLAGS \
-		--with-gmp=/home/${USER}/software/kviolet_cross_3rdparty/gun \
-		--with-mpfr=/home/${USER}/software/kviolet_cross_3rdparty/gun \
-		--with-mpc=/home/${USER}/software/kviolet_cross_3rdparty/gun \
+		--with-gmp=$INSTALL_PREFIX_CROSS_LINUX/gun \
+		--with-mpfr=$INSTALL_PREFIX_CROSS_LINUX/gun \
+		--with-mpc=$INSTALL_PREFIX_CROSS_LINUX/gun \
 		--enable-host-shared \
 		--enable-vtable-verify \
 		--enable-lto \
 		--enable-libssp \
 		--enable-libada \
 		--program-suffix=8.1 \
-		--prefix=/home/${USER}/software/kviolet_cross_3rdparty/gun \
-		--exec-prefix=/home/${USER}/software/kviolet_cross_3rdparty/gun \
-		--sysconfdir=/home/${USER}/software/kviolet_cross_3rdparty/gun/etc \
-		--localstatedir=/home/${USER}/software/kviolet_cross_3rdparty/gun/var
+		--prefix=$INSTALL_PREFIX_CROSS_LINUX/gun \
+		--exec-prefix=$INSTALL_PREFIX_CROSS_LINUX/gun \
+		--sysconfdir=$INSTALL_PREFIX_CROSS_LINUX/gun/etc \
+		--localstatedir=$INSTALL_PREFIX_CROSS_LINUX/gun/var
 
 sed -i '179,181d' gdb/nat/linux-ptrace.h
 
@@ -150,13 +150,13 @@ wget http://mirrors.ustc.edu.cn/gnu/gmp/gmp-6.0.0a.tar.xz
 tar -xvf gmp-6.0.0a.tar.xz && cd gmp-6.0.0
 
 ./configure $CONFIGURE_FLAGS \
-		--prefix=/home/${USER}/software/kviolet_cross_3rdparty/gun \
+		--prefix=$INSTALL_PREFIX_CROSS_LINUX/gun \
 		--enable-cxx \
 		--enable-fft
 
 make -j8 && make install
 
-rm /home/${USER}/software/kviolet_cross_3rdparty/gun/lib/lib*.la
+rm $INSTALL_PREFIX_CROSS_LINUX/gun/lib/lib*.la
 
 cd $PACKAGE_COMPILE_DIR
 
@@ -165,12 +165,12 @@ wget http://mirrors.ustc.edu.cn/gnu/mpfr/mpfr-3.1.3.tar.xz
 tar -xvf mpfr-3.1.3.tar.xz && cd mpfr-3.1.3/
 
 ./configure $CONFIGURE_FLAGS \
-		--prefix=/home/${USER}/software/kviolet_cross_3rdparty/gun \
-		--with-gmp=/home/${USER}/software/kviolet_cross_3rdparty/gun
+		--prefix=$INSTALL_PREFIX_CROSS_LINUX/gun \
+		--with-gmp=$INSTALL_PREFIX_CROSS_LINUX/gun
 
 make -j8 && make install
 
-rm /home/${USER}/software/kviolet_cross_3rdparty/gun/lib/lib*.la
+rm $INSTALL_PREFIX_CROSS_LINUX/gun/lib/lib*.la
 
 cd $PACKAGE_COMPILE_DIR
 
@@ -179,25 +179,25 @@ wget http://mirrors.ustc.edu.cn/gnu/mpc/mpc-1.0.3.tar.gz
 tar -xvf mpc-1.0.3.tar.gz && cd mpc-1.0.3/
 
 ./configure $CONFIGURE_FLAGS \
-		--prefix=/home/${USER}/software/kviolet_cross_3rdparty/gun \
-		--with-gmp=/home/${USER}/software/kviolet_cross_3rdparty/gun \
-		--with-mpfr=/home/${USER}/software/kviolet_cross_3rdparty/gun
+		--prefix=$INSTALL_PREFIX_CROSS_LINUX/gun \
+		--with-gmp=$INSTALL_PREFIX_CROSS_LINUX/gun \
+		--with-mpfr=$INSTALL_PREFIX_CROSS_LINUX/gun
 
 make -j8 && make install
 
 cd $PACKAGE_COMPILE_DIR
 
-rm /home/${USER}/software/kviolet_cross_3rdparty/gun/lib/lib*.la
+rm $INSTALL_PREFIX_CROSS_LINUX/gun/lib/lib*.la
 
 wget http://mirrors.ustc.edu.cn/gnu/gdb/gdb-8.0.tar.gz
 
 tar -xvf gdb-8.0.tar.gz && cd gdb-8.0/
 
 ./configure $CONFIGURE_FLAGS \
-		--prefix=/home/${USER}/software/kviolet_cross_3rdparty/gun \
-		--with-gmp=/home/${USER}/software/kviolet_cross_3rdparty/gun \
-		--with-mpfr=/home/${USER}/software/kviolet_cross_3rdparty/gun \
-		--with-mpc=/home/${USER}/software/kviolet_cross_3rdparty/gun \
+		--prefix=$INSTALL_PREFIX_CROSS_LINUX/gun \
+		--with-gmp=$INSTALL_PREFIX_CROSS_LINUX/gun \
+		--with-mpfr=$INSTALL_PREFIX_CROSS_LINUX/gun \
+		--with-mpc=$INSTALL_PREFIX_CROSS_LINUX/gun \
 		--program-suffix=8.0 \
 		--with-gnu-ld \
 		--enable-plugins \
@@ -210,9 +210,9 @@ tar -xvf gdb-8.0.tar.gz && cd gdb-8.0/
 		--disable-gprof \
 		--without-curses \
 		--enable-tui=no	\
-		--exec-prefix=/home/${USER}/software/kviolet_cross_3rdparty/gun \
-		--sysconfdir=/home/${USER}/software/kviolet_cross_3rdparty/gun/etc \
-		--localstatedir=/home/${USER}/software/kviolet_cross_3rdparty/gun/var
+		--exec-prefix=$INSTALL_PREFIX_CROSS_LINUX/gun \
+		--sysconfdir=$INSTALL_PREFIX_CROSS_LINUX/gun/etc \
+		--localstatedir=$INSTALL_PREFIX_CROSS_LINUX/gun/var
 
 make -j8 && make install
 
@@ -224,7 +224,7 @@ wget  https://ftp.gnu.org/pub/gnu/ncurses/ncurses-6.2.tar.gz
 tar xvf ncurses-6.2.tar.gz && cd ncurses-6.2/
 
 ./configure $CONFIGURE_FLAGS \
-            	--with-shared \
-		--prefix=/home/${USER}/software/kviolet_cross_3rdparty/ncurses
+    --with-shared \
+    --prefix=$INSTALL_PREFIX_CROSS_LINUX/ncurses
 
 make -j8 && make install
