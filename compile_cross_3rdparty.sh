@@ -54,7 +54,7 @@ cd $PACKAGE_COMPILE_DIR/grpc/cd build_h3_r258
 
 make -j8 && make install
 
-# rk
+# gdb
 source /opt/workspace/Rockchip/rk3568/aarch64-linux-gcc-v12.3/environment-setup
 export "CONFIGURE_FLAGS=--target=aarch64-buildroot-linux-gnu --host=aarch64-buildroot-linux-gnu --build=x86_64-pc-linux-gnu"
 
