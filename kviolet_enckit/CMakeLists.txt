@@ -1,0 +1,38 @@
+﻿CMAKE_MINIMUM_REQUIRED(VERSION 3.8 FATAL_ERROR)
+
+PROJECT(kviolet_enckit)
+
+SET(CMAKE_MODULE_PATH
+		${CMAKE_SOURCE_DIR}/cmake/check
+		${CMAKE_SOURCE_DIR}/cmake/traverse)
+
+INCLUDE(TraverseSet)
+INCLUDE(TraverseSource)
+INCLUDE(TraverseLibrary)
+INCLUDE(TraverseInstall)
+INCLUDE(TraverseInclude)
+INCLUDE(TraverseCMakeLists)
+INCLUDE(TraverseSourceGroup)
+
+INCLUDE(CheckSystem)
+INCLUDE(CheckPlatform)
+INCLUDE(CheckCompiler)
+INCLUDE(CheckBuildType)
+INCLUDE(CheckGlobalType)
+INCLUDE(CheckInstallPrefix)
+
+# 检查 PLATFORM_TYPE 参数
+IF(NOT DEFINED PLATFORM_TYPE)
+	MESSAGE(FATAL_ERROR "PLATFORM_TYPE must be defined!")
+ELSE ()
+	MESSAGE(STATUS "platform type:${PLATFORM_TYPE}")
+ENDIF ()
+
+TRAVERSE_INCLUDE_DIRECTORIES(
+		${CMAKE_CURRENT_SOURCE_DIR}/../toolkit/${PLATFORM_TYPE}/include)
+
+TRAVERSE_LIBRARY_DIRECTORIES(
+		${CMAKE_CURRENT_SOURCE_DIR}/../toolkit/${PLATFORM_TYPE}/lib
+		${CMAKE_CURRENT_SOURCE_DIR}/../toolkit/${PLATFORM_TYPE}/lib64)
+
+TRAVERSE_CURRENT_DIRECTORY_ADD_PROJECT()

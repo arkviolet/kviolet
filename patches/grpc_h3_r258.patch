@@ -5,7 +5,7 @@ index 117e98d..610e0c0 100644
 @@ -45,8 +45,6 @@ class UrlTable : public BitSet<256> {
    }
  };
- 
+
 -constexpr UrlTable g_url_table;
 -
  class CompatibleTable : public BitSet<256> {
@@ -14,7 +14,7 @@ index 117e98d..610e0c0 100644
 @@ -57,15 +55,13 @@ class CompatibleTable : public BitSet<256> {
    }
  };
- 
+
 -constexpr CompatibleTable g_compatible_table;
 -
  // Map PercentEncodingType to a lookup table of legal symbols for that encoding.
@@ -40,7 +40,7 @@ index 938f25e..d9e88a0 100644
 -constexpr LegalHeaderKeyBits g_legal_header_key_bits;
 +
  }  // namespace
- 
+
  grpc_error_handle grpc_validate_header_key_is_legal(const grpc_slice& slice) {
 @@ -84,7 +84,7 @@ grpc_error_handle grpc_validate_header_key_is_legal(const grpc_slice& slice) {
      return GRPC_ERROR_CREATE_FROM_STATIC_STRING(
@@ -49,7 +49,7 @@ index 938f25e..d9e88a0 100644
 -  return conforms_to(slice, g_legal_header_key_bits, "Illegal header key");
 +  return conforms_to(slice, LegalHeaderKeyBits(), "Illegal header key");
  }
- 
+
  int grpc_header_key_is_legal(grpc_slice slice) {
 @@ -100,12 +100,12 @@ class LegalHeaderNonBinValueBits : public grpc_core::BitSet<256> {
      }
@@ -58,11 +58,10 @@ index 938f25e..d9e88a0 100644
 -constexpr LegalHeaderNonBinValueBits g_legal_header_non_bin_value_bits;
 +
  }  // namespace
- 
+
  grpc_error_handle grpc_validate_header_nonbin_value_is_legal(
      const grpc_slice& slice) {
 -  return conforms_to(slice, g_legal_header_non_bin_value_bits,
 +  return conforms_to(slice, LegalHeaderNonBinValueBits(),
                       "Illegal header value");
  }
- 

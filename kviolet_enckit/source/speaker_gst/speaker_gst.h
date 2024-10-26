@@ -1,11 +1,11 @@
 #ifndef __KVIOLET__ENCKIT__SPEAKER__GST__H__
 #define __KVIOLET__ENCKIT__SPEAKER__GST__H__
 
-#include "../../kviolet/lock_container/lock_map.h"
-
 #include <memory>
 #include <string>
 #include <thread>
+
+#include "kviolet/lock_container/lock_map.h"
 
 namespace kviolet {
 namespace enckit {

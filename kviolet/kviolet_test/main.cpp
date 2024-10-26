@@ -1,4 +1,4 @@
-#include "../../kviolet/kviolet.h"
+#include "../source/kviolet.h"
 
 using namespace kviolet::kpoll;
 using namespace kviolet::timer;

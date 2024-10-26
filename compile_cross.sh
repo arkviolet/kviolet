@@ -2,9 +2,14 @@
 
 set -ex
 
+# h3/r258 交叉编译工具链条
+# https://releases.linaro.org/components/toolchain/binaries/5.5-2017.10/arm-linux-gnueabihf/
+
 sourcePath=$(cd $(dirname $0) && pwd)
 
+# shellcheck disable=SC2034
 GIT_PATCH_DIR=$sourcePath/patches
+
 
 # 编译安装路径
 INSTALL_PREFIX_LINUX=/home/${USER}/software/kviolet_3rdparty

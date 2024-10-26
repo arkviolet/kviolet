@@ -2,8 +2,8 @@
 #define __KVIOLET__ENCKIT__GRPC__SERVER__LOOP__H__
 
 #include <grpcpp/grpcpp.h>
-#include "../../kviolet/lock_container/lock_list.h"
-#include "../../kviolet/lock_container/lock_map.h"
+#include <kviolet/lock_container/lock_list.h>
+#include <kviolet/lock_container/lock_map.h>
 
 #include <memory>
 #include <thread>
@@ -14,7 +14,7 @@ namespace enckit {
 
 using namespace kviolet::container;
 
-template<class DataType>
+template <class DataType>
 class GrpcServiceLoop {
   struct Context {
     LockList<std::shared_ptr<DataType>> list_;
@@ -41,7 +41,8 @@ class GrpcServiceLoop {
     while (!context->IsCancelled()) {
       if (ctx->list_.try_pop_front(read_timeout, data)) {
         if (!callback(data)) {
-          LOG(INFO) << "close by writter: " << std::this_thread::get_id() << ", " << context->peer();
+          LOG(INFO) << "close by writter: " << std::this_thread::get_id() << ", "
+                    << context->peer();
           break;
         }
       }

@@ -3,11 +3,11 @@
 
 #include <pulse/pulseaudio.h>
 
-#include "../../kviolet/lock_container/lock_map.h"
-
 #include <memory>
 #include <string>
 #include <thread>
+
+#include "kviolet/lock_container/lock_map.h"
 
 namespace kviolet {
 namespace enckit {

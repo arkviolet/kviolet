@@ -21,16 +21,4 @@ INCLUDE(CheckBuildType)
 INCLUDE(CheckGlobalType)
 INCLUDE(CheckInstallPrefix)
 
-TRAVERSE_INCLUDE_DIRECTORIES(
-        /usr/include
-        /usr/local/include
-        /home/$ENV{USER}/software/kviolet/include)
-
-TRAVERSE_LIBRARY_DIRECTORIES(
-        /usr/lib
-        /usr/lib64
-        /usr/local/lib
-        /usr/local/lib64
-        /home/$ENV{USER}/software/kviolet/lib)
-
 TRAVERSE_CURRENT_DIRECTORY_ADD_PROJECT()

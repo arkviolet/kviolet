@@ -5,21 +5,21 @@ index b1aa7d0..d0ae872 100644
 @@ -14,7 +14,7 @@
  #
  # Authored by: Thomas Voss <thomas.voss@canonical.com>
- 
+
 -cmake_minimum_required(VERSION 2.8)
 +cmake_minimum_required(VERSION 3.10)
- 
+
  project(dbus-cpp)
- 
+
 @@ -27,9 +27,6 @@ pkg_check_modules(PROCESS_CPP process-cpp)
- 
+
  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
- 
+
 -include(cmake/EnableCoverageReport.cmake)
 -include(cmake/PrePush.cmake)
 -
  include(GNUInstallDirs)
- 
+
  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -pedantic -Wextra -fvisibility=hidden -fPIC -pthread")
 @@ -40,7 +37,6 @@ set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
  set(
@@ -30,16 +30,16 @@ index b1aa7d0..d0ae872 100644
    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=${DBUS_CPP_SANITIZE}")
    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=${DBUS_CPP_SANITIZE}")
 @@ -65,18 +61,11 @@ set(DBUS_CPP_VERSION_MAJOR 5)
- set(DBUS_CPP_VERSION_MINOR 0) 
+ set(DBUS_CPP_VERSION_MINOR 0)
  set(DBUS_CPP_VERSION_PATCH 0)
- 
+
 -include(CTest)
 -
  include_directories(
    include
    ${LIBXML2_INCLUDE_DIR}
  )
- 
+
  add_subdirectory(data)
 -add_subdirectory(doc)
 -add_subdirectory(examples)
@@ -59,7 +59,7 @@ index dc92431..f0e6e9a 100644
 -    return handlers.erase(token);
 +    handlers.erase(token);
  }
- 
+
  template<typename SignalDescription, typename Argument>
 diff --git a/src/core/dbus/CMakeLists.txt b/src/core/dbus/CMakeLists.txt
 index 4713d4d..07ee81f 100644
@@ -72,10 +72,10 @@ index 4713d4d..07ee81f 100644
 -  ${PROCESS_CPP_INCLUDE_DIR}
 +  ${PROCESS_CPP_INCLUDE_DIRS}
  )
- 
+
  configure_file(
 @@ -32,9 +32,7 @@ configure_file(
- 
+
  add_library(
    dbus-cpp SHARED
 -
@@ -98,7 +98,7 @@ index 4713d4d..07ee81f 100644
  # out all symbols that are not in core::dbus::*
  set(symbol_map "${CMAKE_SOURCE_DIR}/symbols.map")
 @@ -56,16 +53,14 @@ set_target_properties(dbus-cpp PROPERTIES LINK_DEPENDS ${symbol_map})
- 
+
  target_link_libraries(
    dbus-cpp
 -
@@ -108,7 +108,7 @@ index 4713d4d..07ee81f 100644
 -  ${PROCESS_CPP_LIBRARIES}
 +  ${PROCESS_CPP_LINK_LIBRARIES}
  )
- 
+
  set_target_properties(
    dbus-cpp
 -
@@ -116,7 +116,7 @@ index 4713d4d..07ee81f 100644
    VERSION ${DBUS_CPP_VERSION_MAJOR}.${DBUS_CPP_VERSION_MINOR}.${DBUS_CPP_VERSION_PATCH}
    SOVERSION ${DBUS_CPP_VERSION_MAJOR}
 @@ -73,40 +68,5 @@ set_target_properties(
- 
+
  install(
    TARGETS dbus-cpp
 -  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

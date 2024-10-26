@@ -2,7 +2,8 @@
 
 #include <glog/logging.h>
 #include <sndfile.h>
-#include "../../kviolet/utilities/timestamp.h"
+
+#include "kviolet/utilities/timestamp.h"
 
 namespace kviolet {
 namespace enckit {

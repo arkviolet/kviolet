@@ -1,5 +1,5 @@
-#include "../../kviolet/kviolet.h"
-#include "../../kviolet_enckit/kviolet_enckit.h"
+#include "../source/kviolet_enckit.h"
+#include "../../kviolet/source/kviolet.h"
 
 using namespace kviolet::enckit;
 using namespace kviolet::kpoll;

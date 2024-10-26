@@ -18,7 +18,7 @@ class Builder : public std::enable_shared_from_this<Builder> {
   using Ptr = std::shared_ptr<Builder>;
 
  public:
-  explicit Builder(const std::string &name = "kviolet") : _name(name) {}
+  explicit Builder(const std::string &name = "") : _name(name) {}
   virtual ~Builder() {}
 
  public:
@@ -31,11 +31,15 @@ class Builder : public std::enable_shared_from_this<Builder> {
   Ptr RegisterHandlers(const _Ty &value, _Args &...args) {
     RegisterHandler(value);
 
-    if constexpr (sizeof...(args) > 0) {  /// C++17
+#if __cplusplus >= 201703L
+    if constexpr (sizeof...(args) > 0) {
       return RegisterHandlers(args...);
     }
 
     return shared_from_this();
+#else
+    return RegisterHandlers(args...);
+#endif
   }
 
   Ptr UnRegisterHandler() {
@@ -51,11 +55,16 @@ class Builder : public std::enable_shared_from_this<Builder> {
   template <typename _Tp, typename... _Args>
   Ptr UnRegisterHandlers(const _Tp &value, _Args... args) {
     UnRegisterHandler(value);
-    if constexpr (sizeof...(args) > 0) {  /// C++17
-      return UnRegisterHandlers(value);
+
+#if __cplusplus >= 201703L
+    if constexpr (sizeof...(args) > 0) {
+      return UnRegisterHandlers(args...);
     }
 
     return shared_from_this();
+#else
+    return UnRegisterHandlers(args...);
+#endif
   }
 
   Ptr operator+=(const std::shared_ptr<Handler> &handler) { return RegisterHandler(handler); }
