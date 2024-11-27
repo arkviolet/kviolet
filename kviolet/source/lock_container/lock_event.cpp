@@ -15,7 +15,7 @@ void LockEvent::Join() {
 
 bool LockEvent::Join(uint64_t timeout) {
   std::unique_lock<std::mutex> lock(_mutex);
-  return std::cv_status::timeout == _condition.wait_for(lock, std::chrono::milliseconds(timeout));
+  return std::cv_status::timeout != _condition.wait_for(lock, std::chrono::milliseconds(timeout));
 }
 
 }  // namespace container

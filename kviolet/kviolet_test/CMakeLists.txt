@@ -2,11 +2,13 @@
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
-RECURSE_CURRENT_DIRECTORY_SOURCE_FILE(SOURCE_FILES)
+ADD_EXECUTABLE(tool_test main.cpp)
 
-ADD_EXECUTABLE(${PROGRAM_NAME} ${SOURCE_FILES})
+target_link_libraries(tool_test kviolet)
 
-TRAVERSE_LIBRARY_FOR_PROGRAM_NAME(kviolet)
+add_library(test_generic_plug SHARED generic_plug/plug_instance.cpp)
+
+target_link_libraries(test_generic_plug kviolet)
 
 REDEFINE_FILE_MACRO(${PROGRAM_NAME})                                                    #添加启动项目
 

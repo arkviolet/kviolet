@@ -58,7 +58,7 @@ void test_container() {
     list.ForEach([](int i) { std::cout << i << std::endl; });
 
     list.Remove(1);
-    list.Remove([&](const int &value) { return value == a; });
+    list.Remove([&](const int& value) { return value == a; });
 
     list.ForEach([](int i) { std::cout << i << std::endl; });
 
@@ -74,15 +74,13 @@ void test_container() {
     lock_map.Insert(std::make_pair(4, 4));
 
     std::cout << std::endl;
-    lock_map.ForEach(
-        [](int key, int value) { std::cout << "key:" << key << ",value:" << value << std::endl; });
+    lock_map.ForEach([](int key, int value) { std::cout << "key:" << key << ",value:" << value << std::endl; });
 
     lock_map.Remove(1);
-    lock_map.RemoveIf([](const auto &item) { return item.first == 4; });
+    lock_map.RemoveIf([](const auto& item) { return item.first == 4; });
 
     std::cout << std::endl;
-    lock_map.ForEach(
-        [](int key, int value) { std::cout << "key:" << key << ",value:" << value << std::endl; });
+    lock_map.ForEach([](int key, int value) { std::cout << "key:" << key << ",value:" << value << std::endl; });
   }
 }
 
@@ -113,7 +111,7 @@ class TestMessage : public Message {
 };
 
 void test_message_queue() {
-  Dispatcher::RegisterHandler([&](const std::shared_ptr<Message> &msg) {
+  Dispatcher::RegisterHandler([&](const std::shared_ptr<Message>& msg) {
     auto m = std::dynamic_pointer_cast<TestMessage>(msg);
     std::cout << m->i << std::endl;
     std::cout << m->j << std::endl;
@@ -129,8 +127,7 @@ void test_message_queue() {
 
 void test_efficent() {
   /// ringbuffer
-  {
-  }
+  {}
 
   /// queue
   {
@@ -178,17 +175,17 @@ void test_efficent() {
     }
 
     std::cout << "Ergodic" << std::endl;
-    list_test.Ergodic([](const int &value) { std::cout << value << " "; });
+    list_test.Ergodic([](const int& value) { std::cout << value << " "; });
     std::cout << std::endl;
 
     std::cout << "Remove 1" << std::endl;
     list_test.Remove(1);
-    list_test.Ergodic([](const int &value) { std::cout << value << " "; });
+    list_test.Ergodic([](const int& value) { std::cout << value << " "; });
     std::cout << std::endl;
 
     std::cout << "Remove pr" << std::endl;
-    list_test.Remove([](const int &value) { return 6 == value; });
-    list_test.Ergodic([](const int &value) { std::cout << value << " "; });
+    list_test.Remove([](const int& value) { return 6 == value; });
+    list_test.Ergodic([](const int& value) { std::cout << value << " "; });
     std::cout << std::endl;
 
     std::cout << "size:" << list_test.Size() << std::endl;
@@ -206,17 +203,13 @@ class SingletonTest {
 
 class SingletonInterfaceTest : public SingletonInterface {
  public:
-  virtual void Handle(void *in, void *out) override {
-    std::cout << "SingletonInterfaceTest" << std::endl;
-  }
+  virtual void Handle(void* in, void* out) override { std::cout << "SingletonInterfaceTest" << std::endl; }
 };
 
 class SingletonTestHandle final : public Singleton<SingletonTest> {};
 
 void test_module() {
-  {
-    SingletonTestHandle::Instance().Test();
-  }
+  { SingletonTestHandle::Instance().Test(); }
 
   {
     SingletonInterfaceTest InterfaceTest;
@@ -241,7 +234,7 @@ void test_system() {
   }
 
   {
-    const char *argv[] = {"/usr/bin/sleep", "10", nullptr};
+    const char* argv[] = {"/usr/bin/sleep", "10", nullptr};
     auto pid = Process::Fork(argv);
 
     std::cout << Process::WaitPid(pid, true) << std::endl;
@@ -254,9 +247,25 @@ void test_system() {
   }
 }
 
-int main(int argc, char **argv) {
+void test_plug() {
+  auto handle = kviolet::module::LoadDriver(
+      "/home/i/workspace/kviolet/kviolet/build_x86_64/kviolet_test/"
+      "libtest_generic_plug.so",
+      "PlugInstance");
+
+  handle->Initialize(kviolet::module::PlugBaseInfo());
+  handle->Start();
+  handle->Stop();
+  handle->Destroy();
+
+  handle = nullptr;
+}
+
+int main(int argc, char** argv) {
   (void)argc;
   (void)argv;
+
+  test_plug();
 
   test_system();
 
