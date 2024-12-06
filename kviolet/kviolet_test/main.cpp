@@ -261,9 +261,36 @@ void test_plug() {
   handle = nullptr;
 }
 
+void test_serialize() {
+  std::string str;
+  {
+    Serialize serialize(128);
+    serialize.SerializePack(1, 2, 3, 4, 5, "hello word", 6, 7, 8, 9, 10);
+    str = std::move(std::string(serialize.str(), serialize.size()));
+  }
+
+  {
+    Serialize serialize(str.c_str(), str.size());
+    int i1, i2, i3, i4;
+    std::string str1;
+    int i5, i6, i7, i8, i9, i10;
+    serialize.DeserializePack(i1, i2, i3, i4, i5, str1, i6, i7, i8, i9, i10);
+    std::cout << i1 << " " << i2 << " " << i3 << " " << i4 << " " << str1 << " " << i5 << " " << i6 << " " << i7 << " " << i8
+              << " " << i9 << " " << i10 << std::endl;
+  }
+
+  {
+    Serialize message(128);
+    message.SerializePack(1, 2, 3, 4, 5, "hello word", 6, 7, 8, 9, 10);
+    message << 1 << 2 << 3 << 4 << 5 << "hello word" << 6 << 7 << 8 << 9 << 10;
+  }
+}
+
 int main(int argc, char** argv) {
   (void)argc;
   (void)argv;
+
+  test_serialize();
 
   test_plug();
 

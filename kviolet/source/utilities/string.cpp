@@ -3,6 +3,31 @@
 namespace kviolet {
 namespace utilities {
 
+void String::PrintHex(const std::string& data, char w) {
+  std::cout << w << "[" << std::hex;
+  for (auto& iter : data) {
+    std::cout << std::uppercase << std::setw(2) << std::setfill('0') << (short)iter << " ";
+  }
+  std::cout << std::dec << "]" << std::endl;
+}
+
+void String::PrintChar(const std::string& data) {
+  std::cout << std::endl << "[";
+  for (auto& iter : data) {
+    if (static_cast<int>(iter) <= 127) {
+      if ('\n' == iter) {
+        std::cout << " ";
+      } else {
+        std::cout << iter;
+      }
+
+    } else {
+      std::cout << " ";
+    }
+  }
+  std::cout << "]" << std::endl << std::endl;
+}
+
 void String::Trim(std::string& value, const char* group) {
   assert(group);
 
@@ -163,7 +188,8 @@ bool String::StartWith(const std::string& value, const std::string& prefix) {
   return value.size() >= prefix.size() && std::equal(prefix.begin(), prefix.end(), value.begin());
 }
 
-std::size_t String::Split(const std::string& value, const std::string& key, std::vector<std::string>& container, bool keepEmpty) {
+std::size_t String::Split(const std::string& value, const std::string& key, std::vector<std::string>& container,
+                          bool keepEmpty) {
   if (key.empty()) {
     container.push_back(value);
   } else {
@@ -413,9 +439,7 @@ std::string String::AsHexString(const uint8_t* value, bool reverse) {
   return AsHexString(value, strlen(reinterpret_cast<const char*>(value)), reverse);
 }
 
-std::string String::AsHexString(const std::string& value, bool reverse) {
-  return AsHexString(value, value.size(), reverse);
-}
+std::string String::AsHexString(const std::string& value, bool reverse) { return AsHexString(value, value.size(), reverse); }
 
 std::string String::AsHexString(const char* value, std::size_t size, bool reverse) {
   assert(value);
@@ -445,13 +469,9 @@ std::string String::AsHexString(const std::string& value, std::size_t size, bool
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-uint8_t HexString::AsByte(const char* value) {
-  return static_cast<uint8_t>(strtol(value, nullptr, 16));
-}
+uint8_t HexString::AsByte(const char* value) { return static_cast<uint8_t>(strtol(value, nullptr, 16)); }
 
-uint8_t HexString::AsByte(const std::string& value) {
-  return AsByte(value.c_str());
-}
+uint8_t HexString::AsByte(const std::string& value) { return AsByte(value.c_str()); }
 
 std::string HexString::AsString(const char* value, bool reverse) {
   assert(value);
@@ -459,9 +479,7 @@ std::string HexString::AsString(const char* value, bool reverse) {
   return AsString(value, strlen(value), reverse);
 }
 
-std::string HexString::AsString(const std::string& value, bool reverse) {
-  return AsString(value, value.size(), reverse);
-}
+std::string HexString::AsString(const std::string& value, bool reverse) { return AsString(value, value.size(), reverse); }
 
 std::string HexString::AsString(const char* value, std::size_t size, bool reverse) {
   int64_t op = reverse ? -2 : 2;

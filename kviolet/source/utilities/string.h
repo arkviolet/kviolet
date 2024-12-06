@@ -8,6 +8,10 @@ namespace utilities {
 
 class KVIOLET_CLASS_API String {
  public:
+  static void PrintHex(const std::string& data, char w = ' ');
+
+  static void PrintChar(const std::string& data);
+
   /// 去除首尾字符
   static void Trim(std::string& value, const char* group = "\r\n\t ");
 
@@ -39,11 +43,13 @@ class KVIOLET_CLASS_API String {
   /// 字符串替换字符
   static void Replace(std::string& value, const std::string& src, const std::string& dst, std::size_t index = 0);
 
-  static std::string Replace(const std::string& value, const std::string& src, const std::string& dst, std::size_t index = 0);
+  static std::string Replace(const std::string& value, const std::string& src, const std::string& dst,
+                             std::size_t index = 0);
 
   static void ReplaceAll(std::string& value, const std::string& src, const std::string& dst, std::size_t index = 0);
 
-  static std::string ReplaceAll(const std::string& value, const std::string& src, const std::string& dst, std::size_t index = 0);
+  static std::string ReplaceAll(const std::string& value, const std::string& src, const std::string& dst,
+                                std::size_t index = 0);
 
   /// 是否包含被查找的字符
   static bool With(const char* value, char infix, std::size_t index = 0);
@@ -63,7 +69,8 @@ class KVIOLET_CLASS_API String {
   static bool StartWith(const std::string& value, const std::string& prefix);
 
   /// 按字符串拆分
-  static std::size_t Split(const std::string& value, const std::string& key, std::vector<std::string>& container, bool keepEmpty = false);
+  static std::size_t Split(const std::string& value, const std::string& key, std::vector<std::string>& container,
+                           bool keepEmpty = false);
 
   static std::vector<std::string> Split(const std::string& value, const std::string& key, bool keepEmpty = false);
 
