@@ -77,7 +77,8 @@ cmake .. \
   -DCMAKE_C_FLAGS=-fPIC \
   -DCMAKE_CXX_FLAGS=-fPIC \
   -DCMAKE_INSTALL_PREFIX=$TOOLKIT_INSTALL_PREFIX_LINUX \
-  -DCMAKE_TOOLCHAIN_FILE=$sourcePath/cmakemoudes/rk3568.cmake
-  #-DCMAKE_TOOLCHAIN_FILE=/opt/rk3568-toolchain/share/buildroot/toolchainfile.cmake
+  -DCMAKE_TOOLCHAIN_FILE=/opt/rk3568/aarch64-linux-gcc-v12.3/share/buildroot/toolchainfile.cmake
+  #-DCMAKE_TOOLCHAIN_FILE=$sourcePath/cmakemoudes/rk3568.cmake
+
 
 make -j && make install
