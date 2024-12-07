@@ -3,9 +3,7 @@
 namespace kviolet {
 namespace utilities {
 
-bool Filesystem::Exists(const std::string& path) {
-  return access(path.c_str(), F_OK) == 0;
-}
+bool Filesystem::Exists(const std::string& path) { return access(path.c_str(), F_OK) == 0; }
 
 bool Filesystem::Remove(const std::string& path) {
   if (IsDirectory(path)) {
@@ -189,7 +187,7 @@ bool Filesystem::CreateDirectories(const std::string& path) {
 std::string Filesystem::CurrentDirectory() {
   char directory[1024 + 1] = {0};
 
-  return getcwd(directory, 1024) ? directory : KVIOLET_EOF;
+  return getcwd(directory, 1024) ? directory : "";
 }
 
 std::string Filesystem::Name(const std::string& path) {
@@ -205,14 +203,15 @@ std::string Filesystem::Steam(const std::string& path) {
   if (srcPos == std::string::npos) {
     return dstPos == std::string::npos ? path : path.substr(0, dstPos);
   } else {
-    return (dstPos == std::string::npos || dstPos < srcPos) ? path.substr(srcPos + 1) : path.substr(srcPos + 1, dstPos - srcPos - 1);
+    return (dstPos == std::string::npos || dstPos < srcPos) ? path.substr(srcPos + 1)
+                                                            : path.substr(srcPos + 1, dstPos - srcPos - 1);
   }
 }
 
 std::string Filesystem::Canonical(const std::string& path) {
   char directory[1024 + 1] = {0};
 
-  return realpath(path.c_str(), directory) ? directory : KVIOLET_EOF;
+  return realpath(path.c_str(), directory) ? directory : "";
 }
 
 std::string Filesystem::Extension(const std::string& path) {
@@ -270,7 +269,8 @@ void Filesystem::TraverseFile(const std::string& path, std::vector<std::string>&
   closedir(dir);
 }
 
-void Filesystem::TraverseFile(const std::string& path, std::vector<std::string>& container, const std::regex& rule, bool subdirectory) {
+void Filesystem::TraverseFile(const std::string& path, std::vector<std::string>& container, const std::regex& rule,
+                              bool subdirectory) {
   DIR* dir = opendir(path.c_str());
 
   if (dir == nullptr) {
@@ -353,7 +353,8 @@ void Filesystem::TraverseDirectory(const std::string& path, std::vector<std::str
   closedir(dir);
 }
 
-void Filesystem::TraverseDirectory(const std::string& path, std::vector<std::string>& container, const std::regex& rule, bool subdirectory) {
+void Filesystem::TraverseDirectory(const std::string& path, std::vector<std::string>& container, const std::regex& rule,
+                                   bool subdirectory) {
   DIR* dir = opendir(path.c_str());
 
   if (dir == nullptr) {

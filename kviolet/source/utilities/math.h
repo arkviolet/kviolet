@@ -6,7 +6,7 @@
 namespace kviolet {
 namespace utilities {
 
-class KVIOLET_CLASS_API Math {
+class API_EXPORT Math {
  public:
   /**
    * 判断当前参数是否为2^n

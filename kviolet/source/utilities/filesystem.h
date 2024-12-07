@@ -5,7 +5,7 @@
 
 namespace kviolet {
 namespace utilities {
-class KVIOLET_CLASS_API Filesystem {
+class API_EXPORT Filesystem {
  public:
   /// 文件是否存在
   static bool Exists(const std::string& path);
@@ -96,7 +96,8 @@ class KVIOLET_CLASS_API Filesystem {
   static void TraverseFile(const std::string& path, std::vector<std::string>& container, bool subdirectory = false);
 
   /// 遍历文件
-  static void TraverseFile(const std::string& path, std::vector<std::string>& container, const std::regex& rule, bool subdirectory = false);
+  static void TraverseFile(const std::string& path, std::vector<std::string>& container, const std::regex& rule,
+                           bool subdirectory = false);
 
   /// 遍历文件
   static std::vector<std::string> TraverseFile(const std::string& path, bool subdirectory = false);
@@ -108,13 +109,15 @@ class KVIOLET_CLASS_API Filesystem {
   static void TraverseDirectory(const std::string& path, std::vector<std::string>& container, bool subdirectory = false);
 
   /// 遍历文件
-  static void TraverseDirectory(const std::string& path, std::vector<std::string>& container, const std::regex& rule, bool subdirectory = false);
+  static void TraverseDirectory(const std::string& path, std::vector<std::string>& container, const std::regex& rule,
+                                bool subdirectory = false);
 
   /// 遍历目录
   static std::vector<std::string> TraverseDirectory(const std::string& path, bool subdirectory = false);
 
   /// 遍历目录
-  static std::vector<std::string> TraverseDirectory(const std::string& path, const std::regex& rule, bool subdirectory = false);
+  static std::vector<std::string> TraverseDirectory(const std::string& path, const std::regex& rule,
+                                                    bool subdirectory = false);
 };
 
 }  // namespace utilities

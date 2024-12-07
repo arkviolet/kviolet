@@ -5,7 +5,7 @@
 
 namespace kviolet {
 namespace utilities {
-class KVIOLET_CLASS_API Net {
+class API_EXPORT Net {
  public:
   /// 转换范围
   static bool AsRange(const std::string& value, uint16_t& head, uint16_t& tail);

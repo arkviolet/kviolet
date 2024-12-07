@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "../common/definecpp.h"
+#include "../common/common.h"
 
 namespace kviolet {
 namespace module {

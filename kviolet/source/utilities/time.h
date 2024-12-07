@@ -14,7 +14,7 @@ using SteadyClockType = std::chrono::steady_clock;
 using SteadyClockDuration = std::chrono::steady_clock::duration;
 using SteadyClockTimePoint = std::chrono::steady_clock::time_point;
 
-class KVIOLET_CLASS_API Time {
+class API_EXPORT Time {
  public:
   /// 是否是同一年
   static bool IsSameYear(std::time_t sSeconds, std::time_t dSeconds);
@@ -131,7 +131,8 @@ class KVIOLET_CLASS_API Time {
   static std::string FormatTimeString(std::time_t seconds, const char* format = "%4d-%02d-%02d %02d:%02d:%02d");
 
   /// 格式化日期字符串
-  static std::string FormatTimeString(std::time_t seconds, std::time_t timeZone, const char* format = "%4d-%02d-%02d %02d:%02d:%02d");
+  static std::string FormatTimeString(std::time_t seconds, std::time_t timeZone,
+                                      const char* format = "%4d-%02d-%02d %02d:%02d:%02d");
 
   /// 格式化当前UTC日期字符串
   static std::string CurrentUTCTimeString(const char* format = "%4d-%02d-%02d %02d:%02d:%02d");

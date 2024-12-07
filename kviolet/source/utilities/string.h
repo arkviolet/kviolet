@@ -6,7 +6,7 @@
 namespace kviolet {
 namespace utilities {
 
-class KVIOLET_CLASS_API String {
+class API_EXPORT String {
  public:
   static void PrintHex(const std::string& data, char w = ' ');
 
@@ -96,7 +96,7 @@ class KVIOLET_CLASS_API String {
   static std::string AsHexString(const std::string& value, std::size_t size, bool reverse = false);
 };
 
-class KVIOLET_CLASS_API HexString {
+class API_EXPORT HexString {
  public:
   /// 转换字符
   static uint8_t AsByte(const char* value);
