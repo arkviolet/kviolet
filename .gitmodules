@@ -1,0 +1,3 @@
+[submodule "docker_platformer"]
+	path = docker_platformer
+	url = git@github.com:arkviolet/docker_platformer.git
