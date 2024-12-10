@@ -1,20 +1,14 @@
-#
-# clion
-#
 .idea
 cmake-build-debug
 cmake-build-release
 
-#
-# build
-#
 build*
 build_linux
 build_androd
 build_rk3308
 
-#
-# cache
-#
 toolkit
 package
+packages
+linux_packages
+static-binaries
