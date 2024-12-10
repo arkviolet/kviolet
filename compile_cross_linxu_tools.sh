@@ -4,8 +4,6 @@ set -ex
 
 sourcePath=$(cd $(dirname $0) && pwd)
 
-BINUTILS_VERSION=2.40
-
 PACKAGE_COMPILE_DIR=$sourcePath/linux_packages
 INSTALL_PREFIX_CROSS_LINUX=$sourcePath/linux_packages/install
 
@@ -16,15 +14,16 @@ cd $sourcePath/linux_packages
 ##########################################################################################
 #ncurses
 # Allwinner h3_r258
-export PATH=$PATH:/opt/sdk/h3/toolchains/gcc-linaro-5.5.0-2017.10-x86_64_arm-linux-gnueabihf/bin/
+export PATH=$PATH:/opt/gcc-linaro-5.5.0-2017.10-x86_64_arm-linux-gnueabihf/bin/
 export "CONFIGURE_FLAGS=--host=arm-linux-gnueabihf --build=x86_64-pc-linux-gnu"
 export CC="arm-linux-gnueabihf-gcc"
+export CXX="arm-linux-gnueabihf-g++"
 
 cd $PACKAGE_COMPILE_DIR
 
-wget  https://ftp.gnu.org/pub/gnu/ncurses/ncurses-6.2.tar.gz
+wget  https://ftp.gnu.org/pub/gnu/ncurses/ncurses-5.7.tar.gz
 
-tar xvf ncurses-6.2.tar.gz && cd ncurses-6.2/
+tar xvf ncurses-5.7.tar.gz && cd ncurses-5.7/
 
 ./configure $CONFIGURE_FLAGS \
     --with-shared=no \
@@ -34,6 +33,7 @@ make -j8 && make install
 
 # procps
 cd $PACKAGE_COMPILE_DIR
+export NCURSES_CFLAGS="-I$INSTALL_PREFIX_CROSS_LINUX/h3_r258/ncurses/include/ncurses -I$INSTALL_PREFIX_CROSS_LINUX/h3_r258/ncurses/include/"
 export NCURSES_LIBS="-L$INSTALL_PREFIX_CROSS_LINUX/h3_r258/ncurses/lib -lncurses"
 
 git clone https://gitlab.com/procps-ng/procps.git
@@ -41,7 +41,10 @@ git clone https://gitlab.com/procps-ng/procps.git
 cd procps && ./autogen.sh 
 
 ./configure $CONFIGURE_FLAGS \
-    --prefix=$INSTALL_PREFIX_CROSS_LINUX/h3_r258/procps
+    --enable-shared=no \
+    --prefix=$INSTALL_PREFIX_CROSS_LINUX/h3_r258/procps \
+    --disable-nls \
+    --disable-pidwait
 
 make -j8 && make install
 
