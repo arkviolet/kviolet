@@ -35,11 +35,6 @@ rm -rf build && mkdir build && cd build && cmake .. \
 
 
 #########################################################################
-
-# Allwinner h3 r258
-# https://releases.linaro.org/components/toolchain/binaries/5.5-2017.10/arm-linux-gnueabihf/
-# https://releases.linaro.org/components/toolchain/binaries/7.5-2019.12/arm-linux-gnueabihf/
-
 PLATFORM_TYPE=linaro_arm
 
 TOOLKIT_INSTALL_PREFIX_LINUX=$sourcePath/toolkit/$PLATFORM_TYPE
@@ -54,7 +49,7 @@ cmake .. \
   -DCMAKE_C_FLAGS=-fPIC \
   -DCMAKE_CXX_FLAGS=-fPIC \
   -DCMAKE_INSTALL_PREFIX=$TOOLKIT_INSTALL_PREFIX_LINUX \
-  -DCMAKE_TOOLCHAIN_FILE=$sourcePath/cmakemoudes/linaro_arm.cmake
+  -DCMAKE_TOOLCHAIN_FILE=$sourcePath/docker_platformer/cmakemoudes/linaro_arm.cmake
 
 make -j && make install
 
