@@ -265,7 +265,11 @@ void test_serialize() {
   std::string str;
   {
     Serialize serialize(128);
+#if defined(__GNUC__) && (__GNUC__ >= 6)
     serialize.SerializePack(1, 2, 3, 4, 5, "hello word", 6, 7, 8, 9, 10);
+#else
+    serialize << 1 << 2 << 3 << 4 << 5 << "hello word" << 6 << 7 << 8 << 9 << 10;
+#endif
     str = std::move(std::string(serialize.str(), serialize.size()));
   }
 
@@ -274,14 +278,20 @@ void test_serialize() {
     int i1, i2, i3, i4;
     std::string str1;
     int i5, i6, i7, i8, i9, i10;
+#if defined(__GNUC__) && (__GNUC__ >= 6)
     serialize.DeserializePack(i1, i2, i3, i4, i5, str1, i6, i7, i8, i9, i10);
+#else
+    serialize >> i1 >> i2 >> i3 >> i4 >> i5 >> str1 >> i6 >> i7 >> i8 >> i9 >> i10;
+#endif
     std::cout << i1 << " " << i2 << " " << i3 << " " << i4 << " " << str1 << " " << i5 << " " << i6 << " " << i7 << " " << i8
               << " " << i9 << " " << i10 << std::endl;
   }
 
   {
     Serialize message(128);
+#if defined(__GNUC__) && (__GNUC__ >= 6)
     message.SerializePack(1, 2, 3, 4, 5, "hello word", 6, 7, 8, 9, 10);
+#endif
     message << 1 << 2 << 3 << 4 << 5 << "hello word" << 6 << 7 << 8 << 9 << 10;
   }
 }

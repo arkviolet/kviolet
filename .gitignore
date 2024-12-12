@@ -10,5 +10,6 @@ build_rk3308
 toolkit
 package
 packages
+sysstat
 linux_packages
 static-binaries

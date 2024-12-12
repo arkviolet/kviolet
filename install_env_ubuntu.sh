@@ -1,9 +1,9 @@
 #!/bin/bash
 
+set -ex
+
 mkdir -vp ~/package/
 mkdir -vp ~/software/
-
-SOFTWARE_PATH=~/software
 
 sudo apt-get update
 
@@ -193,10 +193,10 @@ make -j4
 #
 # download android NDK21
 #
-    cd ~/package/ && wget https://dl.google.com/android/repository/android-ndk-r21e-linux-x86_64.zip
+cd ~/package/ && wget https://dl.google.com/android/repository/android-ndk-r21e-linux-x86_64.zip
 
-    unzip android-ndk-r21e-linux-x86_64.zip
+unzip android-ndk-r21e-linux-x86_64.zip
 
-    rm android-ndk-r21e-linux-x86_64.zip
+rm android-ndk-r21e-linux-x86_64.zip
 
-    mv android-ndk-r21e ~/software/
+mv android-ndk-r21e ~/software/

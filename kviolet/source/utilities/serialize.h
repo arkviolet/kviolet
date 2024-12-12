@@ -46,6 +46,7 @@ class Serialize {
   Serialize& operator>>(std::string& item) { return Extract(item); }
 
  public:
+#if defined(__GNUC__) && (__GNUC__ >= 6)
   template <typename... _Args>
   void SerializePack(_Args&&... args) {
     (void)(*this << ... << args);
@@ -55,6 +56,7 @@ class Serialize {
   void DeserializePack(_Args&... args) {
     (void)(*this >> ... >> args);
   }
+#endif
 
  public:
   uint32_t size() { return size_; }
