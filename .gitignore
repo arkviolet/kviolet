@@ -8,8 +8,4 @@ build_androd
 build_rk3308
 
 toolkit
-package
-packages
-sysstat
-linux_packages
-static-binaries
+toolkit_enckit
