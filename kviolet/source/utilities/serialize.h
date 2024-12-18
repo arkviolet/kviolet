@@ -14,36 +14,17 @@ class Serialize {
  public:
   Serialize() = delete;
   Serialize(uint32_t reserve) { buffer_ = new char[reserve]; }
-  Serialize(const char* data, uint32_t size) {
-    size_ = size;
-    buffer_ = new char[size];
-    memcpy(buffer_, data, size);
-  }
-
   ~Serialize() { delete[] buffer_; }
 
  public:
   Serialize& operator<<(bool item) { return Append(item); }
-  Serialize& operator<<(uint32_t item) { return Append(item); }
   Serialize& operator<<(int item) { return Append(item); }
+  Serialize& operator<<(uint32_t item) { return Append(item); }
   Serialize& operator<<(uint64_t item) { return Append(item); }
   Serialize& operator<<(int64_t item) { return Append(item); }
   Serialize& operator<<(double item) { return Append(item); }
-  Serialize& operator<<(const std::string& item) { return Append(item.c_str(), item.size()); }
   Serialize& operator<<(const char* item) { return Append(item, strlen(item)); }
-
-  Serialize& operator>>(bool& item) {
-    item = *reinterpret_cast<bool*>(buffer_ + offset_);
-    offset_ += sizeof(item);
-    return *this;
-  }
-
-  Serialize& operator>>(uint32_t& item) { return Extract(item); }
-  Serialize& operator>>(int& item) { return Extract(item); }
-  Serialize& operator>>(uint64_t& item) { return Extract(item); }
-  Serialize& operator>>(int64_t& item) { return Extract(item); }
-  Serialize& operator>>(double& item) { return Extract(item); }
-  Serialize& operator>>(std::string& item) { return Extract(item); }
+  Serialize& operator<<(const std::string& item) { return Append(item.c_str(), item.size()); }
 
  public:
 #if defined(__GNUC__) && (__GNUC__ >= 6)
@@ -51,17 +32,11 @@ class Serialize {
   void SerializePack(_Args&&... args) {
     (void)(*this << ... << args);
   }
-
-  template <typename... _Args>
-  void DeserializePack(_Args&... args) {
-    (void)(*this >> ... >> args);
-  }
 #endif
 
  public:
-  uint32_t size() { return size_; }
-  uint32_t offset() { return offset_; }
-  const char* str() { return buffer_; }
+  uint32_t Size() { return size_; }
+  const char* Str() { return buffer_; }
 
  protected:
   template <typename T>
@@ -79,26 +54,57 @@ class Serialize {
     return *this;
   }
 
+ private:
+  uint32_t size_{0};
+  char* buffer_{nullptr};
+};
+
+class Deserialize {
+ public:
+  Deserialize() = delete;
+  ~Deserialize() = default;
+  Deserialize(const char* data) { data_ = data; }
+
+ public:
+  Deserialize& operator>>(bool& item) { return Extract(item); }
+  Deserialize& operator>>(int& item) { return Extract(item); }
+  Deserialize& operator>>(uint32_t& item) { return Extract(item); }
+  Deserialize& operator>>(uint64_t& item) { return Extract(item); }
+  Deserialize& operator>>(int64_t& item) { return Extract(item); }
+  Deserialize& operator>>(double& item) { return Extract(item); }
+  Deserialize& operator>>(std::string& item) { return Extract(item); }
+
+ public:
+#if defined(__GNUC__) && (__GNUC__ >= 6)
+  template <typename... _Args>
+  void DeserializePack(_Args&... args) {
+    (void)(*this >> ... >> args);
+  }
+#endif
+
+ public:
+  uint32_t Offset() { return offset_; }
+
+ protected:
   template <typename T>
-  Serialize& Extract(T& item) {
+  Deserialize& Extract(T& item) {
     /// TODO std::is_same<std::string&, decltype(item)>::value)
-    item = *reinterpret_cast<T*>(buffer_ + offset_);
+    item = *(T*)(data_ + offset_);
     offset_ += sizeof(item);
     return *this;
   }
 
-  Serialize& Extract(std::string& item) {
-    auto len = *reinterpret_cast<uint32_t*>(buffer_ + offset_);
+  Deserialize& Extract(std::string& item) {
+    auto len = *(uint32_t*)(data_ + offset_);
     offset_ += sizeof(uint32_t);
-    item = std::move(std::string(buffer_ + offset_, len));
+    item = std::move(std::string(data_ + offset_, len));
     offset_ += len;
     return *this;
   }
 
  private:
-  uint32_t size_{0};
   uint32_t offset_{0};
-  char* buffer_{nullptr};
+  const char* data_{nullptr};
 };
 
 }  // namespace utilities

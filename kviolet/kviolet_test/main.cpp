@@ -270,19 +270,23 @@ void test_serialize() {
 #else
     serialize << 1 << 2 << 3 << 4 << 5 << "hello word" << 6 << 7 << 8 << 9 << 10;
 #endif
-    str = std::move(std::string(serialize.str(), serialize.size()));
+    str = std::move(std::string(serialize.Str(), serialize.Size()));
   }
 
   {
-    Serialize serialize(str.c_str(), str.size());
+    Deserialize deserialize(str.c_str());
     int i1, i2, i3, i4;
     std::string str1;
     int i5, i6, i7, i8, i9, i10;
 #if defined(__GNUC__) && (__GNUC__ >= 6)
-    serialize.DeserializePack(i1, i2, i3, i4, i5, str1, i6, i7, i8, i9, i10);
+    deserialize.DeserializePack(i1, i2, i3, i4, i5, str1, i6, i7, i8, i9, i10);
 #else
-    serialize >> i1 >> i2 >> i3 >> i4 >> i5 >> str1 >> i6 >> i7 >> i8 >> i9 >> i10;
+    deserialize >> i1 >> i2 >> i3 >> i4 >> i5 >> str1 >> i6 >> i7 >> i8 >> i9 >> i10;
 #endif
+    if (str.size() != deserialize.Offset()) {
+      std::cout << "deserialize error" << std::endl;
+    }
+
     std::cout << i1 << " " << i2 << " " << i3 << " " << i4 << " " << str1 << " " << i5 << " " << i6 << " " << i7 << " " << i8
               << " " << i9 << " " << i10 << std::endl;
   }
