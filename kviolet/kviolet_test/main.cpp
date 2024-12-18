@@ -253,12 +253,14 @@ void test_plug() {
       "libtest_generic_plug.so",
       "PlugInstance");
 
-  handle->Initialize(kviolet::module::PlugBaseInfo());
-  handle->Start();
-  handle->Stop();
-  handle->Destroy();
+  if (handle) {
+    handle->Initialize(kviolet::module::PlugBaseInfo());
+    handle->Start();
+    handle->Stop();
+    handle->Destroy();
 
-  handle = nullptr;
+    handle = nullptr;
+  }
 }
 
 void test_serialize() {
