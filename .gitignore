@@ -1,0 +1,12 @@
+.idea
+cmake-build-debug
+cmake-build-release
+
+build_linux
+build_androd
+build_rk3308
+toolkit/kviolet/build*
+toolkit/kviolet_enckit/build*
+
+packages
+software
